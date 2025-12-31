@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/register_screen.dart';
+import 'package:mobile/features/onboarding/profile_setup.dart';
 
 
 class LoginScreen extends StatelessWidget {
@@ -82,7 +83,14 @@ class LoginScreen extends StatelessWidget {
               SizedBox(
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileSetupScreen(),
+                      ),
+                    );
+                    },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4442D9),
                     shape: RoundedRectangleBorder(
