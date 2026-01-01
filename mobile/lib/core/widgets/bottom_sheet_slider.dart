@@ -8,6 +8,7 @@ class BottomSheetSlider extends StatelessWidget {
   final double max;
   final int divisions;
   final ValueChanged<double> onChanged;
+  final double initialValue = 0; // or whatever your default is
 
   const BottomSheetSlider({
     super.key,
@@ -44,36 +45,46 @@ class BottomSheetSlider extends StatelessWidget {
 
         if (selected != null) onChanged(selected);
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        height: 52,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE6E6E6)),
+          color: value != initialValue
+              ? const Color(0xFF4442D9).withOpacity(0.08)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: (value != null && value != initialValue)
+                ? const Color(0xFF4442D9)
+                : Colors.black12,
+          ),
         ),
-
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                placeholder,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  placeholder,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            Text(
-              "${value.toStringAsFixed(1)} $unit",
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
+              Text(
+                "${value.toStringAsFixed(1)} $unit",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
               ),
-            ),
 
-            const Icon(Icons.chevron_right, color: Colors.black38),
-          ],
+              const Icon(Icons.chevron_right, color: Colors.black38),
+            ],
+          ),
         ),
       ),
     );

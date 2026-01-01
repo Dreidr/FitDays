@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/widgets/bottom_sheet_dropdown.dart';
 import 'package:mobile/core/widgets/bottom_sheet_slider.dart';
+import 'package:mobile/core/widgets/workout_schedule_field.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -13,6 +14,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   String? fitnessGoal;
   String? fitnessLevel;
   double weightKg = 72.5;
+  List<String> workoutDays = []; // start empty
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +61,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               },
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
             BottomSheetSlider(
               placeholder: "Weight",
@@ -87,15 +89,21 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             BottomSheetDropdown(
               placeholder: "Fitness Level",
               value: fitnessLevel,
-              options: const [
-                "Beginner",
-                "Intermediate",
-                "Advanced",
-              ],
+              options: const ["Beginner", "Intermediate", "Advanced"],
               onChanged: (val) {
                 setState(() => fitnessLevel = val);
               },
             ),
+
+            const SizedBox(height: 12),
+
+            WorkoutScheduleField(
+              placeholder: "Workout Schedule",
+              value: workoutDays,
+              onChanged: (val) => setState(() => workoutDays = val),
+            ),
+
+              const SizedBox(height: 12),
           ],
         ),
       ),

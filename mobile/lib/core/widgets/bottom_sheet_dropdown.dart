@@ -28,27 +28,37 @@ class BottomSheetDropdown extends StatelessWidget {
             final selected = await _showPicker(context);
             if (selected != null) onChanged(selected);
           },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            height: 52,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE6E6E6)),
+              color: (value?.isNotEmpty == true)
+                  ? const Color(0xFF4442D9).withOpacity(0.08)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: (value?.isNotEmpty == true)
+                    ? const Color(0xFF4442D9)
+                    : Colors.black12,
+              ),
             ),
-
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    value ?? placeholder,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      value ?? placeholder,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-                const Icon(Icons.chevron_right, color: Colors.black38),
-              ],
+                  const Icon(Icons.chevron_right, color: Colors.black38),
+                ],
+              ),
             ),
           ),
         ),
@@ -101,7 +111,7 @@ class BottomSheetDropdown extends StatelessWidget {
                       child: const Text(
                         "Done",
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF4442D9),
                         ),
@@ -133,9 +143,15 @@ class BottomSheetDropdown extends StatelessWidget {
                             ),
                           ),
                         ),
-                        trailing: isSelected
-                            ? const Icon(Icons.check, color: Color(0xFF4442D9))
-                            : null,
+                        trailing: SizedBox(
+                          width: 16,
+                          child: isSelected
+                              ? const Icon(
+                                  Icons.check,
+                                  color: Color(0xFF4442D9),
+                                )
+                              : null,
+                        ),
                         onTap: () {
                           temp = item;
                           // rebuild bottom sheet
