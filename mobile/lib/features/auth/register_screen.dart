@@ -20,11 +20,14 @@ class RegisterScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
 
+              
+// TODO: add APP bar instead of a back button 
+
               // 🔙 Back button
               Align(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.chevron_left),
                   color: Colors.black,
                   onPressed: () {
                       Navigator.push(

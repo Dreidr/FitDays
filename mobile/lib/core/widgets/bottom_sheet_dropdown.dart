@@ -130,33 +130,46 @@ class BottomSheetDropdown extends StatelessWidget {
                       final item = options[index];
                       final isSelected = item == temp;
 
-                      return ListTile(
-                        contentPadding:
-                            EdgeInsets.zero, // remove default padding
-                        title: Center(
-                          child: Text(
-                            item,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        trailing: SizedBox(
-                          width: 16,
-                          child: isSelected
-                              ? const Icon(
-                                  Icons.check,
-                                  color: Color(0xFF4442D9),
-                                )
-                              : null,
-                        ),
+                      return InkWell(
                         onTap: () {
                           temp = item;
-                          // rebuild bottom sheet
                           (context as Element).markNeedsBuild();
                         },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Row(
+                            children: [
+                              const SizedBox(
+                                width: 24,
+                              ), // left spacer (balances check)
+
+                              Expanded(
+                                child: Center(
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(
+                                width: 56, 
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: isSelected
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: Color(0xFF4442D9),
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       );
                     },
                   ),
