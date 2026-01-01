@@ -14,6 +14,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   String? fitnessGoal;
   String? fitnessLevel;
   double weightKg = 72.5;
+  bool weightChanged = false;
   List<String> workoutDays = []; // start empty
 
   @override
@@ -70,7 +71,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               min: 35,
               max: 160,
               divisions: 250, // 0.5kg steps if you want: (160-35)*2=250
-              onChanged: (v) => setState(() => weightKg = v),
+              isSet: weightChanged, // 👈 now recognized
+              onChanged: (v) {
+                setState(() {
+                  weightKg = v;
+                  weightChanged =
+                      true; // only becomes true after user moves slider
+                });
+              },
             ),
 
             const SizedBox(height: 48),
@@ -103,7 +111,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               onChanged: (val) => setState(() => workoutDays = val),
             ),
 
-              const SizedBox(height: 12),
+            const SizedBox(height: 12),
           ],
         ),
       ),

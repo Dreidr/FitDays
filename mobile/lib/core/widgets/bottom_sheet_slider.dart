@@ -9,6 +9,7 @@ class BottomSheetSlider extends StatelessWidget {
   final int divisions;
   final ValueChanged<double> onChanged;
   final double initialValue = 0; // or whatever your default is
+  final bool isSet;
 
   const BottomSheetSlider({
     super.key,
@@ -19,6 +20,7 @@ class BottomSheetSlider extends StatelessWidget {
     required this.max,
     required this.divisions,
     required this.onChanged,
+    required this.isSet, // 👈 add this
   });
 
   @override
@@ -50,14 +52,12 @@ class BottomSheetSlider extends StatelessWidget {
         curve: Curves.easeOut,
         height: 52,
         decoration: BoxDecoration(
-          color: value != initialValue
+          color: isSet
               ? const Color(0xFF4442D9).withOpacity(0.08)
               : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: (value != null && value != initialValue)
-                ? const Color(0xFF4442D9)
-                : Colors.black12,
+            color: isSet ? const Color(0xFF4442D9) : Colors.black12,
           ),
         ),
         child: Padding(
