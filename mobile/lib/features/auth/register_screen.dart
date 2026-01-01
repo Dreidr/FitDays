@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/login_screen.dart';
-import 'package:mobile/features/onboarding/profile_setup.dart';
+import 'package:mobile/features/onboarding/plan_setup_screen.dart';
 
 
 class RegisterScreen extends StatelessWidget {
@@ -50,7 +50,7 @@ class RegisterScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
-                  color:const Color(0xFF4442D9),
+                  color: Color(0xFF4442D9),
                 ),
               ),
 

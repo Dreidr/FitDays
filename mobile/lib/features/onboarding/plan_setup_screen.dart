@@ -3,6 +3,7 @@ import 'package:mobile/core/widgets/bottom_sheet_dropdown.dart';
 import 'package:mobile/core/widgets/bottom_sheet_slider.dart';
 import 'package:mobile/core/widgets/workout_schedule_field.dart';
 import 'package:mobile/core/widgets/top_toast.dart';
+import 'package:mobile/features/home/home_screen.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -42,8 +43,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                // TODO: later save + navigate
-              },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                      ),
+                    );
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4442D9),
                 shape: RoundedRectangleBorder(
