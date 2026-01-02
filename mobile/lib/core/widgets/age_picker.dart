@@ -1,0 +1,168 @@
+import 'package:flutter/material.dart';
+
+class AgePickerField extends StatelessWidget {
+  const AgePickerField({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.showBorder = true, // 👈 default ON
+    this.isSelected = false,
+  });
+
+  final int? value;
+  final ValueChanged<int> onChanged;
+  final bool showBorder;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () async {
+        final selected = await _showAgePicker(context, value ?? 25);
+        if (selected != null) onChanged(selected);
+      },
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF4442D9).withOpacity(0.06)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: showBorder
+              ? Border.all(
+                  color: isSelected ? const Color(0xFF4442D9) : Colors.black12,
+                )
+              : null,
+        ),
+
+        child: Row(
+          children: [
+            const Text(
+              "Age",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            Text(
+              value?.toString() ?? "Select",
+              style: TextStyle(
+                fontSize: 16,
+                color: value == null ? Colors.black38 : Colors.black87,
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Icon(Icons.chevron_right, color: Colors.black38),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<int?> _showAgePicker(BuildContext context, int initial) {
+    final controller = FixedExtentScrollController(initialItem: initial - 18);
+
+    int temp = initial;
+
+    return showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // grabber
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                Row(
+                  children: [
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        "Select age",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, temp),
+                      child: const Text(
+                        "Done",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF4442D9),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                SizedBox(
+                  height: 180,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ListWheelScrollView.useDelegate(
+                        controller: controller,
+                        itemExtent: 44,
+                        physics: const FixedExtentScrollPhysics(),
+                        onSelectedItemChanged: (index) {
+                          temp = 18 + index;
+                        },
+                        childDelegate: ListWheelChildBuilderDelegate(
+                          childCount: 63,
+                          builder: (_, index) {
+                            final age = 18 + index;
+                            return Center(
+                              child: Text(
+                                age.toString(),
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      // 👇 selection highlight
+                      IgnorePointer(
+                        child: Container(
+                          height: 44,
+                          margin: const EdgeInsets.symmetric(horizontal: 24),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.06),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
