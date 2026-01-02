@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/widgets/profile_name.dart';
 import 'package:mobile/core/widgets/bottom_sheet_dropdown.dart';
 import 'package:mobile/core/widgets/bottom_sheet_slider.dart';
 import 'package:mobile/core/widgets/workout_schedule_field.dart';
+import 'package:mobile/core/widgets/age_picker.dart';
 import 'package:mobile/core/widgets/top_toast.dart';
 import 'package:mobile/features/home/home_screen.dart';
 
@@ -13,12 +15,17 @@ class ProfileSetupScreen extends StatefulWidget {
 }
 
 class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
+  String? name;
+  String? gender;
+  bool ageSelected = false;
+  int? age;
   String? fitnessGoal;
   String? fitnessLevel;
   String? workoutPlan;
   int? workoutDuration;
   double weightKg = 72.5;
   bool weightChanged = false;
+
   List<String> workoutDays = []; // start empty
 
   @override
@@ -30,7 +37,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          "Profile",
+          "Plan Setup",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
         ),
       ),
@@ -43,13 +50,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                      ),
-                    );
-                    },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4442D9),
                 shape: RoundedRectangleBorder(
@@ -73,6 +78,72 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              "Profile",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            ProfileNameField(
+              value: name,
+              showBorder: false, // 👈 clean list style
+              onChanged: (val) => setState(() => name = val),
+            ),
+
+            const Divider(
+              height: 6, // space around line
+              thickness: 0.6, // thin line
+              indent: 14, // left padding
+              endIndent: 14, // right padding
+              color: Colors.black12,
+            ),
+            
+//TODO: Show selection separately
+
+            BottomSheetDropdown(
+              placeholder: "Gender",
+              value: gender,
+              showBorder: false, // 👈 clean list style
+              options: const ["Male", "Female", "Other", "Prefer Not To Say"],
+              onChanged: (val) {
+                setState(() => gender = val);
+                showTopToast(context, "Profile Data Updated");
+              },
+            ),
+            const Divider(
+              height: 6, // space around line
+              thickness: 0.6, // thin line
+              indent: 14, // left padding
+              endIndent: 14, // right padding
+              color: Colors.black12,
+            ),
+
+            AgePickerField(
+              value: age,
+              isSelected: ageSelected,
+              showBorder: false, // 👈 clean list style
+              onChanged: (val) {
+                setState(() {
+                  age = val;
+                  ageSelected = true;
+                });
+                showTopToast(context, "Profile Data Updated");
+              },
+            ),
+
+            const Divider(
+              height: 6, // space around line
+              thickness: 0.6, // thin line
+              indent: 14, // left padding
+              endIndent: 14, // right padding
+              color: Colors.black12,
+            ),
+
             const Text(
               "Fitness goal",
               style: TextStyle(
@@ -131,8 +202,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               ),
             ),
 
-            const SizedBox(height: 12),
-
             BottomSheetDropdown(
               placeholder: "Fitness Level",
               value: fitnessLevel,
@@ -143,7 +212,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               },
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             WorkoutScheduleField(
               placeholder: "Workout Schedule",

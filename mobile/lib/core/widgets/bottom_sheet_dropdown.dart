@@ -8,6 +8,7 @@ class BottomSheetDropdown extends StatelessWidget {
     required this.options,
     required this.onChanged,
     this.icon = Icons.chevron_right,
+    this.showBorder = true, // 👈 default ON
   });
 
   final String placeholder;
@@ -15,6 +16,7 @@ class BottomSheetDropdown extends StatelessWidget {
   final List<String> options;
   final ValueChanged<String> onChanged;
   final IconData icon;
+  final bool showBorder;
 
   @override
   Widget build(BuildContext context) {
@@ -32,33 +34,34 @@ class BottomSheetDropdown extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
             height: 52,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
               color: (value?.isNotEmpty == true)
                   ? const Color(0xFF4442D9).withOpacity(0.08)
                   : Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: (value?.isNotEmpty == true)
-                    ? const Color(0xFF4442D9)
-                    : Colors.black12,
-              ),
+              border: showBorder
+                  ? Border.all(
+                      color: (value?.isNotEmpty == true)
+                          ? const Color(0xFF4442D9)
+                          : Colors.black12,
+                    )
+                  : null,
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      value ?? placeholder,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    value ?? placeholder,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const Icon(Icons.chevron_right, color: Colors.black38),
-                ],
-              ),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.black38),
+              ],
             ),
           ),
         ),
@@ -78,8 +81,7 @@ class BottomSheetDropdown extends StatelessWidget {
       ),
       builder: (context) {
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -156,7 +158,7 @@ class BottomSheetDropdown extends StatelessWidget {
                               ),
 
                               SizedBox(
-                                width: 56, 
+                                width: 56,
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: isSelected
@@ -178,7 +180,6 @@ class BottomSheetDropdown extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
             ),
-          ),
         );
       },
     );

@@ -125,128 +125,143 @@ class _WorkoutSchedulePickerState extends State<_WorkoutSchedulePicker> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          "Workout Schedule",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.black87,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, selected.toList()),
-            child: const Text(
-              "Done",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF4442D9),
-              ),
-            ),
-          ),
-        ],
-      ),
-
-      // This prevents overflow: the body can scroll
       body: SafeArea(
-        child: SingleChildScrollView(
-          controller: widget.scrollController, // 👈 important
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Select your workout days",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 14),
-              // Chip grid (no overflow)
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: days.map((day) {
-                  final isOn = selected.contains(day);
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (isOn) {
-                          selected.remove(day);
-                        } else {
-                          selected.add(day);
-                        }
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 160),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 22,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isOn ? const Color(0xFF4442D9) : Colors.white,
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: isOn
-                              ? const Color(0xFF4442D9)
-                              : Colors.black12,
-                        ),
-                      ),
-                      child: Text(
-                        day,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: isOn ? Colors.white : Colors.black87,
-                        ),
+        child: Column(
+          children: [
+            // 🔹 Custom header (replaces AppBar)
+            
+            Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.black87),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+
+                  const Expanded(
+                    child: Text(
+                      "Workout Schedule",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 24),
-
-              Row(
-                children: [
-                  _PresetButton(
-                    text: "Mon–Fri",
-                    onTap: () => setState(() {
-                      selected
-                        ..clear()
-                        ..addAll(["Mon", "Tue", "Wed", "Thu", "Fri"]);
-                    }),
                   ),
-                  const SizedBox(width: 10),
-                  _PresetButton(
-                    text: "All days",
-                    onTap: () => setState(() {
-                      selected
-                        ..clear()
-                        ..addAll(days);
-                    }),
-                  ),
-                  const SizedBox(width: 10),
-                  _PresetButton(
-                    text: "Clear",
-                    onTap: () => setState(selected.clear),
+
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, selected.toList()),
+                    child: const Text(
+                      "Done",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF4442D9),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ],
-          ),
+        
+
+            const Divider(height: 1),
+
+            // 🔹 Scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                controller: widget.scrollController, // 👈 still works
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Select your workout days",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: days.map((day) {
+                        final isOn = selected.contains(day);
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (isOn) {
+                                selected.remove(day);
+                              } else {
+                                selected.add(day);
+                              }
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 160),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 22,
+                              vertical: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isOn
+                                  ? const Color(0xFF4442D9)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: isOn
+                                    ? const Color(0xFF4442D9)
+                                    : Colors.black12,
+                              ),
+                            ),
+                            child: Text(
+                              day,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: isOn ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Row(
+                      children: [
+                        _PresetButton(
+                          text: "Mon–Fri",
+                          onTap: () => setState(() {
+                            selected
+                              ..clear()
+                              ..addAll(["Mon", "Tue", "Wed", "Thu", "Fri"]);
+                          }),
+                        ),
+                        const SizedBox(width: 10),
+                        _PresetButton(
+                          text: "All days",
+                          onTap: () => setState(() {
+                            selected
+                              ..clear()
+                              ..addAll(days);
+                          }),
+                        ),
+                        const SizedBox(width: 10),
+                        _PresetButton(
+                          text: "Clear",
+                          onTap: () => setState(selected.clear),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
