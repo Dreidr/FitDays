@@ -6,6 +6,7 @@ import 'package:mobile/core/widgets/workout_schedule_field.dart';
 import 'package:mobile/core/widgets/age_picker.dart';
 import 'package:mobile/core/widgets/top_toast.dart';
 import 'package:mobile/features/home/home_screen.dart';
+import 'package:mobile/core/enums/dropdown_display.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -25,7 +26,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   int? workoutDuration;
   double weightKg = 72.5;
   bool weightChanged = false;
-
   List<String> workoutDays = []; // start empty
 
   @override
@@ -52,7 +52,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => HomeScreen(
+                      userName: name ?? "User",
+                      workoutStreak: 0, // starts at 0
+                      startDate: DateTime.now(),
+                      workoutDays: workoutDays, // 👈 pass it
+                    ),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -79,15 +86,15 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Profile",
+              "PROFILE",
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Colors.black87,
+                color: Colors.black45,
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             ProfileNameField(
               value: name,
@@ -102,12 +109,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               endIndent: 14, // right padding
               color: Colors.black12,
             ),
-            
-//TODO: Show selection separately
+
+            const SizedBox(height: 8),
 
             BottomSheetDropdown(
               placeholder: "Gender",
               value: gender,
+              display: DropdownDisplay.trailingValue,
               showBorder: false, // 👈 clean list style
               options: const ["Male", "Female", "Other", "Prefer Not To Say"],
               onChanged: (val) {
@@ -122,6 +130,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               endIndent: 14, // right padding
               color: Colors.black12,
             ),
+
+            const SizedBox(height: 8),
 
             AgePickerField(
               value: age,
@@ -144,26 +154,28 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               color: Colors.black12,
             ),
 
+            const SizedBox(height: 16),
+
             const Text(
-              "Fitness goal",
+              "FITNESS GOAL",
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Colors.black87,
+                color: Colors.black45,
               ),
             ),
 
             const SizedBox(height: 12),
 
             BottomSheetDropdown(
-              placeholder: "Select Goal",
+              placeholder: "Set My Goal",
               value: fitnessGoal,
               options: const [
-                "Lose weight",
-                "Build muscle",
-                "Maintain fitness",
-                "Improve endurance",
-                "Get stronger",
+                "Lose Weight",
+                "Build Muscle",
+                "Maintain Fitness",
+                "Improve Endurance",
+                "Get Stronger",
               ],
               onChanged: (val) {
                 setState(() => fitnessGoal = val);
@@ -174,7 +186,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             const SizedBox(height: 12),
 
             BottomSheetSlider(
-              placeholder: "Weight",
+              placeholder: "Weight Goal",
               unit: "kg",
               value: weightKg,
               min: 35,
@@ -191,16 +203,18 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               },
             ),
 
-            const SizedBox(height: 48),
+            const SizedBox(height: 16),
 
             const Text(
-              "Workout parameters",
+              "WORKOUT PARAMETERS",
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Colors.black87,
+                color: Colors.black45,
               ),
             ),
+
+            const SizedBox(height: 12),
 
             BottomSheetDropdown(
               placeholder: "Fitness Level",
@@ -212,7 +226,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               },
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
             WorkoutScheduleField(
               placeholder: "Workout Schedule",
@@ -222,6 +236,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 showTopToast(context, "Workout Schedule updated");
               },
             ),
+            const SizedBox(height: 12),
 
             BottomSheetDropdown(
               placeholder: "Workout Duration",
@@ -237,10 +252,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               },
             ),
 
+            const SizedBox(height: 12),
+
             BottomSheetDropdown(
               placeholder: "Workout Plan",
               value: workoutPlan,
-              options: const ["Bulk", "Cut", "Sad", "Bad"],
+              options: const [
+                "Strength Training",
+                "Cardio",
+                "Flexibility Training",
+                "Stability Training",
+              ],
               onChanged: (val) {
                 setState(() => workoutPlan = val);
                 showTopToast(context, "Workout Plan updated");

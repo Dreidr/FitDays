@@ -127,12 +127,7 @@ class _SliderSheetState extends State<_SliderSheet> {
 
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 14,
-          bottom: 20 + MediaQuery.of(context).viewInsets.bottom,
-        ),
+       padding: const EdgeInsets.fromLTRB(16, 16, 10, 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -140,10 +135,7 @@ class _SliderSheetState extends State<_SliderSheet> {
             Row(
               children: [
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 4,
-                    ), // space before title
+          
                     child: Text(
                       widget.title,
                       style: const TextStyle(
@@ -151,7 +143,7 @@ class _SliderSheetState extends State<_SliderSheet> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                  ),
+                  
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, temp),
@@ -159,8 +151,8 @@ class _SliderSheetState extends State<_SliderSheet> {
                     "Done",
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w800, // <- heavier DONE
-                      color: purple,
+                      fontWeight: FontWeight.w700, // <- heavier DONE
+                      color: Color(0xFF4442D9) 
                     ),
                   ),
                 ),
@@ -172,7 +164,7 @@ class _SliderSheetState extends State<_SliderSheet> {
             // big value
             Text(
               "${temp.toStringAsFixed(1)} ${widget.unit}",
-              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800),
+              style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w800),
             ),
 
             const SizedBox(height: 14),

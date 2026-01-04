@@ -1,0 +1,3 @@
+enum DropdownDisplay { replacePlaceholder, trailingValue }
+
+

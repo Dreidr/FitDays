@@ -72,7 +72,7 @@ class AgePickerField extends StatelessWidget {
       builder: (_) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 10, 10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -85,14 +85,13 @@ class AgePickerField extends StatelessWidget {
                     borderRadius: BorderRadius.circular(99),
                   ),
                 ),
-                const SizedBox(height: 12),
-
+     
                 Row(
                   children: [
                     const SizedBox(width: 12),
                     const Expanded(
                       child: Text(
-                        "Select age",
+                        "Age",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,

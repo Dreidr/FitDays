@@ -89,7 +89,7 @@ class WorkoutScheduleField extends StatelessWidget {
       ),
       builder: (_) => DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.5, // 👈 60% height (change this)
+        initialChildSize: 0.4 , // 👈 60% height (change this)
         minChildSize: 0.4,
         maxChildSize: 0.9,
         builder: (context, scrollController) {
@@ -127,22 +127,17 @@ class _WorkoutSchedulePickerState extends State<_WorkoutSchedulePicker> {
 
       body: SafeArea(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // 🔹 Custom header (replaces AppBar)
-            
-            Row(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 10, 10),
+              child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.black87),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       "Workout Schedule",
-                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: Colors.black87,
                       ),
@@ -162,9 +157,7 @@ class _WorkoutSchedulePickerState extends State<_WorkoutSchedulePicker> {
                   ),
                 ],
               ),
-        
-
-            const Divider(height: 1),
+            ),
 
             // 🔹 Scrollable content
             Expanded(

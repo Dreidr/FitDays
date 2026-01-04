@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 
+class HomeTopRow extends StatelessWidget {
+  const HomeTopRow({
+    super.key,
+    required this.streak,
+    required this.week,
+    this.onStreakTap,
+  });
 
-class TopRow extends StatelessWidget {
+  final int streak;
+  final int week;
+  final VoidCallback? onStreakTap;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _Chip(icon: Icons.emoji_events, label: "2"),
-        _Chip(label: "Week 2"),
+        GestureDetector(
+          onTap: onStreakTap,
+          child: _Chip(
+            icon: Icons.local_fire_department,
+            label: "$streak",
+          ),
+        ),
+        _Chip(label: "Week $week"),
       ],
     );
   }
@@ -16,6 +32,7 @@ class TopRow extends StatelessWidget {
 
 class _Chip extends StatelessWidget {
   const _Chip({this.icon, required this.label});
+
   final IconData? icon;
   final String label;
 
@@ -33,7 +50,10 @@ class _Chip extends StatelessWidget {
             Icon(icon, size: 16, color: const Color(0xFF4442D9)),
             const SizedBox(width: 6),
           ],
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
