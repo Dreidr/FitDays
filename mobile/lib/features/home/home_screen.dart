@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:mobile/core/widgets/top_row.dart';
 import 'package:mobile/core/widgets/greeting.dart';
 import 'package:mobile/core/widgets/calendar.dart';
-import 'package:mobile/core/widgets/workout_card.dart';
+import 'package:mobile/core/widgets/workout_card_carousel.dart';
 import 'package:mobile/core/widgets/quick_actions.dart';
 import 'package:mobile/core/widgets/insights.dart';
 import 'package:mobile/core/widgets/bottom_navigation.dart';
+import 'package:mobile/core/theme/app_decorations.dart';
+import 'package:mobile/core/models/day_plan.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -54,8 +56,47 @@ class _HomeScreenState extends State<HomeScreen> {
     return List.generate(14, (i) => startOfLastWeek.add(Duration(days: i)));
   }
 
+  List<DayPlan> buildThreeDayPlans(Set<int> workoutWeekdays) {
+    final today = DateTime.now();
+    final start = DateTime(today.year, today.month, today.day);
+
+    const workoutTypes = [
+      ("Upper Body", "45 min • Strength"),
+      ("Lower Body", "40 min • Strength"),
+      ("Full Body", "35 min • Conditioning"),
+    ];
+
+    var workoutIndex = 0;
+
+    return List.generate(3, (i) {
+      final date = start.add(Duration(days: i));
+      final isWorkoutDay = workoutWeekdays.contains(date.weekday);
+
+      if (!isWorkoutDay) {
+        return DayPlan(
+          date: date,
+          isWorkoutDay: false,
+          title: "Recovery day",
+          subtitle: "Stretch • Walk • Mobility",
+        );
+      }
+
+      final wt = workoutTypes[workoutIndex % workoutTypes.length];
+      workoutIndex++;
+
+      return DayPlan(
+        date: date,
+        isWorkoutDay: true,
+        title: wt.$1,
+        subtitle: wt.$2,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final workoutWeekdays = getWorkoutWeekdays();
+    final plans = buildThreeDayPlans(workoutWeekdays);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -75,14 +116,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.03),
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                decoration: AppDecorations.card(context),
+
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 12),
+                    
                     Greeting(userName: widget.userName),
                     const SizedBox(height: 12),
                     Calendar(
@@ -91,7 +130,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       workoutDays: getWorkoutWeekdays(),
                     ),
                     const SizedBox(height: 20),
-                    TodayWorkoutCard(),
+                    WorkoutCarousel(
+                      plans: buildThreeDayPlans(getWorkoutWeekdays()),
+                    ),
                     const SizedBox(height: 20),
                   ],
                 ),

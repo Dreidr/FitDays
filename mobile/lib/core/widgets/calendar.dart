@@ -14,14 +14,12 @@ class Calendar extends StatelessWidget {
 
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
-      
 
   @override
   Widget build(BuildContext context) {
     final week1 = dates.take(7).toList();
     final week2 = dates.skip(7).take(7).toList();
     const _weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
 
     return Column(
       children: [
@@ -81,8 +79,12 @@ class Calendar extends StatelessWidget {
     }
 
     return Column(
+  children: [
+    const SizedBox(height: 6),
+
+    Stack(
+      alignment: Alignment.center,
       children: [
-        const SizedBox(height: 6),
         Container(
           width: 36,
           height: 36,
@@ -93,10 +95,43 @@ class Calendar extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             date.day.toString(),
-            style: TextStyle(fontWeight: FontWeight.w700, color: text),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: text,
+            ),
           ),
         ),
+
+        // dumbbell marker (only on workout days)
+        if (isWorkoutDay)
+          Positioned(
+            right: 4,
+            bottom: 4,
+            child: Icon(
+              Icons.fitness_center,
+              size: 12,
+              color: isCompleted
+                  ? Colors.white
+                  : const Color(0xFF4442D9),
+            ),
+          ),
       ],
-    );
+    ),
+
+    // 👇 TODAY DOT
+    if (isToday) ...[
+      const SizedBox(height: 4),
+      Container(
+        width: 4,
+        height: 4,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFF4442D9),
+        ),
+      ),
+    ],
+  ],
+);
+
   }
 }

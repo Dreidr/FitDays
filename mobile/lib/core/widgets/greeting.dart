@@ -17,17 +17,46 @@ class Greeting extends StatelessWidget {
     }
   }
 
+String getMotivation() {
+  final hour = DateTime.now().hour;
+
+  if (hour < 12) {
+    return "Let’s start the day strong 💪";
+  } else if (hour < 17) {
+    return "Keep the momentum going 🚀";
+  } else if (hour < 21) {
+    return "Finish the day proud 🏁";
+  } else {
+    return "Small steps still count 🌙";
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "${getGreeting()}, $userName 👋",
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 12),
-      ],
-    );
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text(
+      "${getGreeting()}, $userName 👋",
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+    const SizedBox(height: 6),
+
+    Text(
+      getMotivation(),
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: Colors.black87,
+      ),
+    ),
+
+    const SizedBox(height: 12),
+  ],
+);
+
   }
 }
