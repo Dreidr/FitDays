@@ -1,9 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/register_screen.dart';
 import 'package:mobile/features/onboarding/plan_setup_screen.dart';
-
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -20,43 +18,42 @@ class LoginScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
 
+              // TODO: add APP bar instead of a back button
 
-// TODO: add APP bar instead of a back button 
               // 🔙 Back button
               Align(
-                alignment: Alignment.centerLeft,       
+                alignment: Alignment.centerLeft,
                 child: IconButton(
                   icon: const Icon(Icons.chevron_left),
                   iconSize: 34,
                   color: Colors.black,
                   onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LaunchScreen(),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LaunchScreen(),
                       ),
                     );
-                    },
+                  },
                 ),
-              
               ),
 
-              const Spacer(flex:1), // pushes everything below to bottom section
-
-
+              const Spacer(
+                flex: 1,
+              ), // pushes everything below to bottom section
               // Log In / logo
-              const Text(
-                'FitDays',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF4442D9),
+              // Logo
+              const Align(
+                alignment: Alignment(0, -0.15),
+                child: Image(
+                  image: AssetImage('assets/images/fitdays_logo.png'),
+                  width: 320,
+                  height: 320,
+                  fit: BoxFit.contain,
                 ),
               ),
 
-             const SizedBox(height:40),
-
+              const SizedBox(height: 10),
 
               // Email field
               TextField(
@@ -88,13 +85,13 @@ class LoginScreen extends StatelessWidget {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProfileSetupScreen(),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileSetupScreen(),
                       ),
                     );
-                    },
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4442D9),
                     shape: RoundedRectangleBorder(
@@ -136,8 +133,8 @@ class LoginScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const RegisterScreen(),
-                      ),
-                    );
+                        ),
+                      );
                     },
                     child: const Text(
                       'Sign up',
@@ -158,3 +155,4 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
+

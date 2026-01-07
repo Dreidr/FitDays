@@ -44,17 +44,17 @@ class RegisterScreen extends StatelessWidget {
 
 
               // Log In / logo
-              const Text(
-                'FitDays',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF4442D9),
+              const Align(
+                alignment: Alignment(0, -0.15),
+                child: Image(
+                  image: AssetImage('assets/images/fitdays_logo.png'),
+                  width: 320,
+                  height: 320,
+                  fit: BoxFit.contain,
                 ),
               ),
 
-             const SizedBox(height:40),
+             const SizedBox(height:10),
 
 
               // Email field
