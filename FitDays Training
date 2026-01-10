@@ -1,0 +1,34 @@
+## Project Name
+FitDays Training – Flutter fitness tracking app
+
+## Tech Stack
+- Flutter
+- Firebase
+- REST APIs (ExerciseDB)
+- Local storage (SharedPreferences)
+
+## App Features
+- 
+- Workout tracking and guiding
+//Macro tracking would be implemented later
+- Streaks
+- iOS + Android support
+
+## Current Status
+- Launch screen UI done
+- Page setup screen UI done
+- Home screen UI done
+- Workout detail screen UI done
+- Workout carousel connected
+- API test successful /in a different project/
+- Sticky bottom nav bar done
+
+## Coding Preferences
+- Clean UI
+- Beginner-friendly explanations
+- Step-by-step guidance
+
+## Known Issues
+- iOS simulator storage constraints
+- API image reload on navigation
+- Folder and files restructure needed
