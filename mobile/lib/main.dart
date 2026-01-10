@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 
-
-
-
 void main() {
   runApp(const MyApp());
 }

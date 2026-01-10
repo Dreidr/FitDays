@@ -5,8 +5,8 @@ import 'package:mobile/core/widgets/bottom_sheet_slider.dart';
 import 'package:mobile/core/widgets/workout_schedule_field.dart';
 import 'package:mobile/core/widgets/age_picker.dart';
 import 'package:mobile/core/widgets/top_toast.dart';
-import 'package:mobile/features/home/home_screen.dart';
 import 'package:mobile/core/enums/dropdown_display.dart';
+import 'package:mobile/app_shell.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -53,7 +53,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => HomeScreen(
+                    builder: (_) => AppShell(
                       userName: name ?? "User",
                       workoutStreak: 0, // starts at 0
                       startDate: DateTime.now(),
@@ -62,7 +62,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   ),
                 );
               },
-              style: ElevatedButton.styleFrom(
+              style: ElevatedButton.styleFrom(  
                 backgroundColor: const Color(0xFF4442D9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),

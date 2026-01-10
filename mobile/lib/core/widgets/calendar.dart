@@ -19,7 +19,7 @@ class Calendar extends StatelessWidget {
   Widget build(BuildContext context) {
     final week1 = dates.take(7).toList();
     final week2 = dates.skip(7).take(7).toList();
-    const _weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
     return Column(
       children: [
@@ -39,7 +39,7 @@ class Calendar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(7, (i) {
-            final label = _weekdayLabels[i]; // ["Mon"...]
+            final label = weekdayLabels[i]; // ["Mon"...]
             return SizedBox(
               width: 36, // match your day cell width
               child: Text(
@@ -86,35 +86,33 @@ class Calendar extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(10),
+  width: 36,
+  height: 36,
+  decoration: BoxDecoration(
+    color: bg,
+    borderRadius: BorderRadius.circular(10),
+  ),
+  alignment: Alignment.center,
+  child: isWorkoutDay
+      ? Transform.rotate(
+          angle: 134 * 3.1415926535 / 180,
+          child: Icon(
+            Icons.fitness_center_sharp,
+            size: 18,
+            color: isCompleted
+                ? Colors.white
+                : const Color(0xFF4442D9),
           ),
-          alignment: Alignment.center,
-          child: Text(
-            date.day.toString(),
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: text,
-            ),
+        )
+      : Text(
+          date.day.toString(),
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: text,
           ),
         ),
+),
 
-        // dumbbell marker (only on workout days)
-        if (isWorkoutDay)
-          Positioned(
-            right: 4,
-            bottom: 4,
-            child: Icon(
-              Icons.fitness_center,
-              size: 12,
-              color: isCompleted
-                  ? Colors.white
-                  : const Color(0xFF4442D9),
-            ),
-          ),
       ],
     ),
 
