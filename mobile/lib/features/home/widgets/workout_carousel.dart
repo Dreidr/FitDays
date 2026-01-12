@@ -7,21 +7,39 @@ class WorkoutCarousel extends StatelessWidget {
     super.key,
     required this.plans,
     required this.onPlanTap,
+    this.extraCard,     // ✅ new
+    this.onExtraTap,    // ✅ new
   });
 
   final List<DayPlan> plans;
   final ValueChanged<DayPlan> onPlanTap;
 
+  final Widget? extraCard;
+  final VoidCallback? onExtraTap;
+
   @override
   Widget build(BuildContext context) {
+    final itemCount = plans.length + (extraCard == null ? 0 : 1);
+
     return SizedBox(
       height: 190,
       child: PageView.builder(
-        itemCount: plans.length,
+        itemCount: itemCount,
         controller: PageController(viewportFraction: 0.92),
         itemBuilder: (context, index) {
+          final isExtra = extraCard != null && index == plans.length;
 
-           final plan = plans[index];
+          if (isExtra) {
+            return GestureDetector(
+              onTap: onExtraTap,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: extraCard!,
+              ),
+            );
+          }
+
+          final plan = plans[index];
           final isToday = index == 0;
 
           return GestureDetector(

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/login_screen.dart';
-import 'package:mobile/features/onboarding/plan_setup_screen.dart';
+import 'package:mobile/features/onboarding/profile_setup_screen.dart';
 
 
 class RegisterScreen extends StatelessWidget {

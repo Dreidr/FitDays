@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile/app/app_shell.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
-import 'package:mobile/core/models/user_profile.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,16 +15,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final completed = LocalStorageService.isOnboardingComplete;
-    final UserProfile? profile = LocalStorageService.getUserProfile();
+    final skipped = LocalStorageService.isOnboardingSkipped;
+    final profile = LocalStorageService.getUserProfile();
+
+    final canEnterApp = completed || skipped;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: (completed && profile != null)
+      theme: ThemeData(fontFamily: 'Roboto'),
+      home: (canEnterApp)
           ? AppShell(
-              userName: profile.name.isEmpty ? "User" : profile.name,
+              userName: profile?.name.isNotEmpty == true
+                  ? profile!.name
+                  : "User",
               workoutStreak: 0,
               startDate: DateTime.now(),
-              workoutDays: profile.workoutDays,
+              workoutDays: profile?.workoutDays ?? const [],
             )
           : const LaunchScreen(),
     );

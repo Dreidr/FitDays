@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/register_screen.dart';
-import 'package:mobile/features/onboarding/plan_setup_screen.dart';
+import 'package:mobile/features/onboarding/profile_setup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});

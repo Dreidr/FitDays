@@ -72,7 +72,38 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           "Plan Setup",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
         ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await LocalStorageService.setOnboardingSkipped(true);
+
+              if (!context.mounted) return;
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AppShell(
+                    userName: "User",
+                    workoutStreak: 0,
+                    startDate: DateTime.now(),
+                    workoutDays: const [],
+                  ),
+                ),
+                (route) => false,
+              );
+            },
+
+            child: const Text(
+              "Skip for now",
+              style: TextStyle(
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
+
       // ✅ sticky bottom button
       bottomNavigationBar: SafeArea(
         child: Padding(

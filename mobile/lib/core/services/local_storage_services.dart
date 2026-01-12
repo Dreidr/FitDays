@@ -21,6 +21,14 @@ class LocalStorageService {
     await _prefs?.setBool(_onboardingKey, value);
   }
 
+  static const _skippedKey = "onboarding_skipped";
+
+  static bool get isOnboardingSkipped => _prefs?.getBool(_skippedKey) ?? false;
+
+  static Future<void> setOnboardingSkipped(bool value) async {
+    await _prefs?.setBool(_skippedKey, value);
+  }
+
   // Profile
   static Future<void> saveUserProfile(UserProfile profile) async {
     final jsonString = jsonEncode(profile.toJson());
