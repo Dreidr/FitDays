@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/models/day_plan.dart';
-import 'package:mobile/core/widgets/workout_card.dart';
+import 'package:mobile/features/workout/models/day_plan.dart';
+import 'package:mobile/features/home/widgets/workout_card.dart';
 
 class WorkoutCarousel extends StatelessWidget {
   const WorkoutCarousel({

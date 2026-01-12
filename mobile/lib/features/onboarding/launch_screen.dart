@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui' show ImageFilter;
 import 'package:mobile/features/auth/login_screen.dart';
 import 'package:mobile/features/auth/register_screen.dart';
-import 'package:mobile/core/widgets/logo_animation.dart';
+import 'package:mobile/app/logo_animation.dart';
 
 class LaunchScreen extends StatelessWidget {
   const LaunchScreen({super.key});

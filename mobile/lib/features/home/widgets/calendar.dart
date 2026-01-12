@@ -41,7 +41,7 @@ class Calendar extends StatelessWidget {
           children: List.generate(7, (i) {
             final label = weekdayLabels[i]; // ["Mon"...]
             return SizedBox(
-              width: 36, // match your day cell width
+              width: 32, // match your day cell width
               child: Text(
                 label,
                 textAlign: TextAlign.center,

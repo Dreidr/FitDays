@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/widgets/top_row.dart';
-import 'package:mobile/core/widgets/greeting.dart';
-import 'package:mobile/core/widgets/calendar.dart';
-import 'package:mobile/core/widgets/workout_card_carousel.dart';
-import 'package:mobile/core/widgets/quick_actions.dart';
-import 'package:mobile/core/widgets/insights.dart';
+import 'package:mobile/features/home/widgets/top_row.dart';
+import 'package:mobile/features/home/widgets/greeting.dart';
+import 'package:mobile/features/home/widgets/calendar.dart';
+import 'package:mobile/features/home/widgets/workout_carousel.dart';
+import 'package:mobile/features/home/widgets/quick_actions.dart';
+import 'package:mobile/features/home/widgets/insights.dart';
 import 'package:mobile/core/widgets/bottom_navigation.dart';
-import 'package:mobile/core/theme/app_decorations.dart';
-import 'package:mobile/core/models/day_plan.dart';
+import 'package:mobile/app/theme/app_decorations.dart';
+import 'package:mobile/features/workout/models/day_plan.dart';
 import 'package:mobile/features/workout/workout_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {

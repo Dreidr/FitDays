@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:mobile/core/models/day_plan.dart';
+import 'package:mobile/features/workout/models/day_plan.dart';
 
 class WorkoutCard extends StatelessWidget {
   const WorkoutCard({super.key, required this.plan, required this.isToday});
