@@ -22,6 +22,8 @@ FitDays Training – Flutter fitness tracking app
 - Workout carousel connected
 - API test successful /in a different project/
 - Sticky bottom nav bar done
+- Local storage (SharedPreferences) done
+- Home screen complete_setup_banner done
 
 ## Coding Preferences
 - Clean UI
@@ -31,4 +33,6 @@ FitDays Training – Flutter fitness tracking app
 ## Known Issues
 - iOS simulator storage constraints
 - API image reload on navigation
-- Folder and files restructure needed
+- Folder and files restructure need to be checked in a while
+- Notosans font was asked on Chrome run
+- Overall texts of the app looked like using different fonts
