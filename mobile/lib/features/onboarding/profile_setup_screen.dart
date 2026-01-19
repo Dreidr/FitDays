@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/features/profile/profile_screen.dart';
+import 'package:mobile/features/onboarding/widgets/name_field.dart';
 import 'package:mobile/features/onboarding/widgets/bottom_sheet_dropdown.dart';
 import 'package:mobile/features/onboarding/widgets/bottom_sheet_slider.dart';
 import 'package:mobile/features/workout/workout_schedule_field.dart';
@@ -8,7 +8,6 @@ import 'package:mobile/features/onboarding/widgets/top_toast.dart';
 import 'package:mobile/core/enums/dropdown_display.dart';
 import 'package:mobile/app/app_shell.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
-import 'package:mobile/core/models/user_profile.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -29,7 +28,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   double weightKg = 72.5;
   bool weightChanged = false;
   List<String> workoutDays = []; // start empty
-  bool get _isNameValid => (name ?? "").trim().length >= 2;
+  bool get _isNameValid =>
+      name == null || name!.trim().isEmpty || name!.trim().length >= 2;
   bool get _isGenderValid => (gender ?? "").isNotEmpty;
   bool get _isAgeValid => (age ?? 0) >= 13; // change if you want
   bool get _isGoalValid => (fitnessGoal ?? "").isNotEmpty;
@@ -39,7 +39,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   bool get _isPlanValid => (workoutPlan ?? "").isNotEmpty;
 
   bool get _canSave =>
-      _isNameValid &&
       _isGenderValid &&
       _isAgeValid &&
       _isGoalValid &&
@@ -49,7 +48,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       _isPlanValid;
 
   String _firstErrorMessage() {
-    if (!_isNameValid) return "Please enter your name";
     if (!_isGenderValid) return "Please select your gender";
     if (!_isAgeValid) return "Please select your age";
     if (!_isGoalValid) return "Please select your fitness goal";
@@ -58,6 +56,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     if (!_isDurationValid) return "Please select workout duration";
     if (!_isPlanValid) return "Please select workout plan";
     return "Please complete your profile";
+  }
+
+  late final TextEditingController nameController;
+  @override
+  void initState() {
+    super.initState();
+
+    final profile = LocalStorageService.getUserProfile();
+    name = (profile?.name?.trim().isNotEmpty == true)
+        ? profile!.name!.trim()
+        : null;
   }
 
   @override
@@ -76,6 +85,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           TextButton(
             onPressed: () async {
               await LocalStorageService.setOnboardingSkipped(true);
+              await LocalStorageService.setOnboardingComplete(true);
+              await LocalStorageService.setProfileComplete(false);
+
+              final p = LocalStorageService.getUserProfile();
+              final displayName = p?.name?.trim().isNotEmpty == true
+                  ? p!.name!.trim()
+                  : "User";
 
               if (!context.mounted) return;
 
@@ -83,10 +99,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => AppShell(
-                    userName: "User",
+                    userName: displayName,
                     workoutStreak: 0,
                     startDate: DateTime.now(),
-                    workoutDays: const [],
+                    workoutDays: p?.workoutDays ?? const [],
                   ),
                 ),
                 (route) => false,
@@ -94,10 +110,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             },
 
             child: const Text(
-              "Skip for now",
+              "Skip",
               style: TextStyle(
                 color: Colors.black54,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -114,20 +130,31 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             child: ElevatedButton(
               onPressed: _canSave
                   ? () async {
-                      final profile = UserProfile(
-                        name: (name ?? "").trim(),
-                        gender: gender ?? "",
-                        age: age ?? 0,
-                        fitnessGoal: fitnessGoal ?? "",
-                        fitnessLevel: fitnessLevel ?? "",
-                        workoutPlan: workoutPlan ?? "",
-                        workoutDuration: workoutDuration ?? 0,
+                      final existing = LocalStorageService.getUserProfile();
+                      if (existing == null) return;
+
+                      final trimmedName = name?.trim();
+
+                      final updated = existing.copyWith(
+                        name: (trimmedName == null || trimmedName.isEmpty)
+                            ? null
+                            : trimmedName,
+                        gender: gender,
+                        age: age,
+                        fitnessGoal: fitnessGoal,
+                        fitnessLevel: fitnessLevel,
+                        workoutPlan: workoutPlan,
+                        workoutDuration: workoutDuration,
                         weightKg: weightKg,
                         workoutDays: workoutDays,
                       );
 
-                      await LocalStorageService.saveUserProfile(profile);
-                      await LocalStorageService.setOnboardingComplete(true);
+                      await LocalStorageService.setOnboardingSkipped(
+                        false,
+                      ); // ✅ important to unstick
+                      await LocalStorageService.setProfileComplete(
+                        true,
+                      ); // ✅ key flag
 
                       if (!context.mounted) return;
 
@@ -135,29 +162,27 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (_) => AppShell(
-                            userName: profile.name.isEmpty
-                                ? "User"
-                                : profile.name,
+                            userName: updated.name?.trim().isNotEmpty == true
+                                ? updated.name!.trim()
+                                : "User",
                             workoutStreak: 0,
                             startDate: DateTime.now(),
-                            workoutDays: profile.workoutDays,
+                            workoutDays: updated.workoutDays,
                           ),
                         ),
-                        (route) => false,
+                        (_) => false,
                       );
                     }
                   : () {
-                      // nice UX: tell user what’s missing
                       showTopToast(context, _firstErrorMessage());
                     },
+
+              // ✅ REQUIRED — this was missing
               style: ElevatedButton.styleFrom(
-                backgroundColor: _canSave
-                    ? const Color(0xFF4442D9)
-                    : const Color(0xFF4442D9).withOpacity(0.35),
+                backgroundColor: const Color(0xFF4442D9),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
-                elevation: _canSave ? 1 : 0,
               ),
               child: Text(
                 _canSave ? "Save" : "Complete setup",

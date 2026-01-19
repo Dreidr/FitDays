@@ -14,20 +14,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final completed = LocalStorageService.isOnboardingComplete;
-    final skipped = LocalStorageService.isOnboardingSkipped;
     final profile = LocalStorageService.getUserProfile();
-
-    final canEnterApp = completed || skipped;
+    final isLoggedIn = LocalStorageService.isLoggedIn;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Roboto'),
-      home: (canEnterApp)
+      home: isLoggedIn
           ? AppShell(
-              userName: profile?.name.isNotEmpty == true
-                  ? profile!.name
+              userName: profile?.name?.trim().isNotEmpty == true
+                  ? profile!.name!.trim()
                   : "User",
+
               workoutStreak: 0,
               startDate: DateTime.now(),
               workoutDays: profile?.workoutDays ?? const [],

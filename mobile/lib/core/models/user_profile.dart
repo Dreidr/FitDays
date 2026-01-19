@@ -1,24 +1,36 @@
 class UserProfile {
-  final String name;
-  final String gender;
-  final int age;
-  final String fitnessGoal;
-  final String fitnessLevel;
-  final String workoutPlan;
-  final int workoutDuration; // minutes
-  final double weightKg;
+  final String? name;
+
+  // ✅ make these optional for MVP
+  final String? gender;
+  final int? age;
+  final String? fitnessGoal;
+  final String? fitnessLevel;
+  final String? workoutPlan;
+  final int? workoutDuration; // minutes
+  final double? weightKg;
   final List<String> workoutDays;
 
+  // ✅ identity fields
+  final String email;
+
+  // ⚠️ test-only
+  final String? password;
+
   const UserProfile({
-    required this.name,
-    required this.gender,
-    required this.age,
-    required this.fitnessGoal,
-    required this.fitnessLevel,
-    required this.workoutPlan,
-    required this.workoutDuration,
-    required this.weightKg,
-    required this.workoutDays,
+    this.name,
+    required this.email,
+
+    this.gender,
+    this.age,
+    this.fitnessGoal,
+    this.fitnessLevel,
+    this.workoutPlan,
+    this.workoutDuration,
+    this.weightKg,
+    this.workoutDays = const [],
+
+    this.password,
   });
 
   UserProfile copyWith({
@@ -31,9 +43,14 @@ class UserProfile {
     int? workoutDuration,
     double? weightKg,
     List<String>? workoutDays,
+    String? email,
+    String? password,
   }) {
     return UserProfile(
       name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
+
       gender: gender ?? this.gender,
       age: age ?? this.age,
       fitnessGoal: fitnessGoal ?? this.fitnessGoal,
@@ -55,19 +72,23 @@ class UserProfile {
         "workoutDuration": workoutDuration,
         "weightKg": weightKg,
         "workoutDays": workoutDays,
+        "email": email,
+        "password": password, // ⚠️ test-only
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      name: (json["name"] ?? "") as String,
-      gender: (json["gender"] ?? "") as String,
-      age: (json["age"] ?? 0) as int,
-      fitnessGoal: (json["fitnessGoal"] ?? "") as String,
-      fitnessLevel: (json["fitnessLevel"] ?? "") as String,
-      workoutPlan: (json["workoutPlan"] ?? "") as String,
-      workoutDuration: (json["workoutDuration"] ?? 0) as int,
-      weightKg: (json["weightKg"] ?? 0.0).toDouble(),
+      name: json['name'] as String?,
+      gender: json["gender"] as String?,
+      age: json["age"] as int?,
+      fitnessGoal: json["fitnessGoal"] as String?,
+      fitnessLevel: json["fitnessLevel"] as String?,
+      workoutPlan: json["workoutPlan"] as String?,
+      workoutDuration: json["workoutDuration"] as int?,
+      weightKg: (json["weightKg"] as num?)?.toDouble(),
       workoutDays: List<String>.from((json["workoutDays"] ?? const []) as List),
+      email: (json["email"] ?? "") as String,
+      password: json["password"] as String?, // ⚠️ test-only
     );
   }
 }

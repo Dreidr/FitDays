@@ -8,9 +8,71 @@ class LocalStorageService {
   static const _profileKey = "user_profile";
   static const _onboardingKey = "onboarding_complete";
 
+  static String get displayName {
+    final p = getUserProfile();
+    final n = p?.name?.trim();
+    return (n != null && n.isNotEmpty) ? n : "User";
+  }
+
+  static Future<void> clearAll() async {
+    await _prefs?.clear();
+  }
+
+  // ✅ Auth stub (local only)
+  static const _loggedInKey = "is_logged_in";
+
+  static bool get isLoggedIn => _prefs?.getBool(_loggedInKey) ?? false;
+
+  static Future<void> setLoggedIn(bool value) async {
+    await _prefs?.setBool(_loggedInKey, value);
+  }
+
+  static bool get hasRegisteredUser =>
+      getUserProfile()?.email.isNotEmpty == true;
+
+  // Register = save profile + logged in
+  static Future<void> register({
+    required String email,
+    required String password, // test-only
+
+    List<String> workoutDays = const [],
+  }) async {
+    final profile = UserProfile(
+      email: email.trim(),
+      password: password, // test-only
+
+      workoutDays: workoutDays,
+    );
+
+    await saveUserProfile(profile);
+    await setLoggedIn(true);
+  }
+
+  // Login = compare with stored profile
+  static bool login({required String email, required String password}) {
+    final profile = getUserProfile();
+    if (profile == null) return false;
+
+    final ok = profile.email == email.trim() && profile.password == password;
+    if (ok) {
+      _prefs?.setBool(_loggedInKey, true);
+    }
+    return ok;
+  }
+
+  static Future<void> logout() async {
+    await setLoggedIn(false);
+  }
+
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     debugPrint("SharedPrefs initialized");
+  }
+
+  static String get displayEmail {
+    final p = getUserProfile();
+    final e = p?.email.trim();
+    return (e != null && e.isNotEmpty) ? e : "—";
   }
 
   // Onboarding
@@ -22,6 +84,16 @@ class LocalStorageService {
   }
 
   static const _skippedKey = "onboarding_skipped";
+
+  // ✅ Profile completion (separate from onboarding_skipped)
+  static const _profileCompleteKey = "profile_complete";
+
+  static bool get isProfileComplete =>
+      _prefs?.getBool(_profileCompleteKey) ?? false;
+
+  static Future<void> setProfileComplete(bool value) async {
+    await _prefs?.setBool(_profileCompleteKey, value);
+  }
 
   static bool get isOnboardingSkipped => _prefs?.getBool(_skippedKey) ?? false;
 

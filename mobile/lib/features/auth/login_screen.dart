@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/register_screen.dart';
-import 'package:mobile/features/onboarding/profile_setup_screen.dart';
+import 'package:mobile/core/services/local_storage_services.dart';
+import 'package:mobile/app/app_shell.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  void _showToast(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +37,6 @@ class LoginScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 8),
-
-              // TODO: add APP bar instead of a back button
 
               // 🔙 Back button
               Align(
@@ -38,10 +56,8 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
 
-              const Spacer(
-                flex: 1,
-              ), // pushes everything below to bottom section
-              // Log In / logo
+              const Spacer(flex: 1),
+
               // Logo
               const Align(
                 alignment: Alignment(0, -0.15),
@@ -57,6 +73,8 @@ class LoginScreen extends StatelessWidget {
 
               // Email field
               TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'Email Address',
                   border: OutlineInputBorder(
@@ -69,6 +87,7 @@ class LoginScreen extends StatelessWidget {
 
               // Password field
               TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -85,10 +104,37 @@ class LoginScreen extends StatelessWidget {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
+                    final email = emailController.text.trim();
+                    final pass = passwordController.text;
+
+                    if (email.isEmpty || pass.isEmpty) {
+                      _showToast("Please enter email and password");
+                      return;
+                    }
+
+                    final ok = LocalStorageService.login(
+                      email: email,
+                      password: pass,
+                    );
+
+                    if (!ok) {
+                      _showToast("Wrong email or password");
+                      return;
+                    }
+
+                    final profile = LocalStorageService.getUserProfile();
+
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ProfileSetupScreen(),
+                        builder: (_) => AppShell(
+                          userName: profile?.name?.trim().isNotEmpty == true
+                              ? profile!.name!.trim()
+                              : "User",
+                          workoutStreak: 0,
+                          startDate: DateTime.now(),
+                          workoutDays: profile?.workoutDays ?? const [],
+                        ),
                       ),
                     );
                   },
@@ -111,9 +157,11 @@ class LoginScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Forgot password
+              // Forgot password (disabled for local-auth stub)
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  _showToast("Password reset will be added later");
+                },
                 child: const Text(
                   'Forgot password?',
                   style: TextStyle(color: Colors.black54),
@@ -155,4 +203,3 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-

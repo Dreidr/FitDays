@@ -31,7 +31,7 @@ class BottomNav extends StatelessWidget {
         items: [
           _item(Icons.home, "Home", 0),
           _item(Icons.local_fire_department, "Streak", 1),
-          _centerPlayItem(),
+          _centerPlayItem(3),
           _item(Icons.insights, "Insights", 3),
           _item(Icons.person, "Profile", 4),
         ],
@@ -77,22 +77,40 @@ class BottomNav extends StatelessWidget {
   }
 
   // 🔥 CENTER PLAY BUTTON
-  BottomNavigationBarItem _centerPlayItem() {
-    return BottomNavigationBarItem(
-      label: "",
-      icon: Container(
-        width: 40,
-        height: 40,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xFF4442D9),
+  BottomNavigationBarItem _centerPlayItem(int index) {
+  final isActive = index == currentIndex;
+
+  return BottomNavigationBarItem(
+    label: "",
+    icon: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Color(0xFF4442D9),
+          ),
+          child: const Icon(
+            Icons.play_arrow_rounded,
+            color: Colors.white,
+            size: 28,
+          ),
         ),
-        child: const Icon(
-          Icons.play_arrow_rounded,
-          color: Colors.white,
-          size: 28,
+        const SizedBox(height: 8),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: 4,
+          width: 4,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isActive ? const Color(0xFF4442D9) : Colors.transparent,
+          ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
+
 }

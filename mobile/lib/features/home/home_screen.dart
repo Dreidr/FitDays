@@ -15,13 +15,13 @@ import 'package:mobile/core/widgets/complete_setup_banner.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
-    required this.userName,
+    required this.userNameVN,
     required this.workoutStreak,
     required this.startDate,
     required this.workoutDays,
   });
 
-  final String userName;
+  final ValueNotifier<String> userNameVN;
   final int workoutStreak;
   final DateTime startDate;
   final List<String> workoutDays;
@@ -114,10 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  bool get _profileCompleted {
-    return LocalStorageService.isOnboardingComplete &&
-        LocalStorageService.getUserProfile() != null;
-  }
+  bool get _profileCompleted => LocalStorageService.isProfileComplete;
 
   Future<void> _goToSetup() async {
     await Navigator.push(
@@ -173,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Greeting(userName: widget.userName),
+                    Greeting(userNameVN: widget.userNameVN),
                     const SizedBox(height: 12),
                     Calendar(
                       dates: getTwoWeekDates(),
@@ -182,30 +179,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 20),
                     WorkoutCarousel(
-  plans: plans,
-  onPlanTap: (plan) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => WorkoutDetailScreen(
-          dayLabel: _dayLabel(plan.date),
-          title: plan.title,
-          totalTimeText: _fakeTotalTime(plan),
-        ),
-      ),
-    );
-  },
+                      plans: plans,
+                      onPlanTap: (plan) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WorkoutDetailScreen(
+                              dayLabel: _dayLabel(plan.date),
+                              title: plan.title,
+                              totalTimeText: _fakeTotalTime(plan),
+                            ),
+                          ),
+                        );
+                      },
 
-  // ✅ For skippers only: 2nd swipe = complete setup banner
-  extraCard: completed
-      ? null
-      : SizedBox(
-          height: 190,
-          child: CompleteSetupBanner(onCompletePressed: _goToSetup),
-        ),
-  onExtraTap: completed ? null : _goToSetup,
-),
-
+                      // ✅ For skippers only: 2nd swipe = complete setup banner
+                      extraCard: completed
+                          ? null
+                          : SizedBox(
+                              height: 190,
+                              child: CompleteSetupBanner(
+                                onCompletePressed: _goToSetup,
+                              ),
+                            ),
+                      onExtraTap: completed ? null : _goToSetup,
+                    ),
                   ],
                 ),
               ),

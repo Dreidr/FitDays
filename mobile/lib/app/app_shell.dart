@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/widgets/bottom_navigation.dart';
+import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/home/home_screen.dart';
-import 'package:mobile/features/workout/workout_tab_root.dart';
-
-
+import 'package:mobile/features/profile/profile_screen.dart';
+import 'package:mobile/features/profile/profile_tab_root.dart';
+import 'package:mobile/features/workout/workout_tab_root.dart'; // adjust if needed
+import 'package:mobile/core/widgets/bottom_navigation.dart'; // your sticky nav
 
 class AppShell extends StatefulWidget {
   const AppShell({
@@ -14,7 +15,7 @@ class AppShell extends StatefulWidget {
     required this.workoutDays,
   });
 
-  final String userName;
+  final String userName; // keep String API (main.dart is already using this)
   final int workoutStreak;
   final DateTime startDate;
   final List<String> workoutDays;
@@ -24,66 +25,58 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  int _index = 0;
+  late final ValueNotifier<String> _userNameVN;
 
-  final _keys = List.generate(5, (_) => GlobalKey<NavigatorState>());
+  int _currentIndex = 0;
 
-  void _onTap(int i) {
-    if (i == _index) {
-      _keys[i].currentState?.popUntil((r) => r.isFirst);
-      return;
-    }
-    setState(() => _index = i);
+  @override
+  void initState() {
+    super.initState();
+
+    // Prefer storage value if exists, else fall back to the passed-in name
+    final stored = LocalStorageService.getUserProfile()?.name?.trim() ?? "";
+    final initial = stored.isNotEmpty ? stored : widget.userName;
+
+    _userNameVN = ValueNotifier<String>(initial.isNotEmpty ? initial : "User");
+  }
+
+  @override
+  void dispose() {
+    _userNameVN.dispose();
+    super.dispose();
+  }
+
+  void _refreshNameFromStorage() {
+    final stored = LocalStorageService.getUserProfile()?.name?.trim() ?? "";
+    _userNameVN.value = stored.isNotEmpty ? stored : "User";
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      body: IndexedStack(
-        index: _index,
-        children: [
-          Navigator(
-            key: _keys[0],
-            onGenerateRoute: (_) => MaterialPageRoute(
-              builder: (_) => HomeScreen(
-                userName: widget.userName,
-                workoutStreak: widget.workoutStreak,
-                startDate: widget.startDate,
-                workoutDays: widget.workoutDays,
-              ),
-            ),
-          ),
-          Navigator(
-            key: _keys[1],
-            onGenerateRoute: (_) => MaterialPageRoute(
-              builder: (_) => const Scaffold(body: Center(child: Text("Streak"))),
-            ),
-          ),
-          Navigator(
-            key: _keys[2],
-            onGenerateRoute: (_) => MaterialPageRoute(
-              builder: (_) => const WorkoutTabRoot(),
-            ),
-          ),
-          Navigator(
-            key: _keys[3],
-            onGenerateRoute: (_) => MaterialPageRoute(
-              builder: (_) => const Scaffold(body: Center(child: Text("Insights"))),
-            ),
-          ),
-          Navigator(
-            key: _keys[4],
-            onGenerateRoute: (_) => MaterialPageRoute(
-              builder: (_) => const Scaffold(body: Center(child: Text("Profile"))),
-            ),
-          ),
-        ],
+    final pages = <Widget>[
+      HomeScreen(
+        userNameVN: _userNameVN,
+        workoutStreak: widget.workoutStreak,
+        startDate: widget.startDate,
+        workoutDays: widget.workoutDays,
       ),
 
+      // If you have a Workout tab root/screen:
+      const WorkoutTabRoot(),
+      const Placeholder(), // Play screen (temporary)
+      const Placeholder(), // Stats/Progress (temporary)
+      // Profile screen should be able to edit name and update VN:
+      ProfileTabRoot(
+        userNameVN: _userNameVN,
+        onProfileUpdated: _refreshNameFromStorage, // call after saving name
+      ),
+    ];
+
+    return Scaffold(
+      body: pages[_currentIndex],
       bottomNavigationBar: BottomNav(
-        currentIndex: _index,
-        onTap: _onTap,
+        currentIndex: _currentIndex,
+        onTap: (i) => setState(() => _currentIndex = i),
       ),
     );
   }
