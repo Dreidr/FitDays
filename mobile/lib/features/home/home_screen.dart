@@ -11,6 +11,7 @@ import 'package:mobile/features/workout/workout_detail_screen.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/onboarding/profile_setup_screen.dart';
 import 'package:mobile/core/widgets/complete_setup_banner.dart';
+import 'package:mobile/features/workout/models/planned_exercise.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -25,6 +26,12 @@ class HomeScreen extends StatefulWidget {
   final int workoutStreak;
   final DateTime startDate;
   final List<String> workoutDays;
+
+  final plan = const [
+  PlannedExercise(exerciseId: "0041", sets: 3, reps: 12, weightKg: 20),
+  PlannedExercise(exerciseId: "0380", sets: 3, reps: 12, weightKg: 20),
+];
+
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -188,6 +195,26 @@ class _HomeScreenState extends State<HomeScreen> {
                               dayLabel: _dayLabel(plan.date),
                               title: plan.title,
                               totalTimeText: _fakeTotalTime(plan),
+                              plan:  [
+                                PlannedExercise(
+                                  exerciseId: "0041",
+                                  sets: 3,
+                                  reps: 12,
+                                  weightKg: 20,
+                                ),
+                                PlannedExercise(
+                                  exerciseId: "0380",
+                                  sets: 3,
+                                  reps: 12,
+                                  weightKg: 20,
+                                ),
+                                PlannedExercise(
+                                  exerciseId: "1308",
+                                  sets: 3,
+                                  reps: 10,
+                                  weightKg: 22.5,
+                                ),
+                              ],
                             ),
                           ),
                         );

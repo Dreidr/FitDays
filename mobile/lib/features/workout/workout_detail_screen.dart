@@ -1,194 +1,139 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/app/theme/app_decorations.dart';
+import 'package:mobile/features/workout/services/exercise_db_api.dart';
+import 'package:mobile/features/workout/models/planned_exercise.dart';
+import 'package:mobile/features/workout/exercise_detail_screen.dart';
+import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
 
-class WorkoutDetailScreen extends StatelessWidget {
+class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
     super.key,
     required this.dayLabel,
     required this.title,
     required this.totalTimeText,
+    required this.plan, // ✅ new
   });
 
   final String dayLabel;
   final String title;
   final String totalTimeText;
+  final List<PlannedExercise> plan;
+
+  @override
+  State<WorkoutDetailScreen> createState() => _WorkoutDetailScreenState();
+}
+
+class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
+  late final Future<List<Map<String, dynamic>>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    final ids = widget.plan.map((e) => e.exerciseId).toList();
+    _future = ExerciseDbApi.fetchExercisesByIds(ids);
+  }
+
+  String _s(dynamic v) => (v ?? '').toString();
 
   @override
   Widget build(BuildContext context) {
-    // UI-only mock data (replace later with real plan data)
-    final exercises = <_ExerciseRowData>[
-      const _ExerciseRowData("DB Chest Flyes", "3 sets x 12 reps x 20kg"),
-      const _ExerciseRowData("Landmine twists", "3 sets x 12 reps x 20kg"),
-      const _ExerciseRowData("DB press", "3 sets x 12 reps x 20kg"),
-      const _ExerciseRowData("Skull Crushers", "3 sets x 12 reps x 20kg"),
-      const _ExerciseRowData("Incline DB press", "3 sets x 12 reps x 20kg"),
-      const _ExerciseRowData("Plank", "3 sets x 12 reps"),
-    ];
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(18, 14, 18, 140),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeaderCard(
-                      dayLabel: dayLabel,
-                      title: title,
-                      exerciseCount: exercises.length,
-                      onBack: () => Navigator.pop(context),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      "Total time: $totalTimeText",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Exercise list
-                    ...exercises.map((e) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _ExerciseRow(
-                            name: e.name,
-                            meta: e.meta,
-                            onMore: () {},
-                            onReorder: () {},
-                          ),
-                        )),
-
-                    const SizedBox(height: 6),
-
-                    // Muscle groups / equipment card
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: AppDecorations.card(context),
-                      child: const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Muscle groups",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: "Primary: ",
-                                  style: TextStyle(fontWeight: FontWeight.w800),
-                                ),
-                                TextSpan(text: "Back, Chest"),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: "Secondary: ",
-                                  style: TextStyle(fontWeight: FontWeight.w800),
-                                ),
-                                TextSpan(text: "Tricep"),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 14),
-                          Text(
-                            "Equipments",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text("• Leverage machine"),
-                          Text("• Barbell"),
-                          Text("• Dumbbell"),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Sticky bottom actions
-            Container(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 54,
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.refresh, color: Colors.white),
-                        label: const Text(
-                          "Regenerate",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4442D9),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: _future,
+                builder: (context, snap) {
+                  if (snap.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snap.hasError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          snap.error.toString(),
+                          style: const TextStyle(color: Colors.red),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: SizedBox(
-                      height: 54,
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.edit, color: Colors.black87),
-                        label: const Text(
-                          "Edit",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
+                    );
+                  }
+
+                  final apiItems = snap.data ?? [];
+                  final count = apiItems.length;
+
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(18, 14, 18, 140),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _HeaderCard(
+                          dayLabel: widget.dayLabel,
+                          title: widget.title,
+                          exerciseCount: count,
+                          onBack: () => Navigator.pop(context),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          "Total time: ${widget.totalTimeText}",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
                             color: Colors.black87,
                           ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: const BorderSide(color: Colors.black12),
-                          ),
-                        ),
-                      ),
+                        const SizedBox(height: 10),
+
+                        // ✅ API-driven exercise list
+                        ...List.generate(count, (i) {
+                          final ex = apiItems[i];
+                          final planned = widget.plan[i]; // same order as ids you requested
+
+                          final id = _s(ex['id']);
+                          final name = _s(ex['name']);
+                          final target = _s(ex['target']);
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _ExerciseRow(
+                              exerciseId: id,          // ✅ new
+                              name: name.isEmpty ? "Exercise" : name,
+                              meta: "${planned.metaText()} • Target: $target",
+                              onMore: () {},
+                              onReorder: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ExerciseDetailScreen(exercise: ex),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }),
+
+                        const SizedBox(height: 6),
+
+                        // (optional) you can compute muscle groups/equipment from apiItems
+                        // we can do that next.
+                      ],
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
+
+            // sticky bottom actions stays same...
           ],
         ),
       ),
     );
   }
 }
+
 
 class _HeaderCard extends StatelessWidget {
   const _HeaderCard({
@@ -295,83 +240,86 @@ class _HeaderCard extends StatelessWidget {
 
 class _ExerciseRow extends StatelessWidget {
   const _ExerciseRow({
+    required this.exerciseId,
     required this.name,
     required this.meta,
     required this.onMore,
     required this.onReorder,
+    required this.onTap,
   });
 
+  final String exerciseId;
   final String name;
   final String meta;
   final VoidCallback onMore;
   final VoidCallback onReorder;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          // image placeholder box
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              color: Colors.white,
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black26),
+              child: SizedBox(
+                width: 54,
+                height: 54,
+                child: exerciseId.isEmpty
+                    ? const Icon(Icons.image_not_supported, color: Colors.black54)
+                    : ExerciseThumb(exerciseId: exerciseId), // ✅ your widget
+              ),
             ),
-            child: const Icon(Icons.image_outlined, color: Colors.black54),
-          ),
-          const SizedBox(width: 12),
+            const SizedBox(width: 12),
 
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.black87,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  meta,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black54,
+                  const SizedBox(height: 6),
+                  Text(
+                    meta,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          IconButton(
-            onPressed: onMore,
-            icon: const Icon(Icons.more_horiz, color: Colors.black54),
-          ),
-          IconButton(
-            onPressed: onReorder,
-            icon: const Icon(Icons.drag_handle, color: Colors.black54),
-          ),
-        ],
+            IconButton(
+              onPressed: onMore,
+              icon: const Icon(Icons.more_horiz, color: Colors.black54),
+            ),
+            IconButton(
+              onPressed: onReorder,
+              icon: const Icon(Icons.drag_handle, color: Colors.black54),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _ExerciseRowData {
-  const _ExerciseRowData(this.name, this.meta);
-  final String name;
-  final String meta;
-}
+
 
 
