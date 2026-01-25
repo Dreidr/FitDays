@@ -77,6 +77,9 @@ flutter:
   assets:
     - assets/images/bg.jpeg
     - assets/images/fitdays_logo.png
+    - assets/data/free_exercises_db.json
+    - assets/data/exercises_home.json
+    - assets/data/exercises_gym.json
     # assets/fonts/roboto/
     # assets/animations/
 

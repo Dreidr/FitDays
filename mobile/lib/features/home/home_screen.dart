@@ -28,10 +28,9 @@ class HomeScreen extends StatefulWidget {
   final List<String> workoutDays;
 
   final plan = const [
-  PlannedExercise(exerciseId: "0041", sets: 3, reps: 12, weightKg: 20),
-  PlannedExercise(exerciseId: "0380", sets: 3, reps: 12, weightKg: 20),
-];
-
+    PlannedExercise(exerciseId: "0041", sets: 3, reps: 12, weightKg: 20),
+    PlannedExercise(exerciseId: "0380", sets: 3, reps: 12, weightKg: 20),
+  ];
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -195,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               dayLabel: _dayLabel(plan.date),
                               title: plan.title,
                               totalTimeText: _fakeTotalTime(plan),
-                              plan:  [
+                              plan: [
                                 PlannedExercise(
                                   exerciseId: "0041",
                                   sets: 3,

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/app/theme/app_decorations.dart';
-import 'package:mobile/features/workout/services/exercise_db_api.dart';
 import 'package:mobile/features/workout/models/planned_exercise.dart';
 import 'package:mobile/features/workout/exercise_detail_screen.dart';
 import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
+import 'package:mobile/features/workout/services/local_exercise_repo.dart';
+
+
 
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
@@ -30,7 +31,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   void initState() {
     super.initState();
     final ids = widget.plan.map((e) => e.exerciseId).toList();
-    _future = ExerciseDbApi.fetchExercisesByIds(ids);
+    _future = LocalExerciseRepo.fetchExercisesByIds(ids);
   }
 
   String _s(dynamic v) => (v ?? '').toString();
@@ -89,7 +90,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         // ✅ API-driven exercise list
                         ...List.generate(count, (i) {
                           final ex = apiItems[i];
-                          final planned = widget.plan[i]; // same order as ids you requested
+                          final planned =
+                              widget.plan[i]; // same order as ids you requested
 
                           final id = _s(ex['id']);
                           final name = _s(ex['name']);
@@ -98,7 +100,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _ExerciseRow(
-                              exerciseId: id,          // ✅ new
+                              exerciseId: id, // ✅ new
                               name: name.isEmpty ? "Exercise" : name,
                               meta: "${planned.metaText()} • Target: $target",
                               onMore: () {},
@@ -107,7 +109,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => ExerciseDetailScreen(exercise: ex),
+                                    builder: (_) =>
+                                        ExerciseDetailScreen(exercise: ex),
                                   ),
                                 );
                               },
@@ -134,7 +137,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   }
 }
 
-
 class _HeaderCard extends StatelessWidget {
   const _HeaderCard({
     required this.dayLabel,
@@ -154,30 +156,29 @@ class _HeaderCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF4442D9).withOpacity(0.85),
-                const Color(0xFF2F2ECF).withOpacity(0.85),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF4442D9).withOpacity(0.35),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
-              ),
-            ],
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF4442D9).withOpacity(0.85),
+            const Color(0xFF2F2ECF).withOpacity(0.85),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF4442D9).withOpacity(0.35),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // top row: back + day
           Row(
             children: [
-            
               Text(
                 dayLabel,
                 style: const TextStyle(
@@ -225,10 +226,7 @@ class _HeaderCard extends StatelessWidget {
               separatorBuilder: (_, __) => const SizedBox(width: 10),
               itemBuilder: (_, __) => ClipRRect(
                 borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  width: 56,
-                  color: Colors.white24,
-                ),
+                child: Container(width: 56, color: Colors.white24),
               ),
             ),
           ),
@@ -274,7 +272,10 @@ class _ExerciseRow extends StatelessWidget {
                 width: 54,
                 height: 54,
                 child: exerciseId.isEmpty
-                    ? const Icon(Icons.image_not_supported, color: Colors.black54)
+                    ? const Icon(
+                        Icons.image_not_supported,
+                        color: Colors.black54,
+                      )
                     : ExerciseThumb(exerciseId: exerciseId), // ✅ your widget
               ),
             ),
@@ -319,7 +320,3 @@ class _ExerciseRow extends StatelessWidget {
     );
   }
 }
-
-
-
-

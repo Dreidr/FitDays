@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/home/home_screen.dart';
-import 'package:mobile/features/profile/profile_screen.dart';
 import 'package:mobile/features/profile/profile_tab_root.dart';
 import 'package:mobile/features/workout/workout_tab_root.dart'; // adjust if needed
 import 'package:mobile/core/widgets/bottom_navigation.dart'; // your sticky nav
