@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:mobile/features/workout/services/exercise_db_api.dart';
 
@@ -69,7 +68,8 @@ class ExerciseDetailScreen extends StatelessWidget {
                             if (imgSnap.connectionState ==
                                 ConnectionState.waiting) {
                               return const Center(
-                                  child: CircularProgressIndicator());
+                                child: CircularProgressIndicator(),
+                              );
                             }
                             if (imgSnap.hasError || !imgSnap.hasData) {
                               return Container(
@@ -78,8 +78,10 @@ class ExerciseDetailScreen extends StatelessWidget {
                                 child: const Text('Failed to load animation'),
                               );
                             }
-                            return Image.memory(imgSnap.data!,
-                                fit: BoxFit.cover);
+                            return Image.memory(
+                              imgSnap.data!,
+                              fit: BoxFit.cover,
+                            );
                           },
                         ),
                 ),
@@ -88,8 +90,8 @@ class ExerciseDetailScreen extends StatelessWidget {
               Text(
                 name,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 12),
               Wrap(
@@ -106,8 +108,8 @@ class ExerciseDetailScreen extends StatelessWidget {
                 Text(
                   'Secondary muscles',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -119,9 +121,9 @@ class ExerciseDetailScreen extends StatelessWidget {
               ],
               Text(
                 'Instructions',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
               if (instructions.isEmpty)
@@ -133,9 +135,10 @@ class ExerciseDetailScreen extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${i + 1}. ',
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w800)),
+                        Text(
+                          '${i + 1}. ',
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
                         Expanded(child: Text(instructions[i])),
                       ],
                     ),

@@ -12,6 +12,8 @@ import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/onboarding/profile_setup_screen.dart';
 import 'package:mobile/core/widgets/complete_setup_banner.dart';
 import 'package:mobile/features/workout/models/planned_exercise.dart';
+import 'package:mobile/core/models/user_profile.dart';
+import 'package:mobile/features/workout/services/workout_generator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -27,16 +29,33 @@ class HomeScreen extends StatefulWidget {
   final DateTime startDate;
   final List<String> workoutDays;
 
-  final plan = const [
-    PlannedExercise(exerciseId: "0041", sets: 3, reps: 12, weightKg: 20),
-    PlannedExercise(exerciseId: "0380", sets: 3, reps: 12, weightKg: 20),
-  ];
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<PlannedExercise> _placeholderPlanFor(String title) {
+    // Later: build from ExerciseDB based on title + duration + fitnessLevel
+    if (title.contains("Upper")) {
+      return const [
+        PlannedExercise(exerciseId: "0041", sets: 3, reps: 12, weightKg: 20),
+        PlannedExercise(exerciseId: "0380", sets: 3, reps: 12, weightKg: 20),
+      ];
+    }
+
+    if (title.contains("Lower")) {
+      return const [
+        PlannedExercise(exerciseId: "1308", sets: 3, reps: 10, weightKg: 22.5),
+        PlannedExercise(exerciseId: "1410", sets: 3, reps: 12, weightKg: 20),
+      ];
+    }
+
+    return const [
+      PlannedExercise(exerciseId: "0041", sets: 3, reps: 12, weightKg: 20),
+      PlannedExercise(exerciseId: "1308", sets: 3, reps: 10, weightKg: 22.5),
+    ];
+  }
+
   String _dayLabel(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -49,20 +68,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return labels[d.weekday - 1];
   }
 
-  String _fakeTotalTime(DayPlan plan) {
-    // UI-only placeholder
-    return plan.isWorkoutDay ? "55 mins" : "Rest day";
+  String _totalTimeTextFor(DayPlan plan, int durationMinutes) {
+    return plan.isWorkoutDay ? "$durationMinutes mins" : "Rest day";
   }
 
   final Set<DateTime> completedDates = {}; // ✅ now valid
-  int _currentIndex = 0; // 👈 DEFINE IT HERE
 
   int getWeekNumber() {
     final days = DateTime.now().difference(widget.startDate).inDays;
     return (days ~/ 7) + 1;
   }
 
-  Set<int> getWorkoutWeekdays() {
+  Set<int> _mapToWeekdays(List<String> days) {
     const map = {
       "Mon": DateTime.monday,
       "Tue": DateTime.tuesday,
@@ -73,7 +90,12 @@ class _HomeScreenState extends State<HomeScreen> {
       "Sun": DateTime.sunday,
     };
 
-    return widget.workoutDays.map((d) => map[d]).whereType<int>().toSet();
+    return days.map((d) => map[d]).whereType<int>().toSet();
+  }
+
+  String _planLabel(UserProfile? profile) {
+    final p = profile?.workoutPlan?.trim();
+    return (p != null && p.isNotEmpty) ? p : "Workout";
   }
 
   List<DateTime> getTwoWeekDates() {
@@ -83,41 +105,39 @@ class _HomeScreenState extends State<HomeScreen> {
     return List.generate(14, (i) => startOfLastWeek.add(Duration(days: i)));
   }
 
-  List<DayPlan> buildThreeDayPlans(Set<int> workoutWeekdays) {
+  List<DayPlan> buildNextWorkoutPlans({
+    required Set<int> workoutWeekdays,
+    required int durationMinutes,
+    required UserProfile? profile,
+    int count = 3,
+  }) {
     final today = DateTime.now();
     final start = DateTime(today.year, today.month, today.day);
 
-    const workoutTypes = [
-      ("Upper Body", "45 min • Strength"),
-      ("Lower Body", "40 min • Strength"),
-      ("Full Body", "35 min • Conditioning"),
-    ];
+    // Simple split for MVP
+    const split = ["Upper Body", "Lower Body", "Full Body"];
+    var splitIndex = 0;
 
-    var workoutIndex = 0;
+    final result = <DayPlan>[];
 
-    return List.generate(3, (i) {
+    for (int i = 0; i < 21 && result.length < count; i++) {
       final date = start.add(Duration(days: i));
-      final isWorkoutDay = workoutWeekdays.contains(date.weekday);
+      if (!workoutWeekdays.contains(date.weekday)) continue;
 
-      if (!isWorkoutDay) {
-        return DayPlan(
+      final title = split[splitIndex % split.length];
+      splitIndex++;
+
+      result.add(
+        DayPlan(
           date: date,
-          isWorkoutDay: false,
-          title: "Recovery day",
-          subtitle: "Stretch • Walk • Mobility",
-        );
-      }
-
-      final wt = workoutTypes[workoutIndex % workoutTypes.length];
-      workoutIndex++;
-
-      return DayPlan(
-        date: date,
-        isWorkoutDay: true,
-        title: wt.$1,
-        subtitle: wt.$2,
+          isWorkoutDay: true,
+          title: title,
+          subtitle: "$durationMinutes min • ${_planLabel(profile)}",
+        ),
       );
-    });
+    }
+
+    return result.isEmpty ? [_defaultPlan()] : result;
   }
 
   bool get _profileCompleted => LocalStorageService.isProfileComplete;
@@ -145,12 +165,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final workoutWeekdays = getWorkoutWeekdays();
+    final profile = LocalStorageService.getUserProfile();
     final completed = _profileCompleted;
 
+    final duration = profile?.workoutDuration ?? 40;
+    final savedDays = profile?.workoutDays ?? widget.workoutDays;
+    final workoutWeekdays = _mapToWeekdays(savedDays);
+
     final plans = completed
-        ? buildThreeDayPlans(workoutWeekdays) // ✅ 3 banners
-        : [_defaultPlan()]; // ✅ 1 banner for skippers
+        ? buildNextWorkoutPlans(
+            workoutWeekdays: workoutWeekdays,
+            durationMinutes: duration,
+            profile: profile,
+            count: 3,
+          )
+        : [_defaultPlan()];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -181,39 +210,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     Calendar(
                       dates: getTwoWeekDates(),
                       completedDates: completedDates,
-                      workoutDays: getWorkoutWeekdays(),
+                      workoutDays: workoutWeekdays,
                     ),
                     const SizedBox(height: 20),
                     WorkoutCarousel(
                       plans: plans,
-                      onPlanTap: (plan) {
+                      onPlanTap: (plan) async {
+                        final profile = LocalStorageService.getUserProfile();
+                        final generated =
+                            await WorkoutGenerator.generatePlannedExercises(
+                              profile: profile,
+                              plan: plan,
+                            );
+
+                        if (!context.mounted) return;
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => WorkoutDetailScreen(
                               dayLabel: _dayLabel(plan.date),
                               title: plan.title,
-                              totalTimeText: _fakeTotalTime(plan),
-                              plan: [
-                                PlannedExercise(
-                                  exerciseId: "0041",
-                                  sets: 3,
-                                  reps: 12,
-                                  weightKg: 20,
-                                ),
-                                PlannedExercise(
-                                  exerciseId: "0380",
-                                  sets: 3,
-                                  reps: 12,
-                                  weightKg: 20,
-                                ),
-                                PlannedExercise(
-                                  exerciseId: "1308",
-                                  sets: 3,
-                                  reps: 10,
-                                  weightKg: 22.5,
-                                ),
-                              ],
+                              totalTimeText: _totalTimeTextFor(plan, duration),
+                              plan: generated,
                             ),
                           ),
                         );

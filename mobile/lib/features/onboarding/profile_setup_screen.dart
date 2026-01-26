@@ -28,8 +28,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   double weightKg = 72.5;
   bool weightChanged = false;
   List<String> workoutDays = []; // start empty
-  bool get _isNameValid =>
-      name == null || name!.trim().isEmpty || name!.trim().length >= 2;
   bool get _isGenderValid => (gender ?? "").isNotEmpty;
   bool get _isAgeValid => (age ?? 0) >= 13; // change if you want
   bool get _isGoalValid => (fitnessGoal ?? "").isNotEmpty;
@@ -148,6 +146,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         weightKg: weightKg,
                         workoutDays: workoutDays,
                       );
+                      await LocalStorageService.saveUserProfile(updated);
 
                       await LocalStorageService.setOnboardingSkipped(
                         false,

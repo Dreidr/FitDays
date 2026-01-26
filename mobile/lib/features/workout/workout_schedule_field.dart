@@ -12,16 +12,6 @@ class WorkoutScheduleField extends StatelessWidget {
   final List<String> value; // selected days
   final ValueChanged<List<String>> onChanged;
 
-  static const _days = <String>[
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat",
-    "Sun",
-  ];
-
   @override
   Widget build(BuildContext context) {
     final display = value.isEmpty ? placeholder : value.join(", ");
@@ -89,7 +79,7 @@ class WorkoutScheduleField extends StatelessWidget {
       ),
       builder: (_) => DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.4 , // 👈 60% height (change this)
+        initialChildSize: 0.4, // 👈 60% height (change this)
         minChildSize: 0.4,
         maxChildSize: 0.9,
         builder: (context, scrollController) {

@@ -1,273 +1,168 @@
-import json, pathlib, re
-from collections import Counter, defaultdict
+import json
+import random
+from collections import defaultdict, Counter
+from pathlib import Path
 
-SRC = pathlib.Path("assets/data/free_exercises_db.json")
-OUT_HOME = pathlib.Path("assets/data/exercises_home.json")
-OUT_GYM = pathlib.Path("assets/data/exercises_gym.json")
-REPORT = pathlib.Path("assets/data/curation_report.txt")
+INPUT_PATH = Path("assets/data/original.json")   
+OUTPUT_PATH = Path("assets/data/exercises_curated_200.json")
+TOTAL = 200
+SEED = 42
 
-# ---- tuning knobs ----
-HOME_TARGET = 220
-GYM_TARGET = 260
-
-# cap how many variations of a "base name" we keep (prevents 25 push-ups)
-PER_BASE_CAP_HOME = 4
-PER_BASE_CAP_GYM = 5
-
-# per muscle balance caps (prevents all chest or all legs)
-PER_MUSCLE_CAP_HOME = 40
-PER_MUSCLE_CAP_GYM = 50
-
-# equipment allow-lists
-HOME_EQUIP_OK = {
-    "body weight",
-    "band",
-    "resistance band",
-    "pull-up bar",
-    "kettlebell",     # optional: remove if you want strict home
-    "dumbbell",       # optional: remove if you want strict home
-}
-# If you want HOME to be strict bodyweight-only, set HOME_EQUIP_OK = {"body weight", "band", "resistance band", "pull-up bar"}
-
-GYM_EQUIP_OK = {
-    "body weight",
-    "band",
-    "resistance band",
-    "pull-up bar",
-    "dumbbell",
-    "kettlebell",
-    "barbell",
-    "cable",
-    "machine",
-    "smith machine",
-    "ez barbell",
-    "olympic barbell",
-    "medicine ball",
-    "stability ball",
-    "bosu ball",
-    "trap bar",
+# If you want stronger control, set minimum per category here:
+MIN_PER_CAT = {
+    "cardio": 40,
+    "stretching": 40,
+    # everything else will fall into "strength"
+    "strength": 80,
 }
 
-# keywords that indicate "real-life common" exercises
-KEYWORDS = [
-    # big patterns
-    ("squat", 6),
-    ("deadlift", 6),
-    ("rdl", 6),
-    ("hip thrust", 6),
-    ("glute bridge", 5),
-    ("lunge", 5),
-    ("split squat", 6),
-    ("step up", 4),
+def load_items(path: Path):
+    raw = path.read_text(encoding="utf-8")
+    decoded = json.loads(raw)
+    if isinstance(decoded, list):
+        return decoded
+    if isinstance(decoded, dict) and isinstance(decoded.get("exercises"), list):
+        return decoded["exercises"]
+    raise ValueError("Unexpected JSON shape. Expected a list or {'exercises': [...]}")
 
-    ("bench press", 6),
-    ("push up", 6),
-    ("push-up", 6),
-    ("dip", 5),
+def normalize_category(cat: str) -> str:
+    c = (cat or "").strip().lower()
+    if c == "cardio":
+        return "cardio"
+    if c == "stretching":
+        return "stretching"
+    # treat everything else as strength lane (powerlifting, plyometrics, etc.)
+    return "strength"
 
-    ("row", 6),
-    ("pull up", 6),
-    ("pull-up", 6),
-    ("lat pulldown", 6),
-    ("pulldown", 5),
-    ("chin up", 5),
-    ("chin-up", 5),
+def simplify_item(ex: dict) -> dict:
+    # Keep what your app needs + what you asked for (images + category)
+    primary = ex.get("primaryMuscles") or []
+    secondary = ex.get("secondaryMuscles") or []
+    instructions = ex.get("instructions") or []
+    images = ex.get("images") or []
 
-    ("overhead press", 6),
-    ("shoulder press", 6),
-    ("military press", 6),
+    # Choose a stable id
+    ex_id = ex.get("id") or ex.get("uuid") or ex.get("name") or ""
+    name = ex.get("name") or ""
 
-    # accessories people actually do
-    ("lateral raise", 4),
-    ("bicep curl", 4),
-    ("curl", 3),
-    ("tricep", 4),
-    ("extension", 2),
-    ("face pull", 4),
-    ("rear delt", 4),
-    ("calf raise", 4),
+    category = normalize_category(ex.get("category"))
+    equipment = (ex.get("equipment") or "").strip()
 
-    # core staples
-    ("plank", 5),
-    ("dead bug", 5),
-    ("hollow", 4),
-    ("crunch", 3),
-    ("leg raise", 4),
-    ("russian twist", 3),
-    ("mountain climber", 3),
-]
-
-# avoid niche / overly weird names
-NEGATIVE = [
-    ("stretch", -3),
-    ("release", -3),
-    ("massage", -4),
-    ("foam", -4),
-    ("assisted", -1),
-]
-
-def norm(s: str) -> str:
-    return (s or "").strip().lower()
-
-def base_name(name: str) -> str:
-    """
-    Collapse variations so we don't keep 20 near-duplicates.
-    Example: "push-up (diamond)" -> "push up"
-    """
-    n = norm(name)
-    n = re.sub(r"[\(\)\[\]\{\}].*?[\)\]\}]", "", n)  # remove bracketed text
-    n = re.sub(r"[^a-z0-9\s\-]", " ", n)
-    n = n.replace("-", " ")
-    n = re.sub(r"\s+", " ", n).strip()
-
-    # collapse some common variants
-    for w in ["incline", "decline", "close grip", "wide grip", "neutral grip", "single arm", "single leg", "alternating"]:
-        n = n.replace(w, "").strip()
-    n = re.sub(r"\s+", " ", n).strip()
-    return n
-
-def muscle_primary(ex: dict) -> str:
-    pm = ex.get("primaryMuscles") or []
-    if isinstance(pm, list) and pm:
-        return norm(str(pm[0]))
-    return "other"
-
-def equipment(ex: dict) -> str:
-    return norm(str(ex.get("equipment") or ""))
-
-def score(ex: dict) -> int:
-    name = norm(ex.get("name", ""))
-    s = 0
-    for k, w in KEYWORDS:
-        if k in name:
-            s += w
-    for k, w in NEGATIVE:
-        if k in name:
-            s += w
-    # slight boost for having instructions
-    inst = ex.get("instructions") or []
-    if isinstance(inst, list) and len(inst) >= 2:
-        s += 1
-    return s
-
-def map_to_fitdays(ex: dict) -> dict:
-    ex = dict(ex)
-
-    _id = str(ex.get("id") or ex.get("uuid") or ex.get("name") or "")
-    name = str(ex.get("name") or "")
-    pm = ex.get("primaryMuscles") or []
-    sm = ex.get("secondaryMuscles") or []
-    inst = ex.get("instructions") or []
-
-    pm_list = [str(x) for x in pm] if isinstance(pm, list) else []
-    sm_list = [str(x) for x in sm] if isinstance(sm, list) else []
-    inst_list = [str(x) for x in inst] if isinstance(inst, list) else []
-
-    body = pm_list[0] if pm_list else "other"
+    # Your app uses bodyPart/target; for this dataset, primary muscle is a good stand-in.
+    body_part = primary[0] if isinstance(primary, list) and primary else "other"
 
     return {
-        "id": _id,
-        "name": name,
-        "bodyPart": body,
-        "target": body,
-        "equipment": str(ex.get("equipment") or ""),
-        "gifUrl": "",
-        "secondaryMuscles": sm_list,
-        "instructions": inst_list,
+        "id": str(ex_id),
+        "name": str(name),
+        "category": category,
+        "bodyPart": str(body_part),
+        "target": str(body_part),
+        "equipment": str(equipment),
+        "primaryMuscles": [str(x) for x in primary] if isinstance(primary, list) else [],
+        "secondaryMuscles": [str(x) for x in secondary] if isinstance(secondary, list) else [],
+        "instructions": [str(x) for x in instructions] if isinstance(instructions, list) else [],
+        "images": [str(x) for x in images] if isinstance(images, list) else [],
+        "level": (ex.get("level") or "").strip(),
+        "force": (ex.get("force") or ""),
+        "mechanic": (ex.get("mechanic") or ""),
     }
 
-def curate(all_data: list, equip_ok: set, target: int, per_base_cap: int, per_muscle_cap: int):
-    # filter by equipment
-    filtered = []
-    for ex in all_data:
-        eq = equipment(ex)
-        if eq in equip_ok:
-            filtered.append(ex)
+def is_valid(ex: dict) -> bool:
+    return bool(ex.get("id")) and bool(ex.get("name"))
 
-    # sort by score desc
-    filtered.sort(key=lambda e: score(e), reverse=True)
+def pick_balanced(items, total, seed):
+    random.seed(seed)
 
+    # group by normalized category bucket
+    buckets = defaultdict(list)
+    for ex in items:
+        cat = normalize_category(ex.get("category"))
+        buckets[cat].append(ex)
+
+    # shuffle each bucket for randomness
+    for cat in buckets:
+        random.shuffle(buckets[cat])
+
+    # enforce minimums but never exceed total
     chosen = []
-    base_counts = Counter()
-    muscle_counts = Counter()
+    used_ids = set()
 
-    for ex in filtered:
-        if len(chosen) >= target:
-            break
-
-        b = base_name(ex.get("name", ""))
-        m = muscle_primary(ex)
-
-        if not b:
-            continue
-        if base_counts[b] >= per_base_cap:
-            continue
-        if muscle_counts[m] >= per_muscle_cap:
-            continue
-
-        chosen.append(ex)
-        base_counts[b] += 1
-        muscle_counts[m] += 1
-
-    # if still short, relax constraints slightly (fill)
-    if len(chosen) < target:
-        for ex in filtered:
-            if len(chosen) >= target:
+    def take_from(cat, n):
+        nonlocal chosen
+        for ex in buckets.get(cat, []):
+            if len(chosen) >= total or n <= 0:
                 break
-            b = base_name(ex.get("name", ""))
-            if not b:
-                continue
-            if base_counts[b] >= (per_base_cap + 2):
+            ex_id = ex.get("id")
+            if not ex_id or ex_id in used_ids:
                 continue
             chosen.append(ex)
-            base_counts[b] += 1
+            used_ids.add(ex_id)
+            n -= 1
 
-    mapped = [map_to_fitdays(ex) for ex in chosen]
-    mapped.sort(key=lambda x: norm(x.get("name", "")))
-    return mapped, filtered, base_counts, muscle_counts
+    # Step A: take mins
+    mins = dict(MIN_PER_CAT)
+    # If total mins exceed TOTAL, scale down proportionally
+    sum_mins = sum(mins.values())
+    if sum_mins > total:
+        scale = total / sum_mins
+        for k in mins:
+            mins[k] = int(mins[k] * scale)
+
+    take_from("cardio", mins.get("cardio", 0))
+    take_from("stretching", mins.get("stretching", 0))
+    take_from("strength", mins.get("strength", 0))
+
+    # Step B: fill remaining from all buckets round-robin
+    cats = ["strength", "cardio", "stretching"]
+    idx = 0
+    while len(chosen) < total:
+        cat = cats[idx % len(cats)]
+        idx += 1
+        # find next unused item in bucket
+        found = False
+        for ex in buckets.get(cat, []):
+            ex_id = ex.get("id")
+            if ex_id and ex_id not in used_ids:
+                chosen.append(ex)
+                used_ids.add(ex_id)
+                found = True
+                break
+        if not found:
+            # if this bucket is exhausted, try any bucket
+            any_found = False
+            for other in cats:
+                for ex in buckets.get(other, []):
+                    ex_id = ex.get("id")
+                    if ex_id and ex_id not in used_ids:
+                        chosen.append(ex)
+                        used_ids.add(ex_id)
+                        any_found = True
+                        break
+                if any_found:
+                    break
+            if not any_found:
+                break  # no more unique items
+
+    return chosen
 
 def main():
-    data = json.loads(SRC.read_text(encoding="utf-8"))
-    if isinstance(data, dict) and "exercises" in data:
-        data = data["exercises"]
-    if not isinstance(data, list):
-        raise SystemExit("Source JSON must be a list (or {exercises: []}).")
+    items = load_items(INPUT_PATH)
+    # keep only valid items
+    items = [ex for ex in items if isinstance(ex, dict) and is_valid(ex)]
 
-    home, home_pool, home_base, home_muscle = curate(
-        data, HOME_EQUIP_OK, HOME_TARGET, PER_BASE_CAP_HOME, PER_MUSCLE_CAP_HOME
-    )
-    gym, gym_pool, gym_base, gym_muscle = curate(
-        data, GYM_EQUIP_OK, GYM_TARGET, PER_BASE_CAP_GYM, PER_MUSCLE_CAP_GYM
-    )
+    # pick 200 balanced
+    chosen_raw = pick_balanced(items, TOTAL, SEED)
 
-    OUT_HOME.parent.mkdir(parents=True, exist_ok=True)
-    OUT_HOME.write_text(json.dumps(home, ensure_ascii=False, indent=2), encoding="utf-8")
-    OUT_GYM.write_text(json.dumps(gym, ensure_ascii=False, indent=2), encoding="utf-8")
+    # simplify + normalize
+    curated = [simplify_item(ex) for ex in chosen_raw]
 
     # report
-    lines = []
-    lines.append(f"SRC total: {len(data)}\n")
-
-    lines.append(f"HOME pool (equip filtered): {len(home_pool)}")
-    lines.append(f"HOME curated: {len(home)}")
-    lines.append("HOME top muscles:")
-    for k, v in home_muscle.most_common(12):
-        lines.append(f"  {k}: {v}")
-    lines.append("")
-
-    lines.append(f"GYM pool (equip filtered): {len(gym_pool)}")
-    lines.append(f"GYM curated: {len(gym)}")
-    lines.append("GYM top muscles:")
-    for k, v in gym_muscle.most_common(12):
-        lines.append(f"  {k}: {v}")
-    lines.append("")
-
-    REPORT.write_text("\n".join(lines), encoding="utf-8")
-
-    print(f"✅ Wrote {len(home)} -> {OUT_HOME}")
-    print(f"✅ Wrote {len(gym)}  -> {OUT_GYM}")
-    print(f"📝 Report -> {REPORT}")
+    counts = Counter([c["category"] for c in curated])
+    print("Curated category counts:", dict(counts))
+    print("Total:", len(curated))
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT_PATH.write_text(json.dumps(curated, indent=2), encoding="utf-8")
+    print("Wrote:", OUTPUT_PATH)
 
 if __name__ == "__main__":
     main()
-

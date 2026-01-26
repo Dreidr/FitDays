@@ -11,7 +11,7 @@ class LocalExerciseRepo {
   static Future<List<Map<String, dynamic>>> loadAll() async {
   if (_cache != null) return _cache!;
 
-  final raw = await rootBundle.loadString('assets/data/exercises_gym.json'); // <-- see note below
+  final raw = await rootBundle.loadString('assets/data/exercises_curated_200.json'); // <-- see note below
   final decoded = jsonDecode(raw);
 
   late final List<dynamic> list;
@@ -39,6 +39,7 @@ class LocalExerciseRepo {
         "target": (ex["target"] ?? "").toString(),
         "equipment": (ex["equipment"] ?? "").toString(),
         "gifUrl": (ex["gifUrl"] ?? "").toString(),
+        "category": (ex["category"] ?? "strength").toString(), // ✅ ADD THIS
         "secondaryMuscles": (ex["secondaryMuscles"] is List)
             ? (ex["secondaryMuscles"] as List).map((e) => e.toString()).toList()
             : <String>[],
@@ -67,6 +68,7 @@ class LocalExerciseRepo {
 
     final bodyPart = primary.isNotEmpty ? primary.first : "other";
     final equipment = (ex['equipment'] ?? '').toString();
+    final category = (ex['category'] ?? '').toString();
 
     mapped.add({
       "id": id,
@@ -75,6 +77,7 @@ class LocalExerciseRepo {
       "target": bodyPart,
       "equipment": equipment,
       "gifUrl": "",
+      "category": category, // ✅ ADD THIS
       "secondaryMuscles": secondary,
       "instructions": instructions,
     });

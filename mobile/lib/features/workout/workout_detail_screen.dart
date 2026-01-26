@@ -4,8 +4,6 @@ import 'package:mobile/features/workout/exercise_detail_screen.dart';
 import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
 import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 
-
-
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
     super.key,
@@ -25,13 +23,66 @@ class WorkoutDetailScreen extends StatefulWidget {
 }
 
 class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
-  late final Future<List<Map<String, dynamic>>> _future;
+  late Future<List<Map<String, dynamic>>> _future;
+  bool _warmupOn = true;
 
   @override
   void initState() {
     super.initState();
-    final ids = widget.plan.map((e) => e.exerciseId).toList();
-    _future = LocalExerciseRepo.fetchExercisesByIds(ids);
+    _future = _loadExercises();
+  }
+
+  // ✅ Replace these warmup IDs with ones that exist in your local JSON
+  List<PlannedExercise> _warmupPlan() {
+    return const [
+      PlannedExercise(
+        exerciseId: "Jumping_Jacks",
+        sets: 1,
+        reps: 30,
+        weightKg: 0,
+      ),
+      PlannedExercise(
+        exerciseId: "Arm_Circles",
+        sets: 1,
+        reps: 20,
+        weightKg: 0,
+      ),
+    ];
+  }
+
+  List<PlannedExercise> get _activePlan {
+    if (!_warmupOn) return widget.plan;
+    return [..._warmupPlan(), ...widget.plan];
+  }
+
+  Future<List<Map<String, dynamic>>> _loadExercises() {
+    final ids = _activePlan.map((e) => e.exerciseId).toList();
+    return LocalExerciseRepo.fetchExercisesByIds(ids);
+  }
+
+  void _toggleWarmup(bool v) {
+    setState(() {
+      _warmupOn = v;
+      _future = _loadExercises(); // ✅ reload list based on toggle
+    });
+  }
+
+  void _startWorkout() {
+    // ✅ MVP: just confirm start (later navigate to WorkoutSessionScreen)
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _warmupOn
+              ? "Starting workout (with warm-up)..."
+              : "Starting workout...",
+        ),
+      ),
+    );
+
+    // TODO later:
+    // Navigator.push(context, MaterialPageRoute(
+    //   builder: (_) => WorkoutSessionScreen(sessionPlan: _activePlan),
+    // ));
   }
 
   String _s(dynamic v) => (v ?? '').toString();
@@ -87,11 +138,43 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         ),
                         const SizedBox(height: 10),
 
+                        const SizedBox(height: 12),
+
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.04),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(
+                            children: [
+                              const Expanded(
+                                child: Text(
+                                  "Warm-up",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              Switch(
+                                value: _warmupOn,
+                                onChanged: _toggleWarmup,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
                         // ✅ API-driven exercise list
                         ...List.generate(count, (i) {
                           final ex = apiItems[i];
-                          final planned =
-                              widget.plan[i]; // same order as ids you requested
+                          final planned = _activePlan[i];
 
                           final id = _s(ex['id']);
                           final name = _s(ex['name']);
@@ -129,7 +212,32 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               ),
             ),
 
-            // sticky bottom actions stays same...
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: _startWorkout,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4442D9),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text(
+                      "Start workout",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
