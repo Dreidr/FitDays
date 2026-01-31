@@ -10,7 +10,9 @@ import 'package:mobile/app/app_shell.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
-  const ProfileSetupScreen({super.key});
+  const ProfileSetupScreen({super.key, this.returnResultOnly = false});
+
+  final bool returnResultOnly;
 
   @override
   State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
@@ -62,9 +64,27 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     super.initState();
 
     final profile = LocalStorageService.getUserProfile();
-    name = (profile?.name?.trim().isNotEmpty == true)
-        ? profile!.name!.trim()
+    if (profile == null) return;
+
+    name = (profile.name?.trim().isNotEmpty == true)
+        ? profile.name!.trim()
         : null;
+
+    gender = profile.gender;
+
+    age = profile.age;
+    ageSelected = profile.age != null;
+
+    fitnessGoal = profile.fitnessGoal;
+    fitnessLevel = profile.fitnessLevel;
+
+    workoutPlan = profile.workoutPlan;
+    workoutDuration = profile.workoutDuration;
+
+    weightKg = profile.weightKg ?? 72.5;
+    weightChanged = profile.weightKg != null;
+
+    workoutDays = List<String>.from(profile.workoutDays);
   }
 
   @override
@@ -79,33 +99,63 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           "Plan Setup",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
         ),
-        actions: [
+        actions: [if (!widget.returnResultOnly)
           TextButton(
-            onPressed: () async {
-              await LocalStorageService.setOnboardingSkipped(true);
-              await LocalStorageService.setOnboardingComplete(true);
-              await LocalStorageService.setProfileComplete(false);
+            onPressed: _canSave
+                ? () async {
+                    final existing = LocalStorageService.getUserProfile();
+                    if (existing == null) return;
 
-              final p = LocalStorageService.getUserProfile();
-              final displayName = p?.name?.trim().isNotEmpty == true
-                  ? p!.name!.trim()
-                  : "User";
+                    final trimmedName = name?.trim();
 
-              if (!context.mounted) return;
+                    final updated = existing.copyWith(
+                      name: (trimmedName == null || trimmedName.isEmpty)
+                          ? null
+                          : trimmedName,
+                      gender: gender,
+                      age: age,
+                      fitnessGoal: fitnessGoal,
+                      fitnessLevel: fitnessLevel,
+                      workoutPlan: workoutPlan,
+                      workoutDuration: workoutDuration,
+                      weightKg: weightKg,
+                      workoutDays: workoutDays,
+                    );
 
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AppShell(
-                    userName: displayName,
-                    workoutStreak: 0,
-                    startDate: DateTime.now(),
-                    workoutDays: p?.workoutDays ?? const [],
-                  ),
-                ),
-                (route) => false,
-              );
-            },
+                    // ✅ save first
+                    await LocalStorageService.saveUserProfile(updated);
+
+                    // ✅ EDIT MODE: return to PlanDetails with updated profile
+                    if (widget.returnResultOnly) {
+                      if (!context.mounted) return;
+                      Navigator.pop(context, updated);
+                      return;
+                    }
+
+                    // ✅ ONBOARDING MODE: set flags and enter app
+                    await LocalStorageService.setOnboardingSkipped(false);
+                    await LocalStorageService.setProfileComplete(true);
+
+                    if (!context.mounted) return;
+
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AppShell(
+                          userName: updated.name?.trim().isNotEmpty == true
+                              ? updated.name!.trim()
+                              : "User",
+                          workoutStreak: 0,
+                          startDate: DateTime.now(),
+                          workoutDays: updated.workoutDays,
+                        ),
+                      ),
+                      (_) => false,
+                    );
+                  }
+                : () {
+                    showTopToast(context, _firstErrorMessage());
+                  },
 
             child: const Text(
               "Skip",
@@ -146,6 +196,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         weightKg: weightKg,
                         workoutDays: workoutDays,
                       );
+
+                      Navigator.pop(context, updated);
+
                       await LocalStorageService.saveUserProfile(updated);
 
                       await LocalStorageService.setOnboardingSkipped(
@@ -176,7 +229,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       showTopToast(context, _firstErrorMessage());
                     },
 
-              // ✅ REQUIRED — this was missing
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4442D9),
                 shape: RoundedRectangleBorder(

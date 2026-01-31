@@ -4,6 +4,9 @@ import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/onboarding/widgets/top_toast.dart';
 import 'package:mobile/features/settings/app_settings_screen.dart';
 import 'package:mobile/features/profile/widgets/profile_header_card.dart';
+import 'package:mobile/features/plan/models/plan_settings.dart';
+import 'package:mobile/features/plan/plan_details_screen.dart';
+import 'package:mobile/features/plan/models/session_progress.dart';
 
 const double _rowLeftInset = 8;
 
@@ -166,10 +169,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ), // 👈 text + icon color
                   ),
                   onPressed: () {
-                    // TODO: open plan details screen
+                    final plan = PlanSettings(
+                      workoutsPerWeek: 3,
+                      workoutType: "Strength Training",
+                      durationMin: 50,
+                      fitnessGoal: "Maintain Fitness",
+                    );
+
+                    final progress = [
+                      WeekProgress(
+                        weekNumber: 1,
+                        sessions: const [
+                          SessionItem(
+                            dayLabel: "Tue",
+                            title: "Upper Body",
+                            minutes: 50,
+                            completed: true,
+                          ),
+                          SessionItem(
+                            dayLabel: "Thu",
+                            title: "Full Body",
+                            minutes: 45,
+                            completed: true,
+                          ),
+                        ],
+                      ),
+                      WeekProgress(
+                        weekNumber: 2,
+                        sessions: const [
+                          SessionItem(
+                            dayLabel: "Tue",
+                            title: "Upper Body",
+                            minutes: 60,
+                            completed: true,
+                          ),
+                          SessionItem(
+                            dayLabel: "Thu",
+                            title: "Full Body",
+                            minutes: 50,
+                            completed: true,
+                          ),
+                          SessionItem(
+                            dayLabel: "Sat",
+                            title: "Lower Body",
+                            minutes: 30,
+                            completed: true,
+                          ),
+                        ],
+                      ),
+                    ];
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            PlanDetailsScreen(plan: plan, progress: progress),
+                      ),
+                    );
                   },
+
                   child: const Text(
-                    "Plan details",
+                    "Plan Details",
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
