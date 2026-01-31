@@ -3,6 +3,8 @@ import 'package:mobile/features/workout/models/planned_exercise.dart';
 import 'package:mobile/features/workout/exercise_detail_screen.dart';
 import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
 import 'package:mobile/features/workout/services/local_exercise_repo.dart';
+import 'package:mobile/features/workout_play/workout_play_screen.dart';
+import 'package:mobile/app/theme/app_decorations.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
@@ -23,36 +25,87 @@ class WorkoutDetailScreen extends StatefulWidget {
 }
 
 class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
-  late Future<List<Map<String, dynamic>>> _future;
-  bool _warmupOn = true;
+  Future<List<Map<String, dynamic>>> _future = Future.value(const []);
 
+  bool _warmupOn = true;
+  bool _warmupVisible = false;
+
+  List<PlannedExercise> _userPlan = [];
+  List<PlannedExercise> _warmupPlan = []; // ✅ warmup LIST (not a method)
+  List<Map<String, dynamic>> _allExercises = []; // ✅ dataset cache
+
+  List<Map<String, dynamic>> _lastApiItems = [];
+
+  @override
   @override
   void initState() {
     super.initState();
-    _future = _loadExercises();
+
+    _userPlan = List.of(widget.plan); // base plan (editable)
+
+    () async {
+      _allExercises = await LocalExerciseRepo.loadAll();
+
+      // only generate warm-up if toggle is ON
+      if (_warmupOn) {
+        _warmupPlan = _generateRandomWarmup();
+      } else {
+        _warmupPlan = [];
+      }
+
+      // ✅ now load exercises AFTER warm-up list is ready
+      _future = _loadExercises();
+
+      if (mounted) setState(() {});
+    }();
   }
 
-  // ✅ Replace these warmup IDs with ones that exist in your local JSON
-  List<PlannedExercise> _warmupPlan() {
-    return const [
-      PlannedExercise(
-        exerciseId: "Jumping_Jacks",
-        sets: 1,
-        reps: 30,
-        weightKg: 0,
-      ),
-      PlannedExercise(
-        exerciseId: "Arm_Circles",
-        sets: 1,
-        reps: 20,
-        weightKg: 0,
-      ),
-    ];
+  static const int _warmupCount = 4;
+
+  List<PlannedExercise> _generateRandomWarmup() {
+    if (_allExercises.isEmpty) return [];
+
+    bool isWarmupCandidate(Map<String, dynamic> e) {
+      final cat = (e["category"] ?? "").toString().toLowerCase();
+      final eq = (e["equipment"] ?? "").toString().toLowerCase();
+
+      if (cat != "cardio" && cat != "stretching") return false;
+
+      // dataset may use: body weight / body only / other
+      final okEq = eq.contains("body") || eq.contains("other");
+      return okEq;
+    }
+
+    final pool = _allExercises.where(isWarmupCandidate).toList();
+    if (pool.isEmpty) return [];
+
+    pool.shuffle();
+
+    // ✅ take up to 5
+    final picked = pool.take(_warmupCount).toList();
+
+    return picked.map((e) {
+      final id = (e["id"] ?? "").toString();
+      final cat = (e["category"] ?? "").toString().toLowerCase();
+
+      // simple warm-up prescription
+      if (cat == "cardio") {
+        return PlannedExercise(
+          exerciseId: id,
+          sets: 1,
+          reps: 30, // 30 seconds / reps-ish
+          weightKg: null,
+        );
+      }
+
+      // stretching
+      return PlannedExercise(exerciseId: id, sets: 1, reps: 20, weightKg: null);
+    }).toList();
   }
 
   List<PlannedExercise> get _activePlan {
-    if (!_warmupOn) return widget.plan;
-    return [..._warmupPlan(), ...widget.plan];
+    if (!_warmupOn) return _userPlan;
+    return [..._warmupPlan, ..._userPlan];
   }
 
   Future<List<Map<String, dynamic>>> _loadExercises() {
@@ -63,26 +116,56 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   void _toggleWarmup(bool v) {
     setState(() {
       _warmupOn = v;
-      _future = _loadExercises(); // ✅ reload list based on toggle
+
+      if (!_warmupOn) {
+        _warmupVisible = false; // collapse if off
+      } else {
+        _warmupPlan = _generateRandomWarmup(); // randomize when turned on
+      }
+
+      _future =
+          _loadExercises(); // still reload because active IDs changed for play list
     });
   }
 
-  void _startWorkout() {
-    // ✅ MVP: just confirm start (later navigate to WorkoutSessionScreen)
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _warmupOn
-              ? "Starting workout (with warm-up)..."
-              : "Starting workout...",
+  void _editExercise(int index) {
+    final current = _userPlan[index];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => _EditExerciseSheet(
+        initial: current,
+        onSave: (updated) {
+          setState(() {
+            _userPlan[index] = updated;
+          });
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  Future<void> _startWorkout() async {
+    final exercises = await _future; // ✅ already loaded (or will load)
+
+    if (!mounted) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WorkoutPlayScreen(
+          dayLabel: widget.dayLabel,
+          title: widget.title,
+          plan: _warmupOn ? [..._warmupPlan, ..._userPlan] : _userPlan,
+          exercises: exercises,
         ),
       ),
     );
-
-    // TODO later:
-    // Navigator.push(context, MaterialPageRoute(
-    //   builder: (_) => WorkoutSessionScreen(sessionPlan: _activePlan),
-    // ));
   }
 
   String _s(dynamic v) => (v ?? '').toString();
@@ -98,8 +181,15 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               child: FutureBuilder<List<Map<String, dynamic>>>(
                 future: _future,
                 builder: (context, snap) {
-                  if (snap.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                  // ✅ no blink: show previous content while loading
+                  final isLoading =
+                      snap.connectionState == ConnectionState.waiting;
+
+                  final apiItems =
+                      snap.data ?? (isLoading ? _lastApiItems : const []);
+                  if (!isLoading && snap.hasData) {
+                    // ✅ update cache only when we have fresh data
+                    _lastApiItems = snap.data!;
                   }
                   if (snap.hasError) {
                     return Center(
@@ -112,9 +202,12 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       ),
                     );
                   }
+                  final planItems =
+                      _userPlan; // ✅ main list = only workout exercises
 
-                  final apiItems = snap.data ?? [];
-                  final count = apiItems.length;
+                  final apiById = <String, Map<String, dynamic>>{
+                    for (final ex in apiItems) _s(ex['id']): ex,
+                  };
 
                   return SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(18, 14, 18, 140),
@@ -124,7 +217,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         _HeaderCard(
                           dayLabel: widget.dayLabel,
                           title: widget.title,
-                          exerciseCount: count,
+                          exerciseCount: planItems.length,
                           onBack: () => Navigator.pop(context),
                         ),
                         const SizedBox(height: 14),
@@ -136,8 +229,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                             color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 10),
-
                         const SizedBox(height: 12),
 
                         Container(
@@ -145,26 +236,121 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                             horizontal: 12,
                             vertical: 10,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.04),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Row(
+                          decoration: AppDecorations.card(context),
+                          child: Column(
                             children: [
-                              const Expanded(
-                                child: Text(
-                                  "Warm-up",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.black87,
+                              // ✅ ONE ROW: title + chevron + switch
+                              Row(
+                                children: [
+                                  const SizedBox(width: 10),
+                                  const Expanded(
+                                    child: Text(
+                                      "Warm-up",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
                                   ),
-                                ),
+
+                                  const SizedBox(width: 10),
+
+                                  // Switch with app color
+                                  Switch(
+                                    value: _warmupOn,
+                                    onChanged: _toggleWarmup,
+                                    activeColor: const Color(
+                                      0xFF4442D9,
+                                    ), // thumb
+                                    activeThumbColor: Colors.white,
+                                    activeTrackColor: const Color(
+                                      0xFF4442D9,
+                                    ), // track (ON)
+                                    inactiveThumbColor: Colors.white,
+                                    inactiveTrackColor: Colors.black26,
+                                  ),
+
+                                  // Chevron button (disabled when switch off)
+                                  IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    onPressed: _warmupOn
+                                        ? () => setState(
+                                            () => _warmupVisible =
+                                                !_warmupVisible,
+                                          )
+                                        : null,
+                                    icon: Icon(
+                                      _warmupVisible
+                                          ? Icons.expand_less
+                                          : Icons.expand_more,
+                                      color: _warmupOn
+                                          ? Colors.black54
+                                          : Colors.black26,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Switch(
-                                value: _warmupOn,
-                                onChanged: _toggleWarmup,
-                              ),
+
+                              // ✅ Expanded warm-up list
+                              if (_warmupOn && _warmupVisible) ...[
+                                const SizedBox(height: 10),
+
+                                if (_warmupPlan.isEmpty)
+                                  const Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "No warm-up exercises found in dataset.",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  ..._warmupPlan.map((p) {
+                                    final ex = apiById[p.exerciseId];
+
+                                    final name = ex == null
+                                        ? "Warm-up"
+                                        : _s(ex['name']);
+                                    final cat = ex == null
+                                        ? ""
+                                        : _s(ex['category']);
+
+                                    final subtitle = [
+                                      p.metaText(),
+                                      if (cat.isNotEmpty) cat,
+                                    ].join(" • ");
+
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: _ExerciseRow(
+                                        exerciseId: p.exerciseId,
+                                        name: name.isEmpty ? "Warm-up" : name,
+                                        meta: subtitle,
+                                        onMore: () {},
+                                        onReorder: () {},
+                                        onTap: () {
+                                          if (ex == null) return;
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  ExerciseDetailScreen(
+                                                    exercise: ex,
+                                                  ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }).toList(),
+                              ],
                             ],
                           ),
                         ),
@@ -172,23 +358,34 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         const SizedBox(height: 10),
 
                         // ✅ API-driven exercise list
-                        ...List.generate(count, (i) {
-                          final ex = apiItems[i];
-                          final planned = _activePlan[i];
+                        ...List.generate(planItems.length, (i) {
+                          final planned = planItems[i];
+                          final ex = apiById[planned.exerciseId];
 
-                          final id = _s(ex['id']);
-                          final name = _s(ex['name']);
-                          final target = _s(ex['target']);
+                          final name = ex == null
+                              ? "Missing exercise"
+                              : _s(ex['name']);
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _ExerciseRow(
-                              exerciseId: id, // ✅ new
+                              exerciseId: planned.exerciseId,
                               name: name.isEmpty ? "Exercise" : name,
-                              meta: "${planned.metaText()} • Target: $target",
-                              onMore: () {},
+                              meta: planned.metaText(),
+
+                              onMore: () => _editExercise(i),
                               onReorder: () {},
                               onTap: () {
+                                if (ex == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        "Exercise not found: ${planned.exerciseId}",
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -424,6 +621,213 @@ class _ExerciseRow extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _EditExerciseSheet extends StatefulWidget {
+  const _EditExerciseSheet({required this.initial, required this.onSave});
+
+  final PlannedExercise initial;
+  final ValueChanged<PlannedExercise> onSave;
+
+  @override
+  State<_EditExerciseSheet> createState() => _EditExerciseSheetState();
+}
+
+class _EditExerciseSheetState extends State<_EditExerciseSheet> {
+  late int _sets;
+  late int _reps;
+  late TextEditingController _weightCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _sets = widget.initial.sets;
+    _reps = widget.initial.reps;
+
+    final w = widget.initial.weightKg;
+    _weightCtrl = TextEditingController(
+      text: (w != null && w > 0) ? w.toStringAsFixed(0) : "",
+    );
+  }
+
+  @override
+  void dispose() {
+    _weightCtrl.dispose();
+    super.dispose();
+  }
+
+  double? _parseWeight() {
+    final t = _weightCtrl.text.trim();
+    if (t.isEmpty) return null;
+
+    final v = double.tryParse(t);
+    if (v == null || v <= 0) return null;
+
+    // round to 0.5kg for nicer values
+    return (v * 2).round() / 2.0;
+  }
+
+  PlannedExercise _buildUpdated() {
+    return PlannedExercise(
+      exerciseId: widget.initial.exerciseId,
+      sets: _sets,
+      reps: _reps,
+      weightKg: _parseWeight(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottom = MediaQuery.of(context).viewInsets.bottom;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(18, 14, 18, 16 + bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 44,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.black12,
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            "Edit exercise",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 14),
+
+          _StepperRow(
+            label: "Sets",
+            value: _sets,
+            min: 1,
+            max: 8,
+            onChanged: (v) => setState(() => _sets = v),
+          ),
+          const SizedBox(height: 10),
+          _StepperRow(
+            label: "Reps",
+            value: _reps,
+            min: 1,
+            max: 30,
+            onChanged: (v) => setState(() => _reps = v),
+          ),
+
+          const SizedBox(height: 12),
+
+          const Text(
+            "Weight (kg)",
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          TextField(
+            controller: _weightCtrl,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              hintText: "Leave blank to set later",
+              filled: true,
+              fillColor: Colors.black.withOpacity(0.04),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          Row(
+            children: [
+              TextButton(
+                onPressed: () => setState(() => _weightCtrl.text = ""),
+                child: const Text("Clear weight"),
+              ),
+              const Spacer(),
+              SizedBox(
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4442D9),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: () => widget.onSave(_buildUpdated()),
+                  child: const Text(
+                    "Save",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepperRow extends StatelessWidget {
+  const _StepperRow({
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.onChanged,
+  });
+
+  final String label;
+  final int value;
+  final int min;
+  final int max;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
+            ),
+          ),
+          IconButton(
+            onPressed: value > min ? () => onChanged(value - 1) : null,
+            icon: const Icon(Icons.remove_circle_outline),
+          ),
+          Text(
+            "$value",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+          ),
+          IconButton(
+            onPressed: value < max ? () => onChanged(value + 1) : null,
+            icon: const Icon(Icons.add_circle_outline),
+          ),
+        ],
       ),
     );
   }

@@ -31,7 +31,7 @@ class BottomNav extends StatelessWidget {
         items: [
           _item(Icons.home, "Home", 0),
           _item(Icons.local_fire_department, "Streak", 1),
-          _centerPlayItem(3),
+          _centerPlayItem(2),
           _item(Icons.insights, "Insights", 3),
           _item(Icons.person, "Profile", 4),
         ],

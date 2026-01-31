@@ -11,7 +11,6 @@ import 'package:mobile/features/workout/workout_detail_screen.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/onboarding/profile_setup_screen.dart';
 import 'package:mobile/core/widgets/complete_setup_banner.dart';
-import 'package:mobile/features/workout/models/planned_exercise.dart';
 import 'package:mobile/core/models/user_profile.dart';
 import 'package:mobile/features/workout/services/workout_generator.dart';
 
@@ -34,28 +33,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<PlannedExercise> _placeholderPlanFor(String title) {
-    // Later: build from ExerciseDB based on title + duration + fitnessLevel
-    if (title.contains("Upper")) {
-      return const [
-        PlannedExercise(exerciseId: "0041", sets: 3, reps: 12, weightKg: 20),
-        PlannedExercise(exerciseId: "0380", sets: 3, reps: 12, weightKg: 20),
-      ];
-    }
-
-    if (title.contains("Lower")) {
-      return const [
-        PlannedExercise(exerciseId: "1308", sets: 3, reps: 10, weightKg: 22.5),
-        PlannedExercise(exerciseId: "1410", sets: 3, reps: 12, weightKg: 20),
-      ];
-    }
-
-    return const [
-      PlannedExercise(exerciseId: "0041", sets: 3, reps: 12, weightKg: 20),
-      PlannedExercise(exerciseId: "1308", sets: 3, reps: 10, weightKg: 22.5),
-    ];
-  }
-
   String _dayLabel(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -98,11 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return (p != null && p.isNotEmpty) ? p : "Workout";
   }
 
-  List<DateTime> getTwoWeekDates() {
+  List<DateTime> getOneWeekDates() {
     final today = DateTime.now();
-    final startOfThisWeek = today.subtract(Duration(days: today.weekday - 1));
-    final startOfLastWeek = startOfThisWeek.subtract(const Duration(days: 7));
-    return List.generate(14, (i) => startOfLastWeek.add(Duration(days: i)));
+
+    return List.generate(7, (i) => today.add(Duration(days: i - 3)));
   }
 
   List<DayPlan> buildNextWorkoutPlans({
@@ -206,9 +182,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Greeting(userNameVN: widget.userNameVN),
-                    const SizedBox(height: 12),
+
+                    Divider(thickness: 1, color: Colors.grey.withOpacity(0.25)),
+
                     Calendar(
-                      dates: getTwoWeekDates(),
+                      dates: getOneWeekDates(),
                       completedDates: completedDates,
                       workoutDays: workoutWeekdays,
                     ),

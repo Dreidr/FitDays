@@ -18,7 +18,6 @@ class Calendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final week1 = dates.take(7).toList();
-    final week2 = dates.skip(7).take(7).toList();
     const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
     return Column(
@@ -27,14 +26,7 @@ class Calendar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: week1.map((date) => _DayCell(date)).toList(),
         ),
-        const SizedBox(height: 12),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: week2.map((date) => _DayCell(date)).toList(),
-        ),
-
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
 
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,57 +71,55 @@ class Calendar extends StatelessWidget {
     }
 
     return Column(
-  children: [
-    const SizedBox(height: 6),
-
-    Stack(
-      alignment: Alignment.center,
       children: [
-        Container(
-  width: 36,
-  height: 36,
-  decoration: BoxDecoration(
-    color: bg,
-    borderRadius: BorderRadius.circular(10),
-  ),
-  alignment: Alignment.center,
-  child: isWorkoutDay
-      ? Transform.rotate(
-          angle: 134 * 3.1415926535 / 180,
-          child: Icon(
-            Icons.fitness_center_sharp,
-            size: 18,
-            color: isCompleted
-                ? Colors.white
-                : const Color(0xFF4442D9),
-          ),
-        )
-      : Text(
-          date.day.toString(),
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: text,
-          ),
-        ),
-),
+        const SizedBox(height: 6),
 
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: bg,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: Alignment.center,
+              child: isWorkoutDay
+                  ? Transform.rotate(
+                      angle: 134 * 3.1415926535 / 180,
+                      child: Icon(
+                        Icons.fitness_center_sharp,
+                        size: 18,
+                        color: isCompleted
+                            ? Colors.white
+                            : const Color(0xFF4442D9),
+                      ),
+                    )
+                  : Text(
+                      date.day.toString(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: text,
+                      ),
+                    ),
+            ),
+          ],
+        ),
+
+        // 👇 TODAY DOT
+        if (isToday) ...[
+          const SizedBox(height: 4),
+          Container(
+            width: 4,
+            height: 4,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFF4442D9),
+            ),
+          ),
+        ],
       ],
-    ),
-
-    // 👇 TODAY DOT
-    if (isToday) ...[
-      const SizedBox(height: 4),
-      Container(
-        width: 4,
-        height: 4,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xFF4442D9),
-        ),
-      ),
-    ],
-  ],
-);
-
+    );
   }
 }
