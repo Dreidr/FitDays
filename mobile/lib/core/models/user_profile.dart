@@ -1,8 +1,7 @@
 class UserProfile {
   final String? name;
-
-  // ✅ make these optional for MVP
   final String? gender;
+  final DateTime startDate;
   final int? age;
   final String? fitnessGoal;
   final String? fitnessLevel;
@@ -19,8 +18,8 @@ class UserProfile {
 
   const UserProfile({
     this.name,
+    required this.startDate,
     required this.email,
-
     this.gender,
     this.age,
     this.fitnessGoal,
@@ -35,6 +34,7 @@ class UserProfile {
 
   UserProfile copyWith({
     String? name,
+    DateTime? startDate,
     String? gender,
     int? age,
     String? fitnessGoal,
@@ -48,9 +48,9 @@ class UserProfile {
   }) {
     return UserProfile(
       name: name ?? this.name,
+      startDate: startDate ?? this.startDate,
       email: email ?? this.email,
       password: password ?? this.password,
-
       gender: gender ?? this.gender,
       age: age ?? this.age,
       fitnessGoal: fitnessGoal ?? this.fitnessGoal,
@@ -63,22 +63,34 @@ class UserProfile {
   }
 
   Map<String, dynamic> toJson() => {
-        "name": name,
-        "gender": gender,
-        "age": age,
-        "fitnessGoal": fitnessGoal,
-        "fitnessLevel": fitnessLevel,
-        "workoutPlan": workoutPlan,
-        "workoutDuration": workoutDuration,
-        "weightKg": weightKg,
-        "workoutDays": workoutDays,
-        "email": email,
-        "password": password, // ⚠️ test-only
-      };
+    "name": name,
+    "startDate": startDate.toIso8601String(),
+    "gender": gender,
+    "age": age,
+    "fitnessGoal": fitnessGoal,
+    "fitnessLevel": fitnessLevel,
+    "workoutPlan": workoutPlan,
+    "workoutDuration": workoutDuration,
+    "weightKg": weightKg,
+    "workoutDays": workoutDays,
+    "email": email,
+    "password": password, // ⚠️ test-only
+  };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
+    DateTime parseStartDate(dynamic v) {
+      if (v is String && v.isNotEmpty) {
+        final dt = DateTime.parse(v).toLocal();
+        return DateTime(dt.year, dt.month, dt.day); // ✅ date-only
+      }
+      // fallback if old profiles don't have startDate yet
+      final now = DateTime.now();
+      return DateTime(now.year, now.month, now.day);
+    }
+
     return UserProfile(
       name: json['name'] as String?,
+      startDate: parseStartDate(json["startDate"]),
       gender: json["gender"] as String?,
       age: json["age"] as int?,
       fitnessGoal: json["fitnessGoal"] as String?,

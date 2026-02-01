@@ -34,9 +34,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _dayLabel(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final d = DateTime(date.year, date.month, date.day);
+    final today = DateUtils.dateOnly(DateTime.now());
+    final d = DateUtils.dateOnly(date);
 
     if (d == today) return "Today";
     if (d == today.add(const Duration(days: 1))) return "Tomorrow";
@@ -45,15 +44,44 @@ class _HomeScreenState extends State<HomeScreen> {
     return labels[d.weekday - 1];
   }
 
+  DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
+
+  DateTime _addDays(DateTime d, int days) =>
+      DateTime(d.year, d.month, d.day + days);
+
+  DateTime _mondayOfWeek(DateTime d) {
+    final x = _dateOnly(d);
+    return _addDays(x, -(x.weekday - DateTime.monday));
+  }
+
+  DateTime get _effectiveStartDate {
+    final p = LocalStorageService.getUserProfile();
+    final s = p?.startDate ?? widget.startDate;
+    return _dateOnly(s);
+  }
+
   String _totalTimeTextFor(DayPlan plan, int durationMinutes) {
     return plan.isWorkoutDay ? "$durationMinutes mins" : "Rest day";
   }
 
-  final Set<DateTime> completedDates = {}; // ✅ now valid
+  final Set<DateTime> completedDates = {};
+
+  void markCompleted(DateTime date) {
+    completedDates.add(DateUtils.dateOnly(date));
+  }
+
+  bool isCompleted(DateTime date) {
+    return completedDates.contains(DateUtils.dateOnly(date));
+  }
 
   int getWeekNumber() {
-    final days = DateTime.now().difference(widget.startDate).inDays;
-    return (days ~/ 7) + 1;
+    final today = _dateOnly(DateTime.now());
+    final startMonday = _mondayOfWeek(_effectiveStartDate);
+
+    final days = today.difference(startMonday).inDays;
+    final safeDays = days < 0 ? 0 : days;
+
+    return (safeDays ~/ 7) + 1;
   }
 
   Set<int> _mapToWeekdays(List<String> days) {
@@ -75,10 +103,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return (p != null && p.isNotEmpty) ? p : "Workout";
   }
 
-  List<DateTime> getOneWeekDates() {
-    final today = DateTime.now();
+  List<DateTime> getPlanWeekDates() {
+    final start = _effectiveStartDate;
+    final today = _dateOnly(DateTime.now());
 
-    return List.generate(7, (i) => today.add(Duration(days: i - 3)));
+    final weekIndex = today.difference(start).inDays ~/ 7; // 0-based
+
+    // "Plan week start" (could be Sunday if startDate is Sunday)
+    final rawWeekStart = _addDays(start, weekIndex * 7);
+
+    // ✅ Force calendar to display Mon..Sun
+    final weekStart = _mondayOfWeek(rawWeekStart);
+
+    return List.generate(7, (i) => _addDays(weekStart, i));
   }
 
   List<DayPlan> buildNextWorkoutPlans({
@@ -186,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Divider(thickness: 1, color: Colors.grey.withOpacity(0.25)),
 
                     Calendar(
-                      dates: getOneWeekDates(),
+                      dates: getPlanWeekDates(),
                       completedDates: completedDates,
                       workoutDays: workoutWeekdays,
                     ),

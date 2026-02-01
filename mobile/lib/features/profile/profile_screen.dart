@@ -77,39 +77,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _saveProfile() async {
-    final safe = _draftName.trim().isEmpty ? "User" : _draftName.trim();
+    final safeName = _draftName.trim().isEmpty ? "User" : _draftName.trim();
     final safeEmail = _draftEmail.trim();
 
     setState(() => _saving = true);
 
     final existing = LocalStorageService.getUserProfile();
 
-    if (existing != null) {
-      await LocalStorageService.saveUserProfile(
-        existing.copyWith(email: safeEmail),
-      );
-    } else {
-      await LocalStorageService.saveUserProfile(
-        UserProfile(
-          name: safe,
-          gender: "",
-          age: 0,
-          fitnessGoal: "",
-          fitnessLevel: "",
-          workoutPlan: "",
-          workoutDuration: 0,
-          weightKg: 0.0,
-          workoutDays: const [],
-          email: safeEmail,
-        ),
-      );
-    }
+    final today = DateTime.now();
+    final cleanStartDate = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ); // date-only
+
+    final updated =
+        (existing ??
+                UserProfile(
+                  name: safeName,
+                  email: safeEmail,
+                  startDate: cleanStartDate, // ✅ REQUIRED
+                  // defaults for MVP:
+                  gender: "",
+                  age: 0,
+                  fitnessGoal: "",
+                  fitnessLevel: "",
+                  workoutPlan: "",
+                  workoutDuration: 0,
+                  weightKg: 0.0,
+                  workoutDays: const [],
+                ))
+            .copyWith(
+              name: safeName, // ✅ also save name
+              email: safeEmail, // ✅ save email
+            );
+
+    await LocalStorageService.saveUserProfile(updated);
 
     if (!mounted) return;
 
     setState(() {
-      _savedName = safe;
-      _draftName = safe;
+      _savedName = safeName;
+      _draftName = safeName;
 
       _savedEmail = safeEmail;
       _draftEmail = safeEmail;
@@ -117,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _saving = false;
     });
 
-    widget.userNameVN.value = safe;
+    widget.userNameVN.value = safeName;
     showTopToast(context, "Profile Data Updated");
   }
 

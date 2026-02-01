@@ -33,14 +33,20 @@ class LocalStorageService {
   // Register = save profile + logged in
   static Future<void> register({
     required String email,
-    required String password, // test-only
-
+    required String password,
+    required DateTime startDate, // ✅ add
     List<String> workoutDays = const [],
   }) async {
+    final s = DateTime(
+      startDate.year,
+      startDate.month,
+      startDate.day,
+    ); // date-only
+
     final profile = UserProfile(
       email: email.trim(),
-      password: password, // test-only
-
+      password: password,
+      startDate: s,
       workoutDays: workoutDays,
     );
 

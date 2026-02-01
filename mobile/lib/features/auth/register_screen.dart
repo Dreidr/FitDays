@@ -26,9 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _showToast(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   @override
@@ -140,9 +138,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return;
                     }
 
+                    final now = DateTime.now();
+                    final today = DateTime(now.year, now.month, now.day);
+
                     await LocalStorageService.register(
                       email: email,
                       password: pass,
+                      startDate: today, // ✅ safe default
                     );
 
                     if (!context.mounted) return;
