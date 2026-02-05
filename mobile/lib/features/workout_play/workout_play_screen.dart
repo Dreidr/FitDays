@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mobile/features/workout/models/planned_exercise.dart';
 import 'dart:typed_data';
@@ -11,12 +12,14 @@ class WorkoutPlayScreen extends StatefulWidget {
     required this.title,
     required this.plan,
     required this.exercises,
+    required this.warmupCount, // ✅ add
   });
 
   final String dayLabel;
   final String title;
   final List<PlannedExercise> plan;
   final List<Map<String, dynamic>> exercises;
+  final int warmupCount; // ✅ add
 
   @override
   State<WorkoutPlayScreen> createState() => _WorkoutPlayScreenState();
@@ -29,7 +32,12 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
   bool _isResting = false;
   int _restLeft = 0;
   Timer? _timer;
-  
+
+  int get _warmupCount => widget.warmupCount;
+
+  int get _workoutIndex => _exerciseIndex - _warmupCount;
+
+  int get _workoutTotal => widget.plan.length - _warmupCount;
 
   final Map<String, Future<Uint8List>> _gifFutureCache = {};
 
@@ -305,7 +313,9 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    "Exercise ${_exerciseIndex + 1} / ${widget.plan.length}",
+                                    _exerciseIndex < _warmupCount
+                                        ? "Warm-up ${_exerciseIndex + 1} / $_warmupCount"
+                                        : "Exercise ${_workoutIndex + 1} / $_workoutTotal",
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -391,90 +401,101 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
             ),
 
             // ✅ Rest toast overlay (top)
-            Positioned(
-              left: 18,
-              right: 18,
-              top: 8,
-              child: IgnorePointer(
-                ignoring: !_isResting,
-                child: AnimatedSlide(
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOut,
-                  offset: _isResting ? Offset.zero : const Offset(0, -0.35),
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 220),
-                    opacity: _isResting ? 1 : 0,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 12,
+            // ✅ Big Rest Overlay (blur + modal card)
+            if (_isResting)
+              Positioned.fill(
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 180),
+                  opacity: _isResting ? 1 : 0,
+                  child: Stack(
+                    children: [
+                      // blur background + dim
+                      Positioned.fill(
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                          child: Container(
+                            color: Colors.black.withOpacity(0.15),
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: Colors.black12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.10),
-                              blurRadius: 18,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: Row(
+                      ),
+
+                      // centered card
+                      Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
-                              Icons.timer,
-                              color: Color(0xFF4442D9),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10),
-
-                            Expanded(
-                              child: Text(
-                                "Rest: $_restLeft sec",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.black87,
+                            // title
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                SizedBox(width: 10),
+                                Text(
+                                  "Rest",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black87,
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
 
-                            // ➖
-                            _TinyIconButton(
-                              icon: Icons.remove,
-                              onTap: () => _changeRestBy(-5),
-                            ),
-                            const SizedBox(width: 6),
+                            const SizedBox(height: 14),
 
-                            // ➕
-                            _TinyIconButton(
-                              icon: Icons.add,
-                              onTap: () => _changeRestBy(5),
-                            ),
-                            const SizedBox(width: 8),
+                            // +/- buttons
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _BigRoundButton(
+                                  icon: Icons.remove,
+                                  onTap: () => _changeRestBy(-5),
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 24),
 
+                                // BIG timer
+                                Text(
+                                  "$_restLeft",
+                                  style: const TextStyle(
+                                    fontSize: 64,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.2,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 24),
+
+                                _BigRoundButton(
+                                  icon: Icons.add,
+                                  onTap: () => _changeRestBy(5),
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 30),
+
+                            // Skip
                             TextButton(
                               onPressed: _skipRest,
                               style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                ),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: Size.zero,
+                                foregroundColor: Colors.black87,
                               ),
-                              child: const Text("Skip"),
+                              child: const Text(
+                                "Skip Rest",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -482,11 +503,16 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
   }
 }
 
-class _TinyIconButton extends StatelessWidget {
-  const _TinyIconButton({required this.icon, required this.onTap});
+class _BigRoundButton extends StatelessWidget {
+  const _BigRoundButton({
+    required this.icon,
+    required this.onTap,
+    this.color = Colors.black,
+  });
 
   final IconData icon;
   final VoidCallback onTap;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -494,13 +520,14 @@ class _TinyIconButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
       child: Container(
-        padding: const EdgeInsets.all(6),
+        width: 58,
+        height: 58,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.04),
+          color: Colors.white.withOpacity(0.15),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.black12),
+          border: Border.all(color: Colors.white.withOpacity(0.35)),
         ),
-        child: Icon(icon, size: 18, color: Colors.black87),
+        child: Icon(icon, size: 26, color: color),
       ),
     );
   }

@@ -14,12 +14,14 @@ class WorkoutDetailScreen extends StatefulWidget {
     required this.title,
     required this.totalTimeText,
     required this.plan, // ✅ new
+    required this.warmupCount,
   });
 
   final String dayLabel;
   final String title;
   final String totalTimeText;
   final List<PlannedExercise> plan;
+  final int warmupCount; // ✅
 
   @override
   State<WorkoutDetailScreen> createState() => _WorkoutDetailScreenState();
@@ -37,7 +39,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   List<Map<String, dynamic>> _lastApiItems = [];
 
-  @override
   @override
   void initState() {
     super.initState();
@@ -164,6 +165,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
           title: widget.title,
           plan: _warmupOn ? [..._warmupPlan, ..._userPlan] : _userPlan,
           exercises: exercises,
+          warmupCount: _warmupOn ? _warmupPlan.length : 0,
         ),
       ),
     );

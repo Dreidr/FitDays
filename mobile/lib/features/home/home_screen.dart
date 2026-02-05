@@ -21,12 +21,14 @@ class HomeScreen extends StatefulWidget {
     required this.workoutStreak,
     required this.startDate,
     required this.workoutDays,
+    this.warmupCount = 0, // ✅ optional default
   });
 
   final ValueNotifier<String> userNameVN;
   final int workoutStreak;
   final DateTime startDate;
   final List<String> workoutDays;
+  final int warmupCount;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -248,6 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               title: plan.title,
                               totalTimeText: _totalTimeTextFor(plan, duration),
                               plan: generated,
+                              warmupCount: 0,
                             ),
                           ),
                         );
