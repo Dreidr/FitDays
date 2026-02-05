@@ -5,6 +5,7 @@ import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
 import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 import 'package:mobile/features/workout_play/workout_play_screen.dart';
 import 'package:mobile/app/theme/app_decorations.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
@@ -334,7 +335,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                         name: name.isEmpty ? "Warm-up" : name,
                                         meta: subtitle,
                                         onMore: () {},
-                                        onReorder: () {},
                                         onTap: () {
                                           if (ex == null) return;
                                           Navigator.push(
@@ -357,46 +357,87 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
                         const SizedBox(height: 10),
 
-                        // ✅ API-driven exercise list
-                        ...List.generate(planItems.length, (i) {
-                          final planned = planItems[i];
-                          final ex = apiById[planned.exerciseId];
+                        // ✅ Reorder + swipe-delete main list (user plan only)
+                        ReorderableListView.builder(
+                          shrinkWrap: true,
+                          physics:
+                              const NeverScrollableScrollPhysics(), // because you're inside SingleChildScrollView
+                          buildDefaultDragHandles: false,
+                          itemCount: planItems.length,
+                          onReorder: (oldIndex, newIndex) {
+                            setState(() {
+                              if (newIndex > oldIndex) newIndex -= 1;
+                              final item = _userPlan.removeAt(oldIndex);
+                              _userPlan.insert(newIndex, item);
+                            });
+                            // No need to reload _future because IDs didn't change.
+                          },
+                          itemBuilder: (context, i) {
+                            final planned = planItems[i];
+                            final ex = apiById[planned.exerciseId];
+                            final name = ex == null
+                                ? "Missing exercise"
+                                : _s(ex['name']);
 
-                          final name = ex == null
-                              ? "Missing exercise"
-                              : _s(ex['name']);
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _ExerciseRow(
-                              exerciseId: planned.exerciseId,
-                              name: name.isEmpty ? "Exercise" : name,
-                              meta: planned.metaText(),
-
-                              onMore: () => _editExercise(i),
-                              onReorder: () {},
-                              onTap: () {
-                                if (ex == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        "Exercise not found: ${planned.exerciseId}",
-                                      ),
-                                    ),
-                                  );
-                                  return;
-                                }
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        ExerciseDetailScreen(exercise: ex),
+                            return Slidable(
+                              key: ValueKey(
+                                planned,
+                              ), // IMPORTANT: unique per row (better than index)
+                              endActionPane: ActionPane(
+                                extentRatio:
+                                    0.28, // 👈 smaller = tighter delete button
+                                motion: const DrawerMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (_) {
+                                      setState(() {
+                                        _userPlan.removeAt(i);
+                                        _future =
+                                            _loadExercises(); // reload because IDs changed
+                                      });
+                                    },
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete,
+                                    label: "Delete",
                                   ),
-                                );
-                              },
-                            ),
-                          );
-                        }),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _ExerciseRow(
+                                  exerciseId: planned.exerciseId,
+                                  name: name.isEmpty ? "Exercise" : name,
+                                  meta: planned.metaText(),
+                                  onMore: () => _editExercise(i),
+                                  reorderIndex:
+                                      i, // ✅ new (see _ExerciseRow change below)
+                                  onTap: () {
+                                    if (ex == null) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "Exercise not found: ${planned.exerciseId}",
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            ExerciseDetailScreen(exercise: ex),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
 
                         const SizedBox(height: 6),
 
@@ -547,7 +588,7 @@ class _ExerciseRow extends StatelessWidget {
     required this.name,
     required this.meta,
     required this.onMore,
-    required this.onReorder,
+    this.reorderIndex,
     required this.onTap,
   });
 
@@ -555,7 +596,7 @@ class _ExerciseRow extends StatelessWidget {
   final String name;
   final String meta;
   final VoidCallback onMore;
-  final VoidCallback onReorder;
+  final int? reorderIndex;
   final VoidCallback onTap;
 
   @override
@@ -615,10 +656,14 @@ class _ExerciseRow extends StatelessWidget {
               onPressed: onMore,
               icon: const Icon(Icons.more_horiz, color: Colors.black54),
             ),
-            IconButton(
-              onPressed: onReorder,
-              icon: const Icon(Icons.drag_handle, color: Colors.black54),
-            ),
+            if (reorderIndex != null)
+              ReorderableDragStartListener(
+                index: reorderIndex!,
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.drag_handle, color: Colors.black54),
+                ),
+              ),
           ],
         ),
       ),

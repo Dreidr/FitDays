@@ -26,28 +26,48 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   late final ValueNotifier<String> _userNameVN;
 
+  late DateTime _startDate;
+  late List<String> _workoutDays;
+
   int _currentIndex = 0;
+
+  DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 
   @override
   void initState() {
     super.initState();
 
-    // Prefer storage value if exists, else fall back to the passed-in name
-    final stored = LocalStorageService.getUserProfile()?.name?.trim() ?? "";
-    final initial = stored.isNotEmpty ? stored : widget.userName;
+    final profile = LocalStorageService.getUserProfile();
 
-    _userNameVN = ValueNotifier<String>(initial.isNotEmpty ? initial : "User");
+    // name
+    final storedName = profile?.name?.trim() ?? "";
+    final initialName = storedName.isNotEmpty ? storedName : widget.userName;
+    _userNameVN = ValueNotifier<String>(initialName.isNotEmpty ? initialName : "User");
+
+    // ✅ startDate + workoutDays (prefer storage)
+    final storedStart = profile?.startDate; // <- make sure your UserProfile has this
+    _startDate = _dateOnly(storedStart ?? widget.startDate);
+
+    _workoutDays = (profile?.workoutDays.isNotEmpty == true)
+        ? List<String>.from(profile!.workoutDays)
+        : List<String>.from(widget.workoutDays);
   }
 
-  @override
-  void dispose() {
-    _userNameVN.dispose();
-    super.dispose();
-  }
+  void _refreshFromStorage() {
+    final profile = LocalStorageService.getUserProfile();
 
-  void _refreshNameFromStorage() {
-    final stored = LocalStorageService.getUserProfile()?.name?.trim() ?? "";
-    _userNameVN.value = stored.isNotEmpty ? stored : "User";
+    // refresh name
+    final storedName = profile?.name?.trim() ?? "";
+    _userNameVN.value = storedName.isNotEmpty ? storedName : "User";
+
+    // ✅ refresh plan too
+    final storedStart = profile?.startDate;
+    setState(() {
+      _startDate = _dateOnly(storedStart ?? _startDate);
+      _workoutDays = (profile?.workoutDays.isNotEmpty == true)
+          ? List<String>.from(profile!.workoutDays)
+          : _workoutDays;
+    });
   }
 
   @override
@@ -56,18 +76,15 @@ class _AppShellState extends State<AppShell> {
       HomeScreen(
         userNameVN: _userNameVN,
         workoutStreak: widget.workoutStreak,
-        startDate: widget.startDate,
-        workoutDays: widget.workoutDays,
+        startDate: _startDate,      // ✅ use stored
+        workoutDays: _workoutDays,  // ✅ use stored
       ),
-
-      // If you have a Workout tab root/screen:
       const WorkoutTabRoot(),
-      const Placeholder(), // Play screen (temporary)
-      const Placeholder(), // Stats/Progress (temporary)
-      // Profile screen should be able to edit name and update VN:
+      const Placeholder(),
+      const Placeholder(),
       ProfileTabRoot(
         userNameVN: _userNameVN,
-        onProfileUpdated: _refreshNameFromStorage, // call after saving name
+        onProfileUpdated: _refreshFromStorage, // ✅ refresh everything after edits
       ),
     ];
 
