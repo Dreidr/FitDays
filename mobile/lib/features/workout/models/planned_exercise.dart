@@ -21,6 +21,24 @@ class PlannedExercise {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+    "exerciseId": exerciseId,
+    "sets": sets,
+    "reps": reps,
+    "weightKg": weightKg,
+  };
+
+  // ✅ ADD THIS
+  factory PlannedExercise.fromJson(Map<String, dynamic> json) {
+    final w = json["weightKg"];
+    return PlannedExercise(
+      exerciseId: (json["exerciseId"] ?? "").toString(),
+      sets: (json["sets"] as num).toInt(),
+      reps: (json["reps"] as num).toInt(),
+      weightKg: w == null ? null : (w as num).toDouble(),
+    );
+  }
+
   final String exerciseId; // ExerciseDB id e.g. "0041"
   final int sets;
   final int reps;

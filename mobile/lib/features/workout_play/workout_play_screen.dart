@@ -10,16 +10,14 @@ class WorkoutPlayScreen extends StatefulWidget {
     super.key,
     required this.dayLabel,
     required this.title,
-    required this.plan,
     required this.exercises,
-    required this.warmupCount, // ✅ add
+    required this.warmupCount,
   });
 
   final String dayLabel;
   final String title;
-  final List<PlannedExercise> plan;
-  final List<Map<String, dynamic>> exercises;
-  final int warmupCount; // ✅ add
+  final List<PlannedExercise> exercises;
+  final int warmupCount;
 
   @override
   State<WorkoutPlayScreen> createState() => _WorkoutPlayScreenState();
@@ -37,7 +35,9 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
 
   int get _workoutIndex => _exerciseIndex - _warmupCount;
 
-  int get _workoutTotal => widget.plan.length - _warmupCount;
+  int get _workoutTotal => widget.exercises.length - _warmupCount;
+
+  PlannedExercise get _planned => widget.exercises[_exerciseIndex];
 
   final Map<String, Future<Uint8List>> _gifFutureCache = {};
 
@@ -71,9 +71,6 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
     _timer?.cancel();
     super.dispose();
   }
-
-  Map<String, dynamic> get _ex => widget.exercises[_exerciseIndex];
-  PlannedExercise get _planned => widget.plan[_exerciseIndex];
 
   String _s(dynamic v) => (v ?? '').toString();
 
@@ -111,11 +108,11 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
     }
 
     // ✅ Exercise finished -> go next exercise
-    if (_exerciseIndex < widget.plan.length - 1) {
+    if (_exerciseIndex < widget.exercises.length - 1) {
       setState(() {
         _exerciseIndex++;
         _setIndex = 1;
-        _currentMediaKey = "ex_${widget.plan[_exerciseIndex].exerciseId}";
+        _currentMediaKey = "ex_${widget.exercises[_exerciseIndex].exerciseId}";
       });
       _startRest(20);
       return;
@@ -160,13 +157,13 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
   @override
   void initState() {
     super.initState();
-    _currentMediaKey = "ex_${widget.plan.first.exerciseId}";
+    _currentMediaKey = "ex_${widget.exercises.first.exerciseId}";
   }
 
   @override
   Widget build(BuildContext context) {
-    final name = _s(_ex['name']);
-    final target = _s(_ex['target']);
+    final name = "Exercise ${_planned.exerciseId}";
+    final target = "";
     final weight = _planned.weightKg;
 
     return Scaffold(
@@ -449,7 +446,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                                 _BigRoundButton(
                                   icon: Icons.remove,
                                   onTap: () => _changeRestBy(-5),
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                 ),
                                 const SizedBox(width: 24),
 
@@ -460,7 +457,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                                     fontSize: 64,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1.2,
-                                    color: Colors.white,
+                                    color:  Color(0xFF4442D9),
                                   ),
                                 ),
                                 const SizedBox(width: 24),
@@ -468,7 +465,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                                 _BigRoundButton(
                                   icon: Icons.add,
                                   onTap: () => _changeRestBy(5),
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                 ),
                               ],
                             ),

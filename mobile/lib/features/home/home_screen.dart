@@ -13,6 +13,8 @@ import 'package:mobile/features/onboarding/profile_setup_screen.dart';
 import 'package:mobile/core/widgets/complete_setup_banner.dart';
 import 'package:mobile/core/models/user_profile.dart';
 import 'package:mobile/features/workout/services/workout_generator.dart';
+import 'package:mobile/features/workout/models/saved_workout.dart';
+import 'package:mobile/features/workout/services/play_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -120,39 +122,80 @@ class _HomeScreenState extends State<HomeScreen> {
     return List.generate(7, (i) => _addDays(weekStart, i));
   }
 
-  List<DayPlan> buildNextWorkoutPlans({
-    required Set<int> workoutWeekdays,
+  String _normalizeDay(String s) {
+    final x = s.trim().toLowerCase();
+    if (x.startsWith("mon")) return "Mon";
+    if (x.startsWith("tue")) return "Tue";
+    if (x.startsWith("wed")) return "Wed";
+    if (x.startsWith("thu")) return "Thu";
+    if (x.startsWith("fri")) return "Fri";
+    if (x.startsWith("sat")) return "Sat";
+    if (x.startsWith("sun")) return "Sun";
+    return s.trim();
+  }
+
+  List<DayPlan> buildNext3PlansOptionA({
+    required DateTime startDate,
+    required List<String> workoutDays,
     required int durationMinutes,
     required UserProfile? profile,
-    int count = 3,
   }) {
-    final today = DateTime.now();
-    final start = DateTime(today.year, today.month, today.day);
+    final today = _dateOnly(DateTime.now());
+    final daysSet = workoutDays.map(_normalizeDay).toSet();
 
-    // Simple split for MVP
     const split = ["Upper Body", "Lower Body", "Full Body"];
-    var splitIndex = 0;
 
-    final result = <DayPlan>[];
+    int workoutCountUpTo(DateTime target) {
+      int count = 0;
+      DateTime d = _dateOnly(startDate);
+      while (!d.isAfter(target)) {
+        final label = _normalizeDay(
+          _dayLabel(d) == "Today" || _dayLabel(d) == "Tomorrow"
+              ? _weekdayShort(d)
+              : _weekdayShort(d),
+        );
+        // simpler: just compute weekday short directly
+        if (daysSet.contains(_weekdayShort(d))) count++;
+        d = d.add(const Duration(days: 1));
+      }
+      return count;
+    }
 
-    for (int i = 0; i < 21 && result.length < count; i++) {
-      final date = start.add(Duration(days: i));
-      if (!workoutWeekdays.contains(date.weekday)) continue;
+    DayPlan buildFor(DateTime date) {
+      final d = _dateOnly(date);
+      final weekday = _weekdayShort(d);
+      final isWorkoutDay = daysSet.contains(weekday);
 
-      final title = split[splitIndex % split.length];
-      splitIndex++;
+      if (!isWorkoutDay) {
+        return DayPlan(
+          date: d,
+          isWorkoutDay: false,
+          title: "Rest Day",
+          subtitle: "Recovery • optional walk/stretch",
+        );
+      }
 
-      result.add(
-        DayPlan(
-          date: date,
-          isWorkoutDay: true,
-          title: title,
-          subtitle: "$durationMinutes min • ${_planLabel(profile)}",
-        ),
+      final wc = workoutCountUpTo(d); // >= 1 on workout days
+      final idx = (wc - 1) % split.length;
+
+      return DayPlan(
+        date: d,
+        isWorkoutDay: true,
+        title: split[idx],
+        subtitle: "$durationMinutes min • ${_planLabel(profile)}",
       );
     }
 
-    return result.isEmpty ? [_defaultPlan()] : result;
+    return [
+      buildFor(today),
+      buildFor(today.add(const Duration(days: 1))),
+      buildFor(today.add(const Duration(days: 2))),
+    ];
+  }
+
+  String _weekdayShort(DateTime date) {
+    const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    return labels[date.weekday - 1];
   }
 
   bool get _profileCompleted => LocalStorageService.isProfileComplete;
@@ -188,11 +231,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final workoutWeekdays = _mapToWeekdays(savedDays);
 
     final plans = completed
-        ? buildNextWorkoutPlans(
-            workoutWeekdays: workoutWeekdays,
+        ? buildNext3PlansOptionA(
+            startDate: _effectiveStartDate,
+            workoutDays: savedDays,
             durationMinutes: duration,
             profile: profile,
-            count: 3,
           )
         : [_defaultPlan()];
 
@@ -233,12 +276,45 @@ class _HomeScreenState extends State<HomeScreen> {
                     WorkoutCarousel(
                       plans: plans,
                       onPlanTap: (plan) async {
+                        // Rest day: don’t generate, just inform (or navigate to a RestDay screen later)
+                        if (!plan.isWorkoutDay) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Rest day 😴")),
+                          );
+                          return;
+                        }
+
                         final profile = LocalStorageService.getUserProfile();
-                        final generated =
-                            await WorkoutGenerator.generatePlannedExercises(
-                              profile: profile,
-                              plan: plan,
-                            );
+                        final durationMinutes = profile?.workoutDuration ?? 40;
+
+                        // ✅ deterministic id (same used by Play shortcut)
+                        final id = PlayStateResolver.workoutIdFor(
+                          plan.date,
+                          plan,
+                        );
+
+                        // ✅ only generate if not saved yet
+                        final existing =
+                            LocalStorageService.getSavedWorkoutById(id);
+
+                        if (existing == null) {
+                          final generated =
+                              await WorkoutGenerator.generatePlannedExercises(
+                                profile: profile,
+                                plan: plan,
+                              );
+
+                          final saved = SavedWorkout(
+                            id: id,
+                            createdAt: DateTime.now(),
+                            title: plan.title,
+                            durationMinutes: durationMinutes,
+                            warmupOn: true,
+                            exercises: generated,
+                          );
+
+                          await LocalStorageService.saveGeneratedWorkout(saved);
+                        }
 
                         if (!context.mounted) return;
 
@@ -249,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               dayLabel: _dayLabel(plan.date),
                               title: plan.title,
                               totalTimeText: _totalTimeTextFor(plan, duration),
-                              plan: generated,
+                              workoutId: id, // ✅ changed
                               warmupCount: 0,
                             ),
                           ),

@@ -6,6 +6,8 @@ import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 import 'package:mobile/features/workout_play/workout_play_screen.dart';
 import 'package:mobile/app/theme/app_decorations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:mobile/features/workout/models/saved_workout.dart';
+import 'package:mobile/core/services/local_storage_services.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
@@ -13,14 +15,14 @@ class WorkoutDetailScreen extends StatefulWidget {
     required this.dayLabel,
     required this.title,
     required this.totalTimeText,
-    required this.plan, // ✅ new
+    required this.workoutId, // ✅ new,
     required this.warmupCount,
   });
 
   final String dayLabel;
   final String title;
   final String totalTimeText;
-  final List<PlannedExercise> plan;
+  final String workoutId;
   final int warmupCount; // ✅
 
   @override
@@ -32,6 +34,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   bool _warmupOn = true;
   bool _warmupVisible = false;
+  SavedWorkout? _savedWorkout; // ✅ ADD THIS
 
   List<PlannedExercise> _userPlan = [];
   List<PlannedExercise> _warmupPlan = []; // ✅ warmup LIST (not a method)
@@ -43,7 +46,11 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   void initState() {
     super.initState();
 
-    _userPlan = List.of(widget.plan); // base plan (editable)
+    // ✅ Load saved workout (source of truth)
+    _savedWorkout = LocalStorageService.getSavedWorkoutById(widget.workoutId);
+
+    // If not found, start with empty plan (and show UI message later)
+    _userPlan = List.of(_savedWorkout?.exercises ?? const <PlannedExercise>[]);
 
     () async {
       _allExercises = await LocalExerciseRepo.loadAll();
@@ -153,8 +160,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   }
 
   Future<void> _startWorkout() async {
-    final exercises = await _future; // ✅ already loaded (or will load)
-
+    final playList = _warmupOn ? [..._warmupPlan, ..._userPlan] : _userPlan;
     if (!mounted) return;
 
     Navigator.push(
@@ -163,8 +169,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         builder: (_) => WorkoutPlayScreen(
           dayLabel: widget.dayLabel,
           title: widget.title,
-          plan: _warmupOn ? [..._warmupPlan, ..._userPlan] : _userPlan,
-          exercises: exercises,
+          exercises: playList,
           warmupCount: _warmupOn ? _warmupPlan.length : 0,
         ),
       ),
