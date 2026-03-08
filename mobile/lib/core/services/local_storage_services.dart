@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile/core/models/user_profile.dart';
 import 'package:mobile/features/workout/models/saved_workout.dart';
+import 'package:mobile/features/workout_play/models/active_workout_session.dart';
 
 class LocalStorageService {
   static SharedPreferences? _prefs;
@@ -209,5 +210,41 @@ class LocalStorageService {
 
   static Future<void> clearUserProfile() async {
     await _prefs?.remove(_profileKey);
+  }
+
+  static const String _activeWorkoutSessionKey = 'active_workout_session';
+
+  static Future<void> saveActiveWorkoutSession(
+    ActiveWorkoutSession session,
+  ) async {
+    final prefs = _prefs;
+    if (prefs == null) return;
+
+    await prefs.setString(
+      _activeWorkoutSessionKey,
+      jsonEncode(session.toJson()),
+    );
+  }
+
+  static ActiveWorkoutSession? getActiveWorkoutSession() {
+    final prefs = _prefs;
+    if (prefs == null) return null;
+
+    final raw = prefs.getString(_activeWorkoutSessionKey);
+    if (raw == null || raw.isEmpty) return null;
+
+    try {
+      final map = jsonDecode(raw) as Map<String, dynamic>;
+      return ActiveWorkoutSession.fromJson(map);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> clearActiveWorkoutSession() async {
+    final prefs = _prefs;
+    if (prefs == null) return;
+
+    await prefs.remove(_activeWorkoutSessionKey);
   }
 }

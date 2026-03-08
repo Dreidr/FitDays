@@ -15,6 +15,8 @@ class Calendar extends StatelessWidget {
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
+  DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
+
   @override
   Widget build(BuildContext context) {
     final week1 = dates.take(7).toList();
@@ -24,16 +26,15 @@ class Calendar extends StatelessWidget {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: week1.map((date) => _DayCell(date)).toList(),
+          children: week1.map((date) => _dayCell(date)).toList(),
         ),
         const SizedBox(height: 8),
-
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(7, (i) {
-            final label = weekdayLabels[i]; // ["Mon"...]
+            final label = weekdayLabels[i];
             return SizedBox(
-              width: 32, // match your day cell width
+              width: 40,
               child: Text(
                 label,
                 textAlign: TextAlign.center,
@@ -50,76 +51,86 @@ class Calendar extends StatelessWidget {
     );
   }
 
-  Widget _DayCell(DateTime date) {
-    final today = DateTime.now();
-    final isToday = _isSameDay(date, today);
-    final isCompleted = completedDates.any((d) => _isSameDay(d, date));
-    final isWorkoutDay = workoutDays.contains(date.weekday);
+  Widget _dayCell(DateTime date) {
+    final today = _dateOnly(DateTime.now());
+    final day = _dateOnly(date);
 
-    Color bg;
-    Color text;
+    final isToday = _isSameDay(day, today);
+    final isCompleted = completedDates.any(
+      (d) => _isSameDay(_dateOnly(d), day),
+    );
+    final isWorkoutDay = workoutDays.contains(day.weekday);
+    final isPast = day.isBefore(today);
+    final isMissed = isWorkoutDay && isPast && !isCompleted;
+    final isPlanned = isWorkoutDay && !isCompleted && !isMissed;
+
+    Color fillColor = Colors.transparent;
+    Color borderColor = Colors.transparent;
+    Color textColor = Colors.black54;
 
     if (isCompleted) {
-      bg = const Color(0xFF4442D9);
-      text = Colors.white;
-    } else if (isToday && isWorkoutDay) {
-      bg = const Color(0xFF4442D9).withOpacity(0.15);
-      text = const Color(0xFF4442D9);
-    } else {
-      bg = Colors.transparent;
-      text = Colors.black54;
+      fillColor = Colors.white;
+      borderColor = Colors.white;
+      textColor = const Color(0xFF2ECC71);
+    } else if (isMissed) {
+      fillColor = const Color(0xFFF7F4F4);
+      borderColor = const Color(0xFFE0CFCF);
+      textColor = Colors.black45;
+    } else if (isPlanned) {
+      fillColor = Colors.transparent;
+      borderColor = const Color(0xFF4442D9);
+      textColor = const Color(0xFF4442D9);
     }
 
-    return Column(
-      children: [
-        const SizedBox(height: 6),
+    return SizedBox(
+      width: 40,
+      child: Column(
+        children: [
+          const SizedBox(height: 6),
 
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: bg,
-                borderRadius: BorderRadius.circular(10),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: fillColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: borderColor,
+                    width: (isCompleted || isMissed || isPlanned) ? 1.6 : 0,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: isCompleted
+                    ? const Icon(Icons.check, size: 18, color: Color(0xFF2ECC71))
+                    : Text(
+                        date.day.toString(),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: textColor,
+                        ),
+                      ),
               ),
-              alignment: Alignment.center,
-              child: isWorkoutDay
-                  ? Transform.rotate(
-                      angle: 134 * 3.1415926535 / 180,
-                      child: Icon(
-                        Icons.fitness_center_sharp,
-                        size: 18,
-                        color: isCompleted
-                            ? Colors.white
-                            : const Color(0xFF4442D9),
-                      ),
-                    )
-                  : Text(
-                      date.day.toString(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: text,
-                      ),
-                    ),
-            ),
-          ],
-        ),
-
-        // 👇 TODAY DOT
-        if (isToday) ...[
-          const SizedBox(height: 4),
-          Container(
-            width: 4,
-            height: 4,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFF4442D9),
-            ),
+            ],
           ),
+
+          if (isToday) ...[
+            const SizedBox(height: 4),
+            Container(
+              width: 4,
+              height: 4,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFF4442D9),
+              ),
+            ),
+          ] else
+            const SizedBox(height: 8),
         ],
-      ],
+      ),
     );
   }
 }

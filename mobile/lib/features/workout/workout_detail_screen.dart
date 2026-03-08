@@ -161,12 +161,12 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   Future<void> _startWorkout() async {
     final playList = _warmupOn ? [..._warmupPlan, ..._userPlan] : _userPlan;
-    if (!mounted) return;
 
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => WorkoutPlayScreen(
+          workoutId: widget.workoutId,
           dayLabel: widget.dayLabel,
           title: widget.title,
           exercises: playList,
@@ -174,12 +174,33 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         ),
       ),
     );
+
+    if (!mounted) return;
+
+    setState(() {}); // ✅ forces rebuild
   }
 
   String _s(dynamic v) => (v ?? '').toString();
 
   @override
   Widget build(BuildContext context) {
+    final active = LocalStorageService.getActiveWorkoutSession();
+    final hasActiveSession = active?.workoutId == widget.workoutId;
+    final isCompletedToday = LocalStorageService.isWorkoutCompletedOnDay(
+      DateTime.now(),
+    );
+    final buttonText = hasActiveSession
+        ? "Resume Workout"
+        : isCompletedToday
+        ? "Train Again"
+        : "Start Workout";
+
+    final buttonColor = hasActiveSession
+        ? const Color(0xFF4442D9)
+        : isCompletedToday
+        ? const Color(0xFF2ECC71)
+        : const Color(0xFF4442D9);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -218,7 +239,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                   };
 
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(18, 14, 18, 140),
+                    padding: const EdgeInsets.fromLTRB(18, 14, 18, 24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -460,26 +481,33 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(18, 10, 18, 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 54,
-                  child: ElevatedButton(
-                    onPressed: _startWorkout,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4442D9),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ✅ button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton(
+                        onPressed: _startWorkout,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: buttonColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Text(
+                          buttonText,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      "Start workout",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
               ),
             ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
-  const ProfileHeaderCard({
+  const ProfileHeaderCard({super.key, 
     required this.userName,
     required this.streak,
     required this.workoutMinutes,

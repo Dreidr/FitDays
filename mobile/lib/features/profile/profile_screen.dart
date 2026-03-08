@@ -46,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final profile = LocalStorageService.getUserProfile();
     final stored = profile?.name?.trim() ?? "";
-    final storedEmail = profile?.email?.trim() ?? "";
+    final storedEmail = profile?.email.trim() ?? "";
 
     _savedName = stored.isNotEmpty ? stored : widget.userNameVN.value;
     _draftName = _savedName;

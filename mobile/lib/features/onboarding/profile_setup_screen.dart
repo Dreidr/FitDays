@@ -99,72 +99,68 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           "Plan Setup",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
         ),
-        actions: [if (!widget.returnResultOnly)
-          TextButton(
-            onPressed: _canSave
-                ? () async {
-                    final existing = LocalStorageService.getUserProfile();
-                    if (existing == null) return;
+        actions: [
+          if (!widget.returnResultOnly)
+            TextButton(
+              onPressed: _canSave
+                  ? () async {
+                      final existing = LocalStorageService.getUserProfile();
+                      if (existing == null) return;
 
-                    final trimmedName = name?.trim();
+                      final trimmedName = name?.trim();
 
-                    final updated = existing.copyWith(
-                      name: (trimmedName == null || trimmedName.isEmpty)
-                          ? null
-                          : trimmedName,
-                      gender: gender,
-                      age: age,
-                      fitnessGoal: fitnessGoal,
-                      fitnessLevel: fitnessLevel,
-                      workoutPlan: workoutPlan,
-                      workoutDuration: workoutDuration,
-                      weightKg: weightKg,
-                      workoutDays: workoutDays,
-                    );
+                      final updated = existing.copyWith(
+                        name: (trimmedName == null || trimmedName.isEmpty)
+                            ? null
+                            : trimmedName,
+                        gender: gender,
+                        age: age,
+                        fitnessGoal: fitnessGoal,
+                        fitnessLevel: fitnessLevel,
+                        workoutPlan: workoutPlan,
+                        workoutDuration: workoutDuration,
+                        weightKg: weightKg,
+                        workoutDays: workoutDays,
+                      );
 
-                    // ✅ save first
-                    await LocalStorageService.saveUserProfile(updated);
+                      await LocalStorageService.saveUserProfile(updated);
+                      await LocalStorageService.setOnboardingSkipped(false);
+                      await LocalStorageService.setProfileComplete(true);
 
-                    // ✅ EDIT MODE: return to PlanDetails with updated profile
-                    if (widget.returnResultOnly) {
                       if (!context.mounted) return;
-                      Navigator.pop(context, updated);
-                      return;
-                    }
 
-                    // ✅ ONBOARDING MODE: set flags and enter app
-                    await LocalStorageService.setOnboardingSkipped(false);
-                    await LocalStorageService.setProfileComplete(true);
+                      if (widget.returnResultOnly) {
+                        Navigator.pop(context, updated);
+                        return;
+                      }
 
-                    if (!context.mounted) return;
-
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => AppShell(
-                          userName: updated.name?.trim().isNotEmpty == true
-                              ? updated.name!.trim()
-                              : "User",
-                          workoutStreak: 0,
-                          startDate: DateTime.now(),
-                          workoutDays: updated.workoutDays,
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AppShell(
+                            userName: updated.name?.trim().isNotEmpty == true
+                                ? updated.name!.trim()
+                                : "User",
+                            workoutStreak: 0,
+                            startDate: DateTime.now(),
+                            workoutDays: updated.workoutDays,
+                          ),
                         ),
-                      ),
-                      (_) => false,
-                    );
-                  }
-                : () {
-                    showTopToast(context, _firstErrorMessage());
-                  },
+                        (_) => false,
+                      );
+                    }
+                  : () {
+                      showTopToast(context, _firstErrorMessage());
+                    },
 
-            child: const Text(
-              "Skip",
-              style: TextStyle(
-                color: Colors.black54,
-                fontWeight: FontWeight.w600,
+              child: const Text(
+                "Skip",
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
         ],
       ),
 
@@ -197,18 +193,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         workoutDays: workoutDays,
                       );
 
-                      Navigator.pop(context, updated);
-
                       await LocalStorageService.saveUserProfile(updated);
-
-                      await LocalStorageService.setOnboardingSkipped(
-                        false,
-                      ); // ✅ important to unstick
-                      await LocalStorageService.setProfileComplete(
-                        true,
-                      ); // ✅ key flag
+                      await LocalStorageService.setOnboardingSkipped(false);
+                      await LocalStorageService.setProfileComplete(true);
 
                       if (!context.mounted) return;
+
+                      Navigator.pop(context, updated);
 
                       Navigator.pushAndRemoveUntil(
                         context,

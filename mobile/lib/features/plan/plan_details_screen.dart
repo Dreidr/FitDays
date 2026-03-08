@@ -31,14 +31,16 @@ class _PlanDetailsScreenState extends State<PlanDetailsScreen> {
   }
 
   Future<void> _openEditPlan() async {
-    final updated = await Navigator.push<UserProfile>(
+    final updated = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => const ProfileSetupScreen(returnResultOnly: true),
       ),
     );
 
-    if (updated == null) return;
+    if (updated != null && mounted) {
+      setState(() {});
+    }
 
     setState(() {
       _profile = updated;
@@ -160,7 +162,7 @@ class _PlanDetailsScreenState extends State<PlanDetailsScreen> {
               const SizedBox(height: 14),
 
               // Weeks
-              ...widget.progress.map((w) => _WeekCard(week: w)).toList(),
+              ...widget.progress.map((w) => _WeekCard(week: w)),
             ],
           ),
         ),
