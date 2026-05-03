@@ -176,6 +176,15 @@ class LocalStorageService {
     await _prefs?.setBool(_onboardingKey, value);
   }
 
+  static const _notificationsEnabledKey = "notifications_enabled";
+
+  static bool get notificationsEnabled =>
+      _prefs?.getBool(_notificationsEnabledKey) ?? false;
+
+  static Future<void> setNotificationsEnabled(bool value) async {
+    await _prefs?.setBool(_notificationsEnabledKey, value);
+  }
+
   static const _skippedKey = "onboarding_skipped";
 
   // ✅ Profile completion (separate from onboarding_skipped)
