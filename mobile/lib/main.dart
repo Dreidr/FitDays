@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:mobile/app/app_shell.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
+import 'package:mobile/core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorageService.init();
+  await NotificationService.init();
   runApp(const MyApp());
 }
 

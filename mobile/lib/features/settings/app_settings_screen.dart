@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
+import 'package:mobile/core/services/notification_service.dart';
 import 'package:mobile/features/auth/login_screen.dart';
 
-class AppSettingsScreen extends StatelessWidget {
+class AppSettingsScreen extends StatefulWidget {
   const AppSettingsScreen({super.key});
+
+  @override
+  State<AppSettingsScreen> createState() => _AppSettingsScreenState();
+}
+
+class _AppSettingsScreenState extends State<AppSettingsScreen> {
+  bool _notificationsEnabled = LocalStorageService.notificationsEnabled;
 
   Future<void> _signOut(BuildContext context) async {
     await LocalStorageService.logout();
@@ -19,16 +27,16 @@ class AppSettingsScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Sign out?"),
-        content: const Text("You’ll need to log in again to continue."),
+        title: const Text('Sign out?'),
+        content: const Text('You’ll need to log in again to continue.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Sign out"),
+            child: const Text('Sign out'),
           ),
         ],
       ),
@@ -36,6 +44,25 @@ class AppSettingsScreen extends StatelessWidget {
 
     if (ok == true) {
       await _signOut(context);
+    }
+  }
+
+  Future<void> _toggleNotifications(bool value) async {
+    try {
+      if (value) {
+        final granted = await NotificationService.requestPermissions();
+        if (!granted) return;
+
+        await NotificationService.scheduleDailyWorkoutReminder();
+      } else {
+        await NotificationService.cancelDailyWorkoutReminder();
+      }
+
+      if (!mounted) return;
+      setState(() => _notificationsEnabled = value);
+      NotificationService.showSavedToast(value);
+    } catch (error) {
+      NotificationService.logError(error);
     }
   }
 
@@ -49,7 +76,6 @@ class AppSettingsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top row (matches your profile vibe)
               Row(
                 children: [
                   InkWell(
@@ -66,53 +92,29 @@ class AppSettingsScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    "Settings",
+                    'Settings',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                 ],
               ),
-
               const SizedBox(height: 18),
-
-            
-
-              const SizedBox(height: 18),
-
-              const _SectionTitle("App"),
+              const _SectionTitle('App'),
               _SettingsCard(
                 children: [
                   _SettingsRow(
                     icon: Icons.notifications_none,
-                    title: "Notifications",
-                    subtitle: "Workout reminders",
-                    onTap: () {
-                      // TODO later
-                    },
-                  ),
-                  const Divider(height: 1),
-                  _SettingsRow(
-                    icon: Icons.privacy_tip_outlined,
-                    title: "Privacy",
-                    subtitle: "Permissions & data",
-                    onTap: () {
-                      // TODO later
-                    },
-                  ),
-                  const Divider(height: 1),
-                  _SettingsRow(
-                    icon: Icons.info_outline,
-                    title: "About FitDays",
-                    subtitle: "Version & info",
-                    onTap: () {
-                      // TODO later
-                    },
+                    title: 'Notifications',
+                    subtitle: 'Workout reminders',
+                    trailing: Switch.adaptive(
+                      value: _notificationsEnabled,
+                      onChanged: _toggleNotifications,
+                    ),
+                    onTap: () => _toggleNotifications(!_notificationsEnabled),
                   ),
                 ],
               ),
-
               const SizedBox(height: 18),
-
-              const _SectionTitle("Danger zone"),
+              const _SectionTitle('Danger zone'),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
@@ -126,7 +128,7 @@ class AppSettingsScreen extends StatelessWidget {
                   ),
                   onPressed: () => _confirmSignOut(context),
                   child: const Text(
-                    "Sign out",
+                    'Sign out',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -180,14 +182,14 @@ class _SettingsRow extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.trailingText,
     required this.onTap,
+    this.trailing,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
-  final String? trailingText;
+  final Widget? trailing;
   final VoidCallback onTap;
 
   @override
@@ -233,21 +235,7 @@ class _SettingsRow extends StatelessWidget {
                 ],
               ),
             ),
-            if (trailingText != null)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE9E9E9),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Text(
-                  trailingText!,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-              )
-            else
-              const Icon(Icons.chevron_right),
+            trailing ?? const Icon(Icons.chevron_right),
           ],
         ),
       ),
