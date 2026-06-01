@@ -36,28 +36,35 @@ class NotificationService {
   }
 
   static Future<void> scheduleDailyWorkoutReminder() async {
-    const details = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'daily_workout_reminders',
-        'Daily Workout Reminders',
-        channelDescription: 'Daily reminders to complete your workout.',
-        importance: Importance.high,
-        priority: Priority.high,
-      ),
-      iOS: DarwinNotificationDetails(),
-    );
+  const details = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'daily_workout_reminders',
+      'Daily Workout Reminders',
+      channelDescription: 'Daily reminders to complete your workout.',
+      importance: Importance.high,
+      priority: Priority.high,
+    ),
+    iOS: DarwinNotificationDetails(),
+  );
 
-    await _plugin.periodicallyShow(
-      _dailyReminderId,
-      'FitDays reminder',
-      'Time for your workout. Let\'s keep your streak alive 💪',
-      RepeatInterval.daily,
-      details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    );
+  await _plugin.periodicallyShow(
+    _dailyReminderId,
+    'FitDays reminder',
+    'Time for your workout. Let\'s keep your streak alive 💪',
+    RepeatInterval.daily,
+    details,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  );
 
-    await LocalStorageService.setNotificationsEnabled(true);
+  // ✅ DEBUG HERE
+  final pending = await _plugin.pendingNotificationRequests();
+  debugPrint("📦 Pending notifications: ${pending.length}");
+  for (var n in pending) {
+    debugPrint("➡️ ID: ${n.id}, Title: ${n.title}");
   }
+
+  await LocalStorageService.setNotificationsEnabled(true);
+}
 
   static Future<void> cancelDailyWorkoutReminder() async {
     await _plugin.cancel(_dailyReminderId);

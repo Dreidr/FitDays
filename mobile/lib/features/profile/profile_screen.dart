@@ -7,6 +7,7 @@ import 'package:mobile/features/profile/widgets/profile_header_card.dart';
 import 'package:mobile/features/plan/models/plan_settings.dart';
 import 'package:mobile/features/plan/plan_details_screen.dart';
 import 'package:mobile/features/plan/models/session_progress.dart';
+import 'package:mobile/core/services/workout_history_service.dart';
 
 const double _rowLeftInset = 8;
 
@@ -26,6 +27,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   // What the header shows (only changes AFTER Save)
+  int _completedWorkouts = 0;
+  int _workoutMinutes = 0;
   String _savedName = "User";
 
   // What user is typing (can change freely)
@@ -43,6 +46,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+
+    _loadStats();
 
     final profile = LocalStorageService.getUserProfile();
     final stored = profile?.name?.trim() ?? "";
@@ -74,6 +79,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nameController.dispose();
     _emailController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadStats() async {
+    final history = await WorkoutHistoryService.getWorkoutHistory();
+
+    setState(() {
+      _completedWorkouts = history.length;
+
+      _workoutMinutes = history.fold(
+        0,
+        (sum, workout) => sum + workout.durationMinutes,
+      );
+    });
   }
 
   Future<void> _saveProfile() async {
@@ -146,8 +164,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ProfileHeaderCard(
                 userName: _savedName,
                 streak: 2,
-                workoutMinutes: 200,
-                completedWorkouts: 14,
+                workoutMinutes: _workoutMinutes,
+                completedWorkouts: _completedWorkouts,
                 onSettingsTap: () {
                   Navigator.push(
                     context,
