@@ -3,6 +3,8 @@ import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/register_screen.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/app/app_shell.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile/features/auth/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -109,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         height: 52,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             final email = emailController.text.trim();
                             final pass = passwordController.text;
 
@@ -118,31 +120,39 @@ class _LoginScreenState extends State<LoginScreen> {
                               return;
                             }
 
-                            final ok = LocalStorageService.login(
-                              email: email,
-                              password: pass,
-                            );
+                            try {
+                              await AuthService().signIn(
+                                email: email,
+                                password: pass,
+                              );
 
-                            if (!ok) {
-                              _showToast("Wrong email or password");
-                              return;
-                            }
+                              final profile =
+                                  LocalStorageService.getUserProfile();
 
-                            final profile = LocalStorageService.getUserProfile();
+                              if (!mounted) return;
 
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AppShell(
-                                  userName: profile?.name?.trim().isNotEmpty == true
-                                      ? profile!.name!.trim()
-                                      : "User",
-                                  workoutStreak: 0,
-                                  startDate: DateTime.now(),
-                                  workoutDays: profile?.workoutDays ?? const [],
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => AppShell(
+                                    userName:
+                                        profile?.name?.trim().isNotEmpty == true
+                                        ? profile!.name!.trim()
+                                        : "User",
+                                    workoutStreak: 0,
+                                    startDate: DateTime.now(),
+                                    workoutDays:
+                                        profile?.workoutDays ?? const [],
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            } on FirebaseAuthException catch (e) {
+                              _showToast(
+                                e.message ?? "Wrong email or password",
+                              );
+                            } catch (e) {
+                              _showToast("Login failed");
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF4442D9),

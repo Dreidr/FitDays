@@ -3,6 +3,8 @@ import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/login_screen.dart';
 import 'package:mobile/features/onboarding/profile_setup_screen.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile/features/auth/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -138,24 +140,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return;
                     }
 
-                    final now = DateTime.now();
-                    final today = DateTime(now.year, now.month, now.day);
+                    try {
+                      await AuthService().signUp(email: email, password: pass);
 
-                    await LocalStorageService.register(
-                      email: email,
-                      password: pass,
-                      startDate: today, // ✅ safe default
-                    );
+                      if (!context.mounted) return;
 
-                    if (!context.mounted) return;
-
-                    // ✅ go to profile setup next (recommended)
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProfileSetupScreen(),
-                      ),
-                    );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfileSetupScreen(),
+                        ),
+                      );
+                    } on FirebaseAuthException catch (e) {
+                      _showToast(e.message ?? "Registration failed");
+                    } catch (e) {
+                      _showToast("Registration failed");
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4442D9),
