@@ -1,365 +1,212 @@
-  import 'package:flutter/material.dart';
-  import 'package:mobile/features/home/widgets/top_row.dart';
-  import 'package:mobile/features/home/widgets/greeting.dart';
-  import 'package:mobile/features/home/widgets/calendar.dart';
-  import 'package:mobile/features/home/widgets/workout_carousel.dart';
-  import 'package:mobile/features/home/widgets/quick_actions.dart';
-  import 'package:mobile/features/home/widgets/insights.dart';
-  import 'package:mobile/app/theme/app_decorations.dart';
-  import 'package:mobile/features/workout/models/day_plan.dart';
-  import 'package:mobile/features/workout/workout_detail_screen.dart';
-  import 'package:mobile/core/services/local_storage_services.dart';
-  import 'package:mobile/features/onboarding/profile_setup_screen.dart';
-  import 'package:mobile/core/widgets/complete_setup_banner.dart';
-  import 'package:mobile/core/models/user_profile.dart';
-  import 'package:mobile/features/workout/services/workout_generator.dart';
-  import 'package:mobile/features/workout/models/saved_workout.dart';
-  import 'package:mobile/features/workout/services/play_state.dart';
+import 'package:flutter/material.dart';
+import 'package:mobile/features/home/widgets/top_row.dart';
+import 'package:mobile/features/home/widgets/greeting.dart';
+import 'package:mobile/features/home/widgets/calendar.dart';
+import 'package:mobile/features/home/widgets/workout_carousel.dart';
+import 'package:mobile/features/home/widgets/quick_actions.dart';
+import 'package:mobile/features/home/widgets/insights.dart';
+import 'package:mobile/app/theme/app_decorations.dart';
+import 'package:mobile/features/workout/models/day_plan.dart';
+import 'package:mobile/features/workout/workout_detail_screen.dart';
+import 'package:mobile/core/services/local_storage_services.dart';
+import 'package:mobile/features/onboarding/profile_setup_screen.dart';
+import 'package:mobile/core/widgets/complete_setup_banner.dart';
+import 'package:mobile/features/workout/services/workout_generator.dart';
+import 'package:mobile/features/workout/models/saved_workout.dart';
+import 'package:mobile/features/workout/services/play_state.dart';
+import 'package:mobile/features/workout/services/plan_calendar_service.dart';
+import 'package:mobile/features/workout/services/workout_completion_service.dart';
+import 'package:mobile/features/workout/services/day_plan_builder.dart';
 
-  class HomeScreen extends StatefulWidget {
-    const HomeScreen({
-      super.key,
-      required this.userNameVN,
-      required this.workoutStreak,
-      required this.startDate,
-      required this.workoutDays,
-      this.warmupCount = 0, // ✅ optional default
-    });
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({
+    super.key,
+    required this.userNameVN,
+    required this.workoutStreak,
+    required this.startDate,
+    required this.workoutDays,
+    this.warmupCount = 0, // ✅ optional default
+  });
 
-    final ValueNotifier<String> userNameVN;
-    final int workoutStreak;
-    final DateTime startDate;
-    final List<String> workoutDays;
-    final int warmupCount;
+  final ValueNotifier<String> userNameVN;
+  final int workoutStreak;
+  final DateTime startDate;
+  final List<String> workoutDays;
+  final int warmupCount;
 
-    @override
-    State<HomeScreen> createState() => _HomeScreenState();
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _totalTimeTextFor(DayPlan plan, int durationMinutes) {
+    return plan.isWorkoutDay ? "$durationMinutes mins" : "Rest day";
   }
 
-  class _HomeScreenState extends State<HomeScreen> {
-    String _dayLabel(DateTime date) {
-      final today = DateUtils.dateOnly(DateTime.now());
-      final d = DateUtils.dateOnly(date);
+  bool get _profileCompleted => LocalStorageService.isProfileComplete;
 
-      if (d == today) return "Today";
-      if (d == today.add(const Duration(days: 1))) return "Tomorrow";
+  Future<void> _goToSetup() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ProfileSetupScreen()),
+    );
+    if (!mounted) return;
+    setState(() {}); // ✅ refresh carousel after completing setup
+  }
 
-      const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-      return labels[d.weekday - 1];
-    }
+  DayPlan _defaultPlan() {
+    final today = DateTime.now();
+    final start = DateTime(today.year, today.month, today.day);
 
-    DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
+    return DayPlan(
+      date: start,
+      isWorkoutDay: true,
+      title: "Full Body Starter",
+      subtitle: "30–40 min • Beginner friendly",
+    );
+  }
 
-    DateTime _addDays(DateTime d, int days) =>
-        DateTime(d.year, d.month, d.day + days);
+  @override
+  Widget build(BuildContext context) {
+    final profile = LocalStorageService.getUserProfile();
+    final completed = _profileCompleted;
 
-    DateTime _mondayOfWeek(DateTime d) {
-      final x = _dateOnly(d);
-      return _addDays(x, -(x.weekday - DateTime.monday));
-    }
+    final duration = profile?.workoutDuration ?? 40;
+    final savedDays = profile?.workoutDays ?? widget.workoutDays;
+    final workoutWeekdays = PlanCalendarService.mapToWeekdays(savedDays);
 
-    DateTime get _effectiveStartDate {
-      final p = LocalStorageService.getUserProfile();
-      final s = p?.startDate ?? widget.startDate;
-      return _dateOnly(s);
-    }
+    final plans = completed
+        ? DayPlanBuilder.buildNext3Plans(
+            startDate: profile?.startDate ?? widget.startDate,
+            workoutDays: savedDays,
+            durationMinutes: duration,
+            profile: profile,
+          )
+        : [_defaultPlan()];
 
-    String _totalTimeTextFor(DayPlan plan, int durationMinutes) {
-      return plan.isWorkoutDay ? "$durationMinutes mins" : "Rest day";
-    }
-
-   final completedDates = LocalStorageService.getCompletedDays()
-    .map((d) => DateTime(d.year, d.month, d.day))
-    .toSet();
-
-    void markCompleted(DateTime date) {
-      completedDates.add(DateUtils.dateOnly(date));
-    }
-
-    bool isCompleted(DateTime date) {
-      return completedDates.contains(DateUtils.dateOnly(date));
-    }
-
-    int getWeekNumber() {
-      final today = _dateOnly(DateTime.now());
-      final startMonday = _mondayOfWeek(_effectiveStartDate);
-
-      final days = today.difference(startMonday).inDays;
-      final safeDays = days < 0 ? 0 : days;
-
-      return (safeDays ~/ 7) + 1;
-    }
-
-    Set<int> _mapToWeekdays(List<String> days) {
-      const map = {
-        "Mon": DateTime.monday,
-        "Tue": DateTime.tuesday,
-        "Wed": DateTime.wednesday,
-        "Thu": DateTime.thursday,
-        "Fri": DateTime.friday,
-        "Sat": DateTime.saturday,
-        "Sun": DateTime.sunday,
-      };
-
-      return days.map((d) => map[d]).whereType<int>().toSet();
-    }
-
-    String _planLabel(UserProfile? profile) {
-      final p = profile?.workoutPlan?.trim();
-      return (p != null && p.isNotEmpty) ? p : "Workout";
-    }
-
-    List<DateTime> getPlanWeekDates() {
-      final start = _effectiveStartDate;
-      final today = _dateOnly(DateTime.now());
-
-      final weekIndex = today.difference(start).inDays ~/ 7; // 0-based
-
-      // "Plan week start" (could be Sunday if startDate is Sunday)
-      final rawWeekStart = _addDays(start, weekIndex * 7);
-
-      // ✅ Force calendar to display Mon..Sun
-      final weekStart = _mondayOfWeek(rawWeekStart);
-
-      return List.generate(7, (i) => _addDays(weekStart, i));
-    }
-
-    String _normalizeDay(String s) {
-      final x = s.trim().toLowerCase();
-      if (x.startsWith("mon")) return "Mon";
-      if (x.startsWith("tue")) return "Tue";
-      if (x.startsWith("wed")) return "Wed";
-      if (x.startsWith("thu")) return "Thu";
-      if (x.startsWith("fri")) return "Fri";
-      if (x.startsWith("sat")) return "Sat";
-      if (x.startsWith("sun")) return "Sun";
-      return s.trim();
-    }
-
-    List<DayPlan> buildNext3PlansOptionA({
-      required DateTime startDate,
-      required List<String> workoutDays,
-      required int durationMinutes,
-      required UserProfile? profile,
-    }) {
-      final today = _dateOnly(DateTime.now());
-      final daysSet = workoutDays.map(_normalizeDay).toSet();
-
-      const split = ["Upper Body", "Lower Body", "Full Body"];
-
-      int workoutCountUpTo(DateTime target) {
-        int count = 0;
-        DateTime d = _dateOnly(startDate);
-        while (!d.isAfter(target)) {
-          final label = _normalizeDay(
-            _dayLabel(d) == "Today" || _dayLabel(d) == "Tomorrow"
-                ? _weekdayShort(d)
-                : _weekdayShort(d),
-          );
-          // simpler: just compute weekday short directly
-          if (daysSet.contains(_weekdayShort(d))) count++;
-          d = d.add(const Duration(days: 1));
-        }
-        return count;
-      }
-
-      DayPlan buildFor(DateTime date) {
-        final d = _dateOnly(date);
-        final weekday = _weekdayShort(d);
-        final isWorkoutDay = daysSet.contains(weekday);
-
-        if (!isWorkoutDay) {
-          return DayPlan(
-            date: d,
-            isWorkoutDay: false,
-            title: "Rest Day",
-            subtitle: "Recovery • optional walk/stretch",
-          );
-        }
-
-        final wc = workoutCountUpTo(d); // >= 1 on workout days
-        final idx = (wc - 1) % split.length;
-
-        return DayPlan(
-          date: d,
-          isWorkoutDay: true,
-          title: split[idx],
-          subtitle: "$durationMinutes min • ${_planLabel(profile)}",
-        );
-      }
-
-      return [
-        buildFor(today),
-        buildFor(today.add(const Duration(days: 1))),
-        buildFor(today.add(const Duration(days: 2))),
-      ];
-    }
-
-    String _weekdayShort(DateTime date) {
-      const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-      return labels[date.weekday - 1];
-    }
-
-    bool get _profileCompleted => LocalStorageService.isProfileComplete;
-
-    Future<void> _goToSetup() async {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const ProfileSetupScreen()),
-      );
-      if (!mounted) return;
-      setState(() {}); // ✅ refresh carousel after completing setup
-    }
-
-    DayPlan _defaultPlan() {
-      final today = DateTime.now();
-      final start = DateTime(today.year, today.month, today.day);
-
-      return DayPlan(
-        date: start,
-        isWorkoutDay: true,
-        title: "Full Body Starter",
-        subtitle: "30–40 min • Beginner friendly",
-      );
-    }
-
-    @override
-    Widget build(BuildContext context) {
-      final profile = LocalStorageService.getUserProfile();
-      final completed = _profileCompleted;
-
-      final duration = profile?.workoutDuration ?? 40;
-      final savedDays = profile?.workoutDays ?? widget.workoutDays;
-      final workoutWeekdays = _mapToWeekdays(savedDays);
-      
-
-      final plans = completed
-          ? buildNext3PlansOptionA(
-              startDate: _effectiveStartDate,
-              workoutDays: savedDays,
-              durationMinutes: duration,
-              profile: profile,
-            )
-          : [_defaultPlan()];
-
-      return Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                HomeTopRow(
-                  streak: widget.workoutStreak,
-                  week: getWeekNumber(),
-                  onStreakTap: () {
-                    // TODO: open streak details screen later
-                  },
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              HomeTopRow(
+                streak: widget.workoutStreak,
+                week: PlanCalendarService.getWeekNumber(
+                  profile?.startDate ?? widget.startDate,
                 ),
-                const SizedBox(height: 16),
+                onStreakTap: () {
+                  // TODO: open streak details screen later
+                },
+              ),
+              const SizedBox(height: 16),
 
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: AppDecorations.card(context),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: AppDecorations.card(context),
 
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Greeting(userNameVN: widget.userNameVN),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Greeting(userNameVN: widget.userNameVN),
 
-                      Divider(thickness: 1, color: Colors.grey.withOpacity(0.25)),
+                    Divider(thickness: 1, color: Colors.grey.withOpacity(0.25)),
 
-                      Calendar(
-                        dates: getPlanWeekDates(),
-                        completedDates: completedDates,
-                        workoutDays: workoutWeekdays,
+                    Calendar(
+                      dates: PlanCalendarService.getPlanWeekDates(
+                        profile?.startDate ?? widget.startDate,
                       ),
-                      const SizedBox(height: 20),
-                      WorkoutCarousel(
-                        plans: plans,
-                        onPlanTap: (plan) async {
-                          // Rest day: don’t generate, just inform (or navigate to a RestDay screen later)
-                          if (!plan.isWorkoutDay) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Rest day 😴")),
-                            );
-                            return;
-                          }
+                      completedDates:
+                          WorkoutCompletionService.getCompletedDates(),
+                      workoutDays: workoutWeekdays,
+                    ),
+                    const SizedBox(height: 20),
+                    WorkoutCarousel(
+                      plans: plans,
+                      onPlanTap: (plan) async {
+                        // Rest day: don’t generate, just inform (or navigate to a RestDay screen later)
+                        if (!plan.isWorkoutDay) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Rest day 😴")),
+                          );
+                          return;
+                        }
 
-                          final profile = LocalStorageService.getUserProfile();
-                          final durationMinutes = profile?.workoutDuration ?? 40;
+                        final profile = LocalStorageService.getUserProfile();
+                        final durationMinutes = profile?.workoutDuration ?? 40;
 
-                          // ✅ deterministic id (same used by Play shortcut)
-                          final id = PlayStateResolver.workoutIdFor(
-                            plan.date,
-                            plan,
+                        // ✅ deterministic id (same used by Play shortcut)
+                        final id = PlayStateResolver.workoutIdFor(
+                          plan.date,
+                          plan,
+                        );
+
+                        // ✅ only generate if not saved yet
+                        final existing =
+                            LocalStorageService.getSavedWorkoutById(id);
+
+                        if (existing == null) {
+                          final generated =
+                              await WorkoutGenerator.generatePlannedExercises(
+                                profile: profile,
+                                plan: plan,
+                              );
+
+                          final saved = SavedWorkout(
+                            id: id,
+                            createdAt: DateTime.now(),
+                            title: plan.title,
+                            durationMinutes: durationMinutes,
+                            warmupOn: true,
+                            exercises: generated,
                           );
 
-                          // ✅ only generate if not saved yet
-                          final existing =
-                              LocalStorageService.getSavedWorkoutById(id);
+                          await LocalStorageService.saveGeneratedWorkout(saved);
+                        }
 
-                          if (existing == null) {
-                            final generated =
-                                await WorkoutGenerator.generatePlannedExercises(
-                                  profile: profile,
-                                  plan: plan,
-                                );
+                        if (!context.mounted) return;
 
-                            final saved = SavedWorkout(
-                              id: id,
-                              createdAt: DateTime.now(),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WorkoutDetailScreen(
+                              dayLabel: PlanCalendarService.dayLabel(plan.date),
                               title: plan.title,
-                              durationMinutes: durationMinutes,
-                              warmupOn: true,
-                              exercises: generated,
-                            );
+                              totalTimeText: _totalTimeTextFor(plan, duration),
+                              workoutId: id, // ✅ changed
+                              warmupCount: 0,
+                            ),
+                          ),
+                        );
+                      },
 
-                            await LocalStorageService.saveGeneratedWorkout(saved);
-                          }
-
-                          if (!context.mounted) return;
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => WorkoutDetailScreen(
-                                dayLabel: _dayLabel(plan.date),
-                                title: plan.title,
-                                totalTimeText: _totalTimeTextFor(plan, duration),
-                                workoutId: id, // ✅ changed
-                                warmupCount: 0,
+                      // ✅ For skippers only: 2nd swipe = complete setup banner
+                      extraCard: completed
+                          ? null
+                          : SizedBox(
+                              height: 190,
+                              child: CompleteSetupBanner(
+                                onCompletePressed: _goToSetup,
                               ),
                             ),
-                          );
-                        },
-
-                        // ✅ For skippers only: 2nd swipe = complete setup banner
-                        extraCard: completed
-                            ? null
-                            : SizedBox(
-                                height: 190,
-                                child: CompleteSetupBanner(
-                                  onCompletePressed: _goToSetup,
-                                ),
-                              ),
-                        onExtraTap: completed ? null : _goToSetup,
-                      ),
-                    ],
-                  ),
+                      onExtraTap: completed ? null : _goToSetup,
+                    ),
+                  ],
                 ),
+              ),
 
-                const SizedBox(height: 18),
+              const SizedBox(height: 18),
 
-                QuickActions(),
-                const SizedBox(height: 18),
+              QuickActions(),
+              const SizedBox(height: 18),
 
-                InsightsCard(),
-              ],
-            ),
+              InsightsCard(),
+            ],
           ),
         ),
-      );
-    }
+      ),
+    );
   }
+}

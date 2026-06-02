@@ -6,8 +6,10 @@ import 'package:mobile/features/settings/app_settings_screen.dart';
 import 'package:mobile/features/profile/widgets/profile_header_card.dart';
 import 'package:mobile/features/plan/models/plan_settings.dart';
 import 'package:mobile/features/plan/plan_details_screen.dart';
+import 'package:mobile/features/workout/services/day_plan_builder.dart';
+import 'package:mobile/features/workout/services/workout_history_service.dart';
 import 'package:mobile/features/plan/models/session_progress.dart';
-import 'package:mobile/core/services/workout_history_service.dart';
+import 'package:mobile/features/workout/services/plan_calendar_service.dart';
 
 const double _rowLeftInset = 8;
 
@@ -148,6 +150,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showTopToast(context, "Profile Data Updated");
   }
 
+  List<WeekProgress> _buildProgress(UserProfile profile) {
+    final plans = DayPlanBuilder.buildWeek(
+      startDate: profile.startDate,
+      workoutDays: profile.workoutDays,
+      durationMinutes: profile.workoutDuration ?? 40,
+      profile: profile,
+    );
+
+    return [
+      WeekProgress(
+        weekNumber: 1,
+        sessions: plans
+            .where((p) => p.isWorkoutDay)
+            .map(
+              (p) => SessionItem(
+                dayLabel: PlanCalendarService.dayLabel(p.date),
+                title: p.title,
+                minutes: profile.workoutDuration ?? 40,
+                completed: false,
+              ),
+            )
+            .toList(),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -196,65 +224,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ), // 👈 text + icon color
                   ),
                   onPressed: () {
-                    final plan = PlanSettings(
-                      workoutsPerWeek: 3,
-                      workoutType: "Strength Training",
-                      durationMin: 50,
-                      fitnessGoal: "Maintain Fitness",
-                    );
+                    final profile = LocalStorageService.getUserProfile();
 
-                    final progress = [
-                      WeekProgress(
-                        weekNumber: 1,
-                        sessions: const [
-                          SessionItem(
-                            dayLabel: "Tue",
-                            title: "Upper Body",
-                            minutes: 50,
-                            completed: true,
-                          ),
-                          SessionItem(
-                            dayLabel: "Thu",
-                            title: "Full Body",
-                            minutes: 45,
-                            completed: true,
-                          ),
-                        ],
-                      ),
-                      WeekProgress(
-                        weekNumber: 2,
-                        sessions: const [
-                          SessionItem(
-                            dayLabel: "Tue",
-                            title: "Upper Body",
-                            minutes: 60,
-                            completed: true,
-                          ),
-                          SessionItem(
-                            dayLabel: "Thu",
-                            title: "Full Body",
-                            minutes: 50,
-                            completed: true,
-                          ),
-                          SessionItem(
-                            dayLabel: "Sat",
-                            title: "Lower Body",
-                            minutes: 30,
-                            completed: true,
-                          ),
-                        ],
-                      ),
-                    ];
+                    if (profile == null) return;
+
+                    final plan = PlanSettings(
+                      workoutsPerWeek: profile.workoutDays.length,
+                      workoutType: profile.workoutPlan ?? "Custom Plan",
+                      durationMin: profile.workoutDuration ?? 45,
+                      fitnessGoal: profile.fitnessGoal ?? "General Fitness",
+                    );
 
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                            PlanDetailsScreen(plan: plan, progress: progress),
+                        builder: (_) => PlanDetailsScreen(
+                          plan: plan,
+                          progress: _buildProgress(profile),
+                        ),
                       ),
                     );
                   },
-
                   child: const Text(
                     "Plan Details",
                     style: TextStyle(fontWeight: FontWeight.w600),

@@ -3,11 +3,17 @@ import 'package:mobile/app/app_shell.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/core/services/notification_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   await LocalStorageService.init();
   await NotificationService.init();
+
   runApp(const MyApp());
 }
 

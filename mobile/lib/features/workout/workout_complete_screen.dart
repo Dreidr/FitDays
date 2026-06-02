@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/workout/services/refuel_estimator.dart';
-import 'package:mobile/app/theme/app_decorations.dart';
-import 'package:mobile/core/models/workout_history.dart';
-import 'package:mobile/core/services/workout_history_service.dart';
+import 'package:mobile/features/workout/models/workout_history.dart';
+import 'package:mobile/features/workout/services/workout_history_service.dart';
 
 class WorkoutCompleteScreen extends StatelessWidget {
   final String workoutId;
