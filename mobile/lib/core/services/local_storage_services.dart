@@ -20,58 +20,6 @@ class LocalStorageService {
     await _prefs?.clear();
   }
 
-  // ✅ Auth stub (local only)
-  static const _loggedInKey = "is_logged_in";
-
-  static bool get isLoggedIn => _prefs?.getBool(_loggedInKey) ?? false;
-
-  static Future<void> setLoggedIn(bool value) async {
-    await _prefs?.setBool(_loggedInKey, value);
-  }
-
-  static bool get hasRegisteredUser =>
-      getUserProfile()?.email.isNotEmpty == true;
-
-  // Register = save profile + logged in
-  static Future<void> register({
-    required String email,
-    required String password,
-    required DateTime startDate, // ✅ add
-    List<String> workoutDays = const [],
-  }) async {
-    final s = DateTime(
-      startDate.year,
-      startDate.month,
-      startDate.day,
-    ); // date-only
-
-    final profile = UserProfile(
-      email: email.trim(),
-      password: password,
-      startDate: s,
-      workoutDays: workoutDays,
-    );
-
-    await saveUserProfile(profile);
-    await setLoggedIn(true);
-  }
-
-  // Login = compare with stored profile
-  static bool login({required String email, required String password}) {
-    final profile = getUserProfile();
-    if (profile == null) return false;
-
-    final ok = profile.email == email.trim() && profile.password == password;
-    if (ok) {
-      _prefs?.setBool(_loggedInKey, true);
-    }
-    return ok;
-  }
-
-  static Future<void> logout() async {
-    await setLoggedIn(false);
-  }
-
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     debugPrint("SharedPrefs initialized");

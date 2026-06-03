@@ -5,6 +5,7 @@ import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/app/app_shell.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile/features/auth/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,63 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  Future<void> _showForgotPasswordDialog() async {
+    final controller = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Reset Password"),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(hintText: "Enter your email"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final email = controller.text.trim();
+
+                if (email.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Please enter your email")),
+                  );
+                  return;
+                }
+
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(
+                    email: email,
+                  );
+
+                  if (!mounted) return;
+
+                  Navigator.pop(context);
+
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    const SnackBar(content: Text("Password reset email sent")),
+                  );
+                } on FirebaseAuthException catch (e) {
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    SnackBar(
+                      content: Text(e.message ?? "Unable to send reset email"),
+                    ),
+                  );
+                }
+              },
+              child: const Text("Send"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -125,9 +183,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                 email: email,
                                 password: pass,
                               );
+                              final user = FirebaseAuth.instance.currentUser;
+
+                              debugPrint("LOGIN UID: ${user?.uid}");
+                              debugPrint("LOGIN EMAIL: ${user?.email}");
 
                               final profile =
                                   LocalStorageService.getUserProfile();
+
+                              debugPrint(
+                                "LOCAL PROFILE EMAIL: ${profile?.email}",
+                              );
+                              debugPrint(
+                                "LOCAL PROFILE NAME: ${profile?.name}",
+                              );
 
                               if (!mounted) return;
 
@@ -160,6 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
+
                           child: const Text(
                             'Log in',
                             style: TextStyle(
@@ -173,16 +243,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 16),
 
-                      TextButton(
-                        onPressed: () {
-                          _showToast("Password reset will be added later");
-                        },
-                        child: const Text(
-                          'Forgot password?',
-                          style: TextStyle(color: Colors.black54),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _showForgotPasswordDialog,
+                          child: const Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                              color: Color(0xFF4442D9),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
-
                       const Spacer(),
 
                       Row(

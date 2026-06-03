@@ -5,6 +5,7 @@ import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/core/services/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,12 +24,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profile = LocalStorageService.getUserProfile();
-    final isLoggedIn = LocalStorageService.isLoggedIn;
+    final user = FirebaseAuth.instance.currentUser;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Roboto'),
-      home: isLoggedIn
+      home: user != null
           ? AppShell(
               userName: profile?.name?.trim().isNotEmpty == true
                   ? profile!.name!.trim()

@@ -13,9 +13,6 @@ class UserProfile {
   // ✅ identity fields
   final String email;
 
-  // ⚠️ test-only
-  final String? password;
-
   const UserProfile({
     this.name,
     required this.startDate,
@@ -28,8 +25,6 @@ class UserProfile {
     this.workoutDuration,
     this.weightKg,
     this.workoutDays = const [],
-
-    this.password,
   });
 
   UserProfile copyWith({
@@ -50,7 +45,6 @@ class UserProfile {
       name: name ?? this.name,
       startDate: startDate ?? this.startDate,
       email: email ?? this.email,
-      password: password ?? this.password,
       gender: gender ?? this.gender,
       age: age ?? this.age,
       fitnessGoal: fitnessGoal ?? this.fitnessGoal,
@@ -74,7 +68,6 @@ class UserProfile {
     "weightKg": weightKg,
     "workoutDays": workoutDays,
     "email": email,
-    "password": password, // ⚠️ test-only
   };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -100,7 +93,6 @@ class UserProfile {
       weightKg: (json["weightKg"] as num?)?.toDouble(),
       workoutDays: List<String>.from((json["workoutDays"] ?? const []) as List),
       email: (json["email"] ?? "") as String,
-      password: json["password"] as String?, // ⚠️ test-only
     );
   }
 }

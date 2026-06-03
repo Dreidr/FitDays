@@ -105,6 +105,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               onPressed: _canSave
                   ? () async {
                       final existing = LocalStorageService.getUserProfile();
+                      debugPrint("EXISTING PROFILE = $existing");
+
+                      if (existing == null) {
+                        debugPrint("PROFILE IS NULL");
+                        return;
+                      }
                       if (existing == null) return;
 
                       final trimmedName = name?.trim();
@@ -130,7 +136,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       if (!context.mounted) return;
 
                       if (widget.returnResultOnly) {
-                        Navigator.pop(context, updated);
                         return;
                       }
 
@@ -199,8 +204,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
                       if (!context.mounted) return;
 
-                      Navigator.pop(context, updated);
-
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
@@ -209,7 +212,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                 ? updated.name!.trim()
                                 : "User",
                             workoutStreak: 0,
-                            startDate: DateTime.now(),
+                            startDate: updated.startDate,
                             workoutDays: updated.workoutDays,
                           ),
                         ),

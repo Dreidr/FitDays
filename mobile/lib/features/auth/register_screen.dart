@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mobile/features/onboarding/launch_screen.dart';
 import 'package:mobile/features/auth/login_screen.dart';
 import 'package:mobile/features/onboarding/profile_setup_screen.dart';
-import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile/features/auth/auth_service.dart';
+import 'package:mobile/core/models/user_profile.dart';
+import 'package:mobile/core/services/local_storage_services.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -142,6 +143,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     try {
                       await AuthService().signUp(email: email, password: pass);
+
+                      final profile = UserProfile(
+                        email: email,
+                        startDate: DateTime.now(),
+                      );
+
+                      await LocalStorageService.saveUserProfile(profile);
 
                       if (!context.mounted) return;
 

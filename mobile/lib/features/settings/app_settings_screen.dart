@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/core/services/notification_service.dart';
 import 'package:mobile/features/auth/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AppSettingsScreen extends StatefulWidget {
   const AppSettingsScreen({super.key});
@@ -14,7 +15,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   bool _notificationsEnabled = LocalStorageService.notificationsEnabled;
 
   Future<void> _signOut(BuildContext context) async {
-    await LocalStorageService.logout();
+    await FirebaseAuth.instance.signOut();
+
     if (!context.mounted) return;
 
     Navigator.of(context).pushAndRemoveUntil(
