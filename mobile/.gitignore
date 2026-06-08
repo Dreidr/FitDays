@@ -1,4 +1,6 @@
+
 # Miscellaneous
+assets/videos/
 *.class
 *.log
 *.pyc
