@@ -31,14 +31,14 @@ class WorkoutCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF4442D9).withOpacity(0.85),
-                const Color(0xFF2F2ECF).withOpacity(0.85),
+                const Color(0xFF4442D9).withValues(alpha: 0.85),
+                const Color(0xFF2F2ECF).withValues(alpha: 0.85),
               ],
             ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4442D9).withOpacity(0.35),
+                color: const Color(0xFF4442D9).withValues(alpha: 0.35),
                 blurRadius: 24,
                 offset: const Offset(0, 12),
               ),
@@ -102,7 +102,7 @@ class _Ornament extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(opacity),
+        color: Colors.white.withValues(alpha: opacity),
       ),
     );
   }

@@ -13,16 +13,16 @@ class AppDecorations {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF4442D9).withOpacity(0.22),
-                const Color(0xFF4442D9).withOpacity(0.10),
+                const Color(0xFF4442D9).withValues(alpha: 0.22),
+                const Color(0xFF4442D9).withValues(alpha: 0.10),
               ],
             )
           : LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF4442D9).withOpacity(0.10),
-                const Color(0xFF4442D9).withOpacity(0.03),
+                const Color(0xFF4442D9).withValues(alpha: 0.10),
+                const Color(0xFF4442D9).withValues(alpha: 0.03),
               ],
             ),
       borderRadius: BorderRadius.circular(20),

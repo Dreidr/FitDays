@@ -66,14 +66,14 @@ class WorkoutCompleteScreen extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      themeBlue.withOpacity(0.90),
-                      const Color(0xFF2F2ECF).withOpacity(0.90),
+                      themeBlue.withValues(alpha: 0.90),
+                      const Color(0xFF2F2ECF).withValues(alpha: 0.90),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
-                      color: themeBlue.withOpacity(0.25),
+                      color: themeBlue.withValues(alpha: 0.25),
                       blurRadius: 24,
                       offset: const Offset(0, 12),
                     ),
@@ -133,7 +133,7 @@ class WorkoutCompleteScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: const Text(
@@ -150,13 +150,13 @@ class WorkoutCompleteScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: Text(
                         refuelLine,
                         style: TextStyle(
-                          color: Colors.black87.withOpacity(0.92),
+                          color: Colors.black87.withValues(alpha: 0.92),
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           height: 1.3,
@@ -232,7 +232,7 @@ class _StatRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 10),
           ),

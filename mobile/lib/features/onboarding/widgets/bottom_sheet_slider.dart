@@ -53,7 +53,7 @@ class BottomSheetSlider extends StatelessWidget {
         height: 52,
         decoration: BoxDecoration(
           color: isSet
-              ? const Color(0xFF4442D9).withOpacity(0.08)
+              ? const Color(0xFF4442D9).withValues(alpha: 0.08)
               : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -173,10 +173,10 @@ class _SliderSheetState extends State<_SliderSheet> {
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: purple,
-                inactiveTrackColor: purple.withOpacity(0.2),
+                inactiveTrackColor: purple.withValues(alpha: 0.2),
                 trackHeight: 6,
                 thumbColor: purple,
-                overlayColor: purple.withOpacity(0.15),
+                overlayColor: purple.withValues(alpha: 0.15),
                 thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
               ),
               child: Slider(

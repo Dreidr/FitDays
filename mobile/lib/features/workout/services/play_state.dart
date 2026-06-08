@@ -30,7 +30,7 @@ class PlayStateResolver {
     final mm = d.month.toString().padLeft(2, '0');
     final dd = d.day.toString().padLeft(2, '0');
     final slug = plan.title.toLowerCase().trim().replaceAll(RegExp(r'\s+'), '_');
-    return "${yyyy}-${mm}-${dd}_$slug";
+    return "$yyyy-$mm-${dd}_$slug";
   }
 
   /// You pass in "todayPlan" (you already have this for the banners).

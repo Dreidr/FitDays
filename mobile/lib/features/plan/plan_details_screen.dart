@@ -34,18 +34,16 @@ class _PlanDetailsScreenState extends State<PlanDetailsScreen> {
     final updated = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const ProfileSetupScreen(returnResultOnly: true),
+        builder: (_) => const ProfileSetupScreen(returnResultOnly: true, allowSkip: false,),
       ),
     );
 
     if (updated != null && mounted) {
-      setState(() {});
+      setState(() {
+        _profile = updated;
+        _plan = _planFromProfile(updated);
+      });
     }
-
-    setState(() {
-      _profile = updated;
-      _plan = _planFromProfile(updated);
-    });
   }
 
   @override
@@ -133,7 +131,7 @@ class _PlanDetailsScreenState extends State<PlanDetailsScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     side: BorderSide(
-                      color: purple.withOpacity(0.5),
+                      color: purple.withValues(alpha: 0.5),
                       width: 1.5,
                     ),
                     foregroundColor: Colors.black87,
@@ -204,7 +202,7 @@ class _InfoCard extends StatelessWidget {
           Text(
             subtitle,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               fontWeight: FontWeight.w500,
               fontSize: 12,
             ),
@@ -268,7 +266,7 @@ class _SessionRow extends StatelessWidget {
               children: [
                 Icon(
                   Icons.check,
-                  color: Colors.white.withOpacity(s.completed ? 1 : 0.35),
+                  color: Colors.white.withValues(alpha: s.completed ? 1 : 0.35),
                   size: 18,
                 ),
                 const SizedBox(height: 2),

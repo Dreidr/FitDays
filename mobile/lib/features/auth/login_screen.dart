@@ -5,7 +5,6 @@ import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/app/app_shell.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile/features/auth/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

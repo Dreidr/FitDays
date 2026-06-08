@@ -1,169 +1,243 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/features/workout/services/exercise_db_api.dart';
+import 'package:video_player/video_player.dart';
 
-class ExerciseDetailScreen extends StatelessWidget {
-  const ExerciseDetailScreen({super.key, required this.exercise});
+class ExerciseDetailScreen extends StatefulWidget {
+  const ExerciseDetailScreen({
+    super.key,
+    required this.exercise,
+  });
 
   final Map<String, dynamic> exercise;
 
-  String _s(dynamic v) => (v ?? '').toString();
-  List<String> _list(dynamic v) =>
-      (v is List) ? v.map((e) => e.toString()).toList() : const [];
+  @override
+  State<ExerciseDetailScreen> createState() =>
+      _ExerciseDetailScreenState();
+}
 
-  bool _needsRefetch(Map<String, dynamic> ex) {
-    // If these fields are missing, detail will look incomplete.
-    final hasInstructions = ex['instructions'] is List;
-    final hasSecondary = ex['secondaryMuscles'] is List;
-    return !(hasInstructions && hasSecondary);
+class _ExerciseDetailScreenState
+    extends State<ExerciseDetailScreen> {
+  late VideoPlayerController _controller;
+  bool _ready = false;
+
+  String _s(dynamic v) => (v ?? '').toString();
+
+  List<String> _list(dynamic v) =>
+      (v is List)
+          ? v.map((e) => e.toString()).toList()
+          : const [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    final id = widget.exercise['id'];
+
+    _controller = VideoPlayerController.asset(
+      'assets/videos/$id.mp4',
+    )..initialize().then((_) {
+        _controller.setLooping(true);
+        _controller.play();
+
+        if (mounted) {
+          setState(() {
+            _ready = true;
+          });
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final id = _s(exercise['id']);
+    final ex = widget.exercise;
 
-    final future = (id.isNotEmpty && _needsRefetch(exercise))
-        ? ExerciseDbApi.fetchExerciseById(id)
-        : Future.value(exercise);
+    final name = _s(ex['name']);
+    final bodyPart = _s(ex['bodyPart']);
+    final target = _s(ex['target']);
+    final equipment = _s(ex['equipment']);
+    final difficulty = _s(ex['difficulty']);
+    final description = _s(ex['description']);
 
-    return FutureBuilder<Map<String, dynamic>>(
-      future: future,
-      builder: (context, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+    final secondary = _list(ex['secondaryMuscles']);
+    final instructions = _list(ex['instructions']);
 
-        final ex = (snap.data ?? exercise);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          name.isEmpty ? 'Exercise' : name,
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF7F8FA),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: SizedBox(
+                height: 300,
+                child: _ready
+                    ? AspectRatio(
+                        aspectRatio:
+                            _controller.value.aspectRatio,
+                        child: VideoPlayer(
+                          _controller,
+                        ),
+                      )
+                    : const Center(
+                        child:
+                            CircularProgressIndicator(),
+                      ),
+              ),
+            ),
+          ),
 
-        final name = _s(ex['name']);
-        final bodyPart = _s(ex['bodyPart']);
-        final target = _s(ex['target']);
-        final equipment = _s(ex['equipment']);
-        final secondary = _list(ex['secondaryMuscles']);
-        final instructions = _list(ex['instructions']);
+          const SizedBox(height: 20),
 
-        return Scaffold(
-          appBar: AppBar(title: Text(name.isEmpty ? 'Exercise' : name)),
-          body: ListView(
-            padding: const EdgeInsets.all(16),
+          Text(
+            name,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              // your exact image widget stays the same:
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: id.isEmpty
-                      ? Container(
-                          color: Colors.black12,
-                          alignment: Alignment.center,
-                          child: const Text('No animation'),
-                        )
-                      : FutureBuilder(
-                          future: ExerciseDbApi.fetchImageBytes(
-                            exerciseId: id,
-                            resolution: '720',
-                          ),
-                          builder: (context, imgSnap) {
-                            if (imgSnap.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            if (imgSnap.hasError || !imgSnap.hasData) {
-                              return Container(
-                                color: Colors.black12,
-                                alignment: Alignment.center,
-                                child: const Text('Failed to load animation'),
-                              );
-                            }
-                            return Image.memory(
-                              imgSnap.data!,
-                              fit: BoxFit.cover,
-                            );
-                          },
-                        ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                name,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  if (bodyPart.isNotEmpty) _Chip('Body: $bodyPart'),
-                  if (target.isNotEmpty) _Chip('Target: $target'),
-                  if (equipment.isNotEmpty) _Chip('Equipment: $equipment'),
-                ],
-              ),
-              const SizedBox(height: 16),
-              if (secondary.isNotEmpty) ...[
-                Text(
-                  'Secondary muscles',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: secondary.map((m) => _Chip(m)).toList(),
-                ),
-                const SizedBox(height: 16),
-              ],
-              Text(
-                'Instructions',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 8),
-              if (instructions.isEmpty)
-                const Text('No instructions available.')
-              else
-                for (int i = 0; i < instructions.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${i + 1}. ',
-                          style: const TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                        Expanded(child: Text(instructions[i])),
-                      ],
-                    ),
-                  ),
+              if (bodyPart.isNotEmpty)
+                _Chip("Body: $bodyPart"),
+
+              if (target.isNotEmpty)
+                _Chip("Target: $target"),
+
+              if (equipment.isNotEmpty)
+                _Chip("Equipment: $equipment"),
+
+              if (difficulty.isNotEmpty)
+                _Chip("Difficulty: $difficulty"),
             ],
           ),
-        );
-      },
+
+          if (description.isNotEmpty) ...[
+            const SizedBox(height: 20),
+
+            const Text(
+              "Description",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(description),
+          ],
+
+          if (secondary.isNotEmpty) ...[
+            const SizedBox(height: 20),
+
+            const Text(
+              "Secondary Muscles",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: secondary
+                  .map((e) => _Chip(e))
+                  .toList(),
+            ),
+          ],
+
+          const SizedBox(height: 20),
+
+          const Text(
+            "Instructions",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          if (instructions.isEmpty)
+            const Text(
+              "No instructions available.",
+            ),
+
+          for (int i = 0;
+              i < instructions.length;
+              i++)
+            Padding(
+              padding:
+                  const EdgeInsets.only(bottom: 12),
+              child: Row(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${i + 1}. ",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      instructions[i],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
 
 class _Chip extends StatelessWidget {
   const _Chip(this.label);
+
   final String label;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(999),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
       ),
-      child: Text(label),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4F6F8),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 }

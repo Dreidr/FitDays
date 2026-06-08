@@ -26,7 +26,7 @@ class AgePickerField extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF4442D9).withOpacity(0.06)
+              ? const Color(0xFF4442D9).withValues(alpha: 0.06)
               : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: showBorder
@@ -149,7 +149,7 @@ class AgePickerField extends StatelessWidget {
                           height: 44,
                           margin: const EdgeInsets.symmetric(horizontal: 24),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.06),
+                            color: Colors.black.withValues(alpha: 0.06),
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),

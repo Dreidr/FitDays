@@ -123,7 +123,7 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                         icon: const Icon(Icons.close),
                       ),
                 filled: true,
-                fillColor: Colors.black.withOpacity(0.04),
+                fillColor: Colors.black.withValues(alpha: 0.04),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -210,7 +210,7 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.black.withOpacity(0.06),
+                                  color: Colors.black.withValues(alpha: 0.06),
                                 ),
                               ),
                               child: Row(
@@ -304,12 +304,12 @@ class _FilterChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: selected
-                ? const Color(0xFF4442D9).withOpacity(0.12)
-                : Colors.black.withOpacity(0.05),
+                ? const Color(0xFF4442D9).withValues(alpha: 0.12)
+                : Colors.black.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
               color: selected
-                  ? const Color(0xFF4442D9).withOpacity(0.35)
+                  ? const Color(0xFF4442D9).withValues(alpha: 0.35)
                   : Colors.transparent,
             ),
           ),

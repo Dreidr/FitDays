@@ -4,7 +4,6 @@ import 'package:mobile/features/home/widgets/greeting.dart';
 import 'package:mobile/features/home/widgets/calendar.dart';
 import 'package:mobile/features/home/widgets/workout_carousel.dart';
 import 'package:mobile/features/home/widgets/quick_actions.dart';
-import 'package:mobile/features/home/widgets/insights.dart';
 import 'package:mobile/app/theme/app_decorations.dart';
 import 'package:mobile/features/workout/models/day_plan.dart';
 import 'package:mobile/features/workout/workout_detail_screen.dart';
@@ -46,13 +45,17 @@ class _HomeScreenState extends State<HomeScreen> {
   bool get _profileCompleted => LocalStorageService.isProfileComplete;
 
   Future<void> _goToSetup() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const ProfileSetupScreen()),
-    );
-    if (!mounted) return;
-    setState(() {}); // ✅ refresh carousel after completing setup
-  }
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const ProfileSetupScreen(
+        allowSkip: false,
+      ),
+    ),
+  );
+
+  setState(() {});
+}
 
   DayPlan _defaultPlan() {
     final today = DateTime.now();
@@ -112,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Greeting(userNameVN: widget.userNameVN),
 
-                    Divider(thickness: 1, color: Colors.grey.withOpacity(0.25)),
+                    Divider(thickness: 1, color: Colors.grey.withValues(alpha: 0.25)),
 
                     Calendar(
                       dates: PlanCalendarService.getPlanWeekDates(
@@ -146,8 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         // ✅ only generate if not saved yet
                         final existing =
                             LocalStorageService.getSavedWorkoutById(id);
+                       
 
-                        if (existing == null) {
+                       if (existing == null || existing.exercises.isEmpty) {
                           final generated =
                               await WorkoutGenerator.generatePlannedExercises(
                                 profile: profile,
@@ -201,8 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
               QuickActions(),
               const SizedBox(height: 18),
-
-              InsightsCard(),
             ],
           ),
         ),

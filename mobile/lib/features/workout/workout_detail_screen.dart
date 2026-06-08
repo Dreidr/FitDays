@@ -289,10 +289,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                   Switch(
                                     value: _warmupOn,
                                     onChanged: _toggleWarmup,
-                                    activeColor: const Color(
-                                      0xFF4442D9,
-                                    ), // thumb
-                                    activeThumbColor: Colors.white,
+                                    activeThumbColor: Colors.white, // thumb
+                                    
                                     activeTrackColor: const Color(
                                       0xFF4442D9,
                                     ), // track (ON)
@@ -377,7 +375,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                         },
                                       ),
                                     );
-                                  }).toList(),
+                                  }),
                               ],
                             ],
                           ),
@@ -541,14 +539,14 @@ class _HeaderCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF4442D9).withOpacity(0.85),
-            const Color(0xFF2F2ECF).withOpacity(0.85),
+            const Color(0xFF4442D9).withValues(alpha: 0.85),
+            const Color(0xFF2F2ECF).withValues(alpha: 0.85),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4442D9).withOpacity(0.35),
+            color: const Color(0xFF4442D9).withValues(alpha: 0.35),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -604,8 +602,8 @@ class _HeaderCard extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: 4,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (_, __) => ClipRRect(
+              separatorBuilder: (_, _) => const SizedBox(width: 10),
+              itemBuilder: (_, _) => ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: Container(width: 56, color: Colors.white24),
               ),
@@ -625,6 +623,7 @@ class _ExerciseRow extends StatelessWidget {
     required this.onMore,
     this.reorderIndex,
     required this.onTap,
+    this.thumbnailUrl, // 👈 add
   });
 
   final String exerciseId;
@@ -633,6 +632,7 @@ class _ExerciseRow extends StatelessWidget {
   final VoidCallback onMore;
   final int? reorderIndex;
   final VoidCallback onTap;
+  final String? thumbnailUrl; // 👈 add
 
   @override
   Widget build(BuildContext context) {
@@ -820,7 +820,7 @@ class _EditExerciseSheetState extends State<_EditExerciseSheet> {
             decoration: InputDecoration(
               hintText: "Leave blank to set later",
               filled: true,
-              fillColor: Colors.black.withOpacity(0.04),
+              fillColor: Colors.black.withValues(alpha: 0.04),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
@@ -884,7 +884,7 @@ class _StepperRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.04),
+        color: Colors.black.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(

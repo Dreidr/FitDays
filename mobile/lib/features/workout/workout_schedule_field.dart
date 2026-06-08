@@ -31,7 +31,7 @@ class WorkoutScheduleField extends StatelessWidget {
             height: 52,
             decoration: BoxDecoration(
               color: value.isNotEmpty
-                  ? const Color(0xFF4442D9).withOpacity(0.08) // selected
+                  ? const Color(0xFF4442D9).withValues(alpha: 0.08) // selected
                   : Colors.white, // empty
               borderRadius: BorderRadius.circular(12),
               border: Border.all(

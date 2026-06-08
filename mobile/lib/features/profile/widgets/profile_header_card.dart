@@ -27,14 +27,14 @@ class ProfileHeaderCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF4442D9).withOpacity(0.9),
-            const Color(0xFF2F2ECF).withOpacity(0.9),
+            const Color(0xFF4442D9).withValues(alpha: 0.9),
+            const Color(0xFF2F2ECF).withValues(alpha: 0.9),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4442D9).withOpacity(0.35),
+            color: const Color(0xFF4442D9).withValues(alpha: 0.35),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -64,7 +64,7 @@ class ProfileHeaderCard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: const Icon(
@@ -85,7 +85,7 @@ class ProfileHeaderCard extends StatelessWidget {
                   height: 96,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.95),
+                    color: Colors.white.withValues(alpha: 0.95),
                   ),
                   alignment: Alignment.center,
                   child: Text(
@@ -116,7 +116,7 @@ class ProfileHeaderCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -161,7 +161,7 @@ class _Ornament extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(opacity),
+        color: Colors.white.withValues(alpha: opacity),
       ),
     );
   }
@@ -207,7 +207,7 @@ class _LightDivider extends StatelessWidget {
     return Container(
       width: 1,
       height: 34,
-      color: Colors.white.withOpacity(0.35),
+      color: Colors.white.withValues(alpha: 0.35),
     );
   }
 }

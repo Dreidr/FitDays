@@ -6,6 +6,7 @@ import 'package:mobile/core/services/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile/features/onboarding/profile_setup_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,7 @@ Future<void> main() async {
 
   await LocalStorageService.init();
   await NotificationService.init();
+  
 
   runApp(const MyApp());
 }
@@ -25,21 +27,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final profile = LocalStorageService.getUserProfile();
     final user = FirebaseAuth.instance.currentUser;
+    debugPrint("CURRENT USER: ${user?.email}");
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Roboto'),
-      home: user != null
-          ? AppShell(
-              userName: profile?.name?.trim().isNotEmpty == true
-                  ? profile!.name!.trim()
-                  : "User",
-
-              workoutStreak: 0,
-              startDate: DateTime.now(),
-              workoutDays: profile?.workoutDays ?? const [],
-            )
-          : const LaunchScreen(),
+      home: user == null
+    ? const LaunchScreen()
+    : profile == null
+        ? const ProfileSetupScreen(
+            allowSkip: true,
+          )
+        : AppShell(
+            userName: profile.name?.trim().isNotEmpty == true
+                ? profile.name!.trim()
+                : "User",
+            workoutStreak: 0,
+            startDate: profile.startDate,
+            workoutDays: profile.workoutDays,
+          ),
     );
   }
 }

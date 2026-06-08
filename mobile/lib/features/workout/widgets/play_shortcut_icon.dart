@@ -18,7 +18,7 @@ class PlayShortcutIcon extends StatelessWidget {
     final icon = Icon(
       Icons.play_arrow_rounded,
       size: 28,
-      color: isRest ? Colors.black.withOpacity(0.35) : Colors.black87,
+      color: isRest ? Colors.black.withValues(alpha: 0.35) : Colors.black87,
     );
 
     // Badge (top-right)

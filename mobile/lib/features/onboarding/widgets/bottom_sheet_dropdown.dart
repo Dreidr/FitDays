@@ -39,7 +39,7 @@ class BottomSheetDropdown extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
               color: (value?.isNotEmpty == true)
-                  ? const Color(0xFF4442D9).withOpacity(0.08)
+                  ? const Color(0xFF4442D9).withValues(alpha: 0.08)
                   : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: showBorder

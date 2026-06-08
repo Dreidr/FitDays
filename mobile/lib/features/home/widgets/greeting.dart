@@ -38,7 +38,7 @@ class Greeting extends StatelessWidget {
   children: [
     ValueListenableBuilder<String>(
       valueListenable: userNameVN,
-      builder: (_, name, __) {
+      builder: (_, name, _) {
         return Text(
           "${getGreeting()}, $name 👋",
           style: const TextStyle(

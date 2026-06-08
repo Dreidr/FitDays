@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mobile/features/workout/models/planned_exercise.dart';
-import 'dart:typed_data';
-import 'package:mobile/features/workout/services/exercise_db_api.dart';
 import 'package:mobile/features/workout/workout_complete_screen.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/workout_play/models/active_workout_session.dart';
+import 'package:video_player/video_player.dart';
+import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 
 class WorkoutPlayScreen extends StatefulWidget {
   const WorkoutPlayScreen({
@@ -29,6 +29,46 @@ class WorkoutPlayScreen extends StatefulWidget {
 }
 
 class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
+  Map<String, dynamic>? _exerciseData;
+  Future<void> _loadExerciseData() async {
+    _exerciseData = await LocalExerciseRepo.getById(_planned.exerciseId);
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  VideoPlayerController? _videoController;
+  Future<void> _loadVideo(String exerciseId) async {
+    final oldController = _videoController;
+
+    _videoController = null;
+
+    if (mounted) {
+      setState(() {});
+    }
+
+    await oldController?.dispose();
+
+    final controller = VideoPlayerController.asset(
+      'assets/videos/$exerciseId.mp4',
+    );
+
+    _videoController = controller;
+
+    try {
+      await _videoController!.initialize();
+      await _videoController!.setLooping(true);
+      await _videoController!.play();
+
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (_) {
+      debugPrint('Video not found: $exerciseId');
+    }
+  }
+
   Timer? _workoutTimer;
   int _elapsedSeconds = 0;
 
@@ -50,10 +90,6 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
 
   PlannedExercise get _planned => widget.exercises[_exerciseIndex];
 
-  final Map<String, Future<Uint8List>> _gifFutureCache = {};
-
-  String _currentMediaKey = "";
-
   static const int _defaultRestSeconds = 25;
   static const int _minRestSeconds = 20;
   static const int _maxRestSeconds = 60;
@@ -64,18 +100,6 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
       _restLeft = (_restLeft + delta).clamp(_minRestSeconds, _maxRestSeconds);
     });
     await _persistSession();
-  }
-
-  Future<Uint8List>? _mediaFutureFor(String exerciseId) {
-    if (exerciseId.isEmpty) return null;
-
-    return _gifFutureCache.putIfAbsent(
-      exerciseId,
-      () => ExerciseDbApi.fetchImageBytes(
-        exerciseId: exerciseId,
-        resolution: '720',
-      ),
-    );
   }
 
   void _resumeRestTimer() {
@@ -132,6 +156,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
   void dispose() {
     _timer?.cancel();
     _workoutTimer?.cancel();
+    _videoController?.dispose();
     super.dispose();
   }
 
@@ -163,8 +188,12 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
       setState(() {
         _exerciseIndex++;
         _setIndex = 1;
-        _currentMediaKey = "ex_${widget.exercises[_exerciseIndex].exerciseId}";
       });
+
+      await _loadExerciseData();
+
+      await _loadVideo(widget.exercises[_exerciseIndex].exerciseId);
+
       await _persistSession();
       _startRest(20);
       return;
@@ -215,12 +244,13 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
   @override
   void initState() {
     super.initState();
+    _loadExerciseData();
 
     _workoutId = widget.workoutId;
 
     _restoreFromSavedSession();
 
-    _currentMediaKey = "ex_${widget.exercises[_exerciseIndex].exerciseId}";
+    _loadVideo(widget.exercises[_exerciseIndex].exerciseId);
 
     _workoutTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
       if (!mounted) return;
@@ -238,9 +268,14 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final name = "Exercise ${_planned.exerciseId}";
+    final name = _exerciseData?['name']?.toString() ?? "Exercise";
     final target = "";
     final weight = _planned.weightKg;
+    final instructions =
+        (_exerciseData?['instructions'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        [];
 
     return PopScope(
       canPop: true,
@@ -335,48 +370,21 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                                       child: fade,
                                     );
                                   },
-                                  child: Builder(
-                                    key: ValueKey(_currentMediaKey),
-                                    builder: (context) {
-                                      final id = _planned.exerciseId;
-                                      final future = _mediaFutureFor(id);
-
-                                      if (id.isEmpty || future == null) {
-                                        return Container(
+                                  child:
+                                      _videoController != null &&
+                                          _videoController!.value.isInitialized
+                                      ? AspectRatio(
+                                          aspectRatio: _videoController!
+                                              .value
+                                              .aspectRatio,
+                                          child: VideoPlayer(_videoController!),
+                                        )
+                                      : Container(
                                           color: Colors.black12,
                                           alignment: Alignment.center,
-                                          child: const Text('No animation'),
-                                        );
-                                      }
-
-                                      return FutureBuilder<Uint8List>(
-                                        future: future,
-                                        builder: (context, snap) {
-                                          if (snap.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            );
-                                          }
-                                          if (snap.hasError || !snap.hasData) {
-                                            return Container(
-                                              color: Colors.black12,
-                                              alignment: Alignment.center,
-                                              child: const Text(
-                                                'Failed to load animation',
-                                              ),
-                                            );
-                                          }
-                                          return Image.memory(
-                                            snap.data!,
-                                            fit: BoxFit.cover,
-                                            gaplessPlayback: true,
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
+                                          child:
+                                              const CircularProgressIndicator(),
+                                        ),
                                 ),
                               ),
                             ),
@@ -387,7 +395,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                             Container(
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.04),
+                                color: Colors.black.withValues(alpha: 0.04),
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Row(
@@ -447,6 +455,60 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                               ),
                             ),
 
+                            const SizedBox(height: 14),
+
+                            if (instructions.isNotEmpty)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(color: Colors.black12),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Instructions",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+
+                                    ...instructions.asMap().entries.map(
+                                      (entry) => Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 8,
+                                        ),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${entry.key + 1}. ",
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                entry.value,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  height: 1.4,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
                             const SizedBox(
                               height: 18,
                             ), // ✅ space before bottom button
@@ -495,7 +557,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                           child: BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
                             child: Container(
-                              color: Colors.black.withOpacity(0.15),
+                              color: Colors.black.withValues(alpha: 0.15),
                             ),
                           ),
                         ),
@@ -605,9 +667,9 @@ class _BigRoundButton extends StatelessWidget {
         width: 58,
         height: 58,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
+          color: Colors.white.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.white.withOpacity(0.35)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
         ),
         child: Icon(icon, size: 26, color: color),
       ),

@@ -8,11 +8,18 @@ import 'package:mobile/features/onboarding/widgets/top_toast.dart';
 import 'package:mobile/core/enums/dropdown_display.dart';
 import 'package:mobile/app/app_shell.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile/core/models/user_profile.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
-  const ProfileSetupScreen({super.key, this.returnResultOnly = false});
+  const ProfileSetupScreen({
+    super.key,
+    this.returnResultOnly = false,
+    this.allowSkip = true,
+  });
 
   final bool returnResultOnly;
+  final bool allowSkip;
 
   @override
   State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
@@ -91,81 +98,64 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          "Plan Setup",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
-        ),
-        actions: [
-          if (!widget.returnResultOnly)
-            TextButton(
-              onPressed: _canSave
-                  ? () async {
-                      final existing = LocalStorageService.getUserProfile();
-                      debugPrint("EXISTING PROFILE = $existing");
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          title: const Text(
+            "Plan Setup",
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
+          ),
+          actions: [
+            if (widget.allowSkip)
+              TextButton(
+                onPressed: () async {
+                  var profile = LocalStorageService.getUserProfile();
 
-                      if (existing == null) {
-                        debugPrint("PROFILE IS NULL");
-                        return;
-                      }
-                      if (existing == null) return;
+                  if (profile == null) {
+                    profile = UserProfile(
+                      name: "User",
+                      email: "",
+                      gender: null,
+                      age: null,
+                      fitnessGoal: null,
+                      fitnessLevel: null,
+                      workoutPlan: null,
+                      workoutDuration: null,
+                      weightKg: null,
+                      workoutDays: const [],
+                      startDate: DateTime.now(),
+                    );
 
-                      final trimmedName = name?.trim();
+                    await LocalStorageService.saveUserProfile(profile);
+                  }
 
-                      final updated = existing.copyWith(
-                        name: (trimmedName == null || trimmedName.isEmpty)
-                            ? null
-                            : trimmedName,
-                        gender: gender,
-                        age: age,
-                        fitnessGoal: fitnessGoal,
-                        fitnessLevel: fitnessLevel,
-                        workoutPlan: workoutPlan,
-                        workoutDuration: workoutDuration,
-                        weightKg: weightKg,
-                        workoutDays: workoutDays,
-                      );
+                  await LocalStorageService.setOnboardingSkipped(true);
+                  await LocalStorageService.setProfileComplete(false);
 
-                      await LocalStorageService.saveUserProfile(updated);
-                      await LocalStorageService.setOnboardingSkipped(false);
-                      await LocalStorageService.setProfileComplete(true);
+                  if (!context.mounted) return;
 
-                      if (!context.mounted) return;
-
-                      if (widget.returnResultOnly) {
-                        return;
-                      }
-
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AppShell(
-                            userName: updated.name?.trim().isNotEmpty == true
-                                ? updated.name!.trim()
-                                : "User",
-                            workoutStreak: 0,
-                            startDate: DateTime.now(),
-                            workoutDays: updated.workoutDays,
-                          ),
-                        ),
-                        (_) => false,
-                      );
-                    }
-                  : () {
-                      showTopToast(context, _firstErrorMessage());
-                    },
-
-              child: const Text(
-                "Skip",
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w600,
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AppShell(
+                        userName: profile!.name ?? "User",
+                        workoutStreak: 0,
+                        startDate: profile.startDate,
+                        workoutDays: profile.workoutDays,
+                      ),
+                    ),
+                    (_) => false,
+                  );
+                },
+                child: const Text(
+                  "Skip",
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
         ],
       ),
 
@@ -176,68 +166,77 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           child: SizedBox(
             height: 52,
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _canSave
-                  ? () async {
-                      final existing = LocalStorageService.getUserProfile();
-                      if (existing == null) return;
+              child: ElevatedButton(
+                onPressed: _canSave
+                    ? () async {
+                        var existing = LocalStorageService.getUserProfile();
 
-                      final trimmedName = name?.trim();
+                        existing ??= UserProfile(
+                          email: FirebaseAuth.instance.currentUser?.email ?? "",
+                          startDate: DateTime.now(),
+                        );
 
-                      final updated = existing.copyWith(
-                        name: (trimmedName == null || trimmedName.isEmpty)
-                            ? null
-                            : trimmedName,
-                        gender: gender,
-                        age: age,
-                        fitnessGoal: fitnessGoal,
-                        fitnessLevel: fitnessLevel,
-                        workoutPlan: workoutPlan,
-                        workoutDuration: workoutDuration,
-                        weightKg: weightKg,
-                        workoutDays: workoutDays,
-                      );
+                        final trimmedName = name?.trim();
 
-                      await LocalStorageService.saveUserProfile(updated);
-                      await LocalStorageService.setOnboardingSkipped(false);
-                      await LocalStorageService.setProfileComplete(true);
+                        final updated = existing.copyWith(
+                          name: (trimmedName == null || trimmedName.isEmpty)
+                              ? null
+                              : trimmedName,
+                          gender: gender,
+                          age: age,
+                          fitnessGoal: fitnessGoal,
+                          fitnessLevel: fitnessLevel,
+                          workoutPlan: workoutPlan,
+                          workoutDuration: workoutDuration,
+                          weightKg: weightKg,
+                          workoutDays: workoutDays,
+                        );
 
-                      if (!context.mounted) return;
+                        await LocalStorageService.saveUserProfile(updated);
+                        await LocalStorageService.setOnboardingSkipped(false);
+                        await LocalStorageService.setProfileComplete(true);
 
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AppShell(
-                            userName: updated.name?.trim().isNotEmpty == true
-                                ? updated.name!.trim()
-                                : "User",
-                            workoutStreak: 0,
-                            startDate: updated.startDate,
-                            workoutDays: updated.workoutDays,
+                        if (!context.mounted) return;
+
+                        if (widget.returnResultOnly) {
+                          Navigator.pop(context, updated);
+                          return;
+                        }
+
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AppShell(
+                              userName: updated.name?.trim().isNotEmpty == true
+                                  ? updated.name!.trim()
+                                  : "User",
+                              workoutStreak: 0,
+                              startDate: updated.startDate,
+                              workoutDays: updated.workoutDays,
+                            ),
                           ),
-                        ),
-                        (_) => false,
-                      );
-                    }
-                  : () {
-                      showTopToast(context, _firstErrorMessage());
-                    },
+                          (_) => false,
+                        );
+                      }
+                    : () {
+                        showTopToast(context, _firstErrorMessage());
+                      },
 
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4442D9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4442D9),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: Text(
+                  _canSave ? "Save" : "Complete setup",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              child: Text(
-                _canSave ? "Save" : "Complete setup",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
           ),
         ),
       ),
