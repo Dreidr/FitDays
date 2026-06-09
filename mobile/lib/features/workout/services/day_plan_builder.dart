@@ -58,6 +58,45 @@ class DayPlanBuilder {
     );
   }
 
+  static List<String> _splitForPlan(UserProfile? profile) {
+    final plan = profile?.workoutPlan?.trim().toLowerCase();
+
+    switch (plan) {
+      case 'strength training':
+        return [
+          'Push',
+          'Pull',
+          'Legs',
+          'Upper Body',
+          'Lower Body',
+          'Full Body',
+        ];
+
+      case 'cardio':
+        return [
+          'HIIT',
+          'Steady Cardio',
+          'Core & Conditioning',
+          'Full Body Circuit',
+        ];
+
+      case 'flexibility training':
+        return ['Stretching', 'Mobility', 'Recovery', 'Yoga Flow'];
+
+      case 'stability training':
+        return [
+          'Core Stability',
+          'Balance Training',
+          'Functional Movement',
+          'Mobility & Stability',
+        ];
+
+      default:
+        return ['Full Body'];
+    }
+  }
+  
+
   static DayPlan _buildDay({
     required DateTime date,
     required DateTime startDate,
@@ -67,12 +106,7 @@ class DayPlanBuilder {
   }) {
     final daysSet = workoutDays.map(_normalizeDay).toSet();
 
-    const split = [
-      "Upper Body",
-      "Lower Body",
-      "Full Body",
-    ];
-
+    final split = _splitForPlan(profile);
     int workoutCountUpTo(DateTime target) {
       int count = 0;
       DateTime d = PlanCalendarService.dateOnly(startDate);
@@ -128,15 +162,7 @@ class DayPlanBuilder {
   }
 
   static String _weekdayShort(DateTime date) {
-    const labels = [
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat",
-      "Sun",
-    ];
+    const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
     return labels[date.weekday - 1];
   }

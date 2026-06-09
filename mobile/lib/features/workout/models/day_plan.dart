@@ -3,6 +3,7 @@ class DayPlan {
   final bool isWorkoutDay;
   final String title;
   final String subtitle;
+  
 
   DayPlan({
     required this.date,

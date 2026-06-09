@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 import 'package:mobile/features/workout/exercise_detail_screen.dart';
+import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
 
 class AllExercisesScreen extends StatefulWidget {
   const AllExercisesScreen({super.key});
@@ -217,12 +218,11 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
-                                    child: const SizedBox(
+                                    child: SizedBox(
                                       width: 56,
                                       height: 56,
-                                      child: Icon(
-                                        Icons.fitness_center,
-                                        color: Colors.black45,
+                                      child: ExerciseThumb(
+                                        exerciseId: ex['id'].toString(),
                                       ),
                                     ),
                                   ),

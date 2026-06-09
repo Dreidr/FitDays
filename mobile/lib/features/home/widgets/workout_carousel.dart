@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/workout/models/day_plan.dart';
 import 'package:mobile/features/home/widgets/workout_card.dart';
+import 'package:mobile/features/workout/models/saved_workout.dart';
 
 class WorkoutCarousel extends StatelessWidget {
   const WorkoutCarousel({
     super.key,
     required this.plans,
     required this.onPlanTap,
-    this.extraCard,     // ✅ new
-    this.onExtraTap,    // ✅ new
+    this.extraCard, // ✅ new
+    this.onExtraTap, // ✅ new
+    this.workoutForPlan,
   });
-
+  
+  final SavedWorkout? Function(DayPlan plan)? workoutForPlan;
   final List<DayPlan> plans;
   final ValueChanged<DayPlan> onPlanTap;
 

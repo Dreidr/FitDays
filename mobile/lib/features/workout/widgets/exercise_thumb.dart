@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 
 class ExerciseThumb extends StatelessWidget {
+  final String exerciseId;
+
   const ExerciseThumb({
     super.key,
     required this.exerciseId,
   });
 
-  final String exerciseId;
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 54,
-      height: 54,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF4F6F8),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Icon(
-        Icons.fitness_center,
-        color: Colors.black54,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.asset(
+        'assets/thumbnails/$exerciseId.jpg',
+        width: 72,
+        height: 72,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) {
+          return Container(
+            width: 72,
+            height: 72,
+            alignment: Alignment.center,
+            color: Colors.grey,
+            child: const Icon(Icons.fitness_center),
+          );
+        },
       ),
     );
   }

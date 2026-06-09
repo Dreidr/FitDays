@@ -33,7 +33,6 @@ dependencies:
   flutter_svg: ^2.0.10
   google_fonts: ^6.2.1
   flutter_slidable: ^3.0.0
-
   
 
   # The following adds the Cupertino Icons font to your application.
@@ -85,6 +84,7 @@ flutter:
     - assets/images/fitdays_logo.png
     - assets/data/
     - assets/videos/
+    - assets/thumbnails/
     # assets/fonts/roboto/
     # assets/animations/
 
