@@ -12,7 +12,7 @@ class WorkoutCarousel extends StatelessWidget {
     this.onExtraTap, // ✅ new
     this.workoutForPlan,
   });
-  
+
   final SavedWorkout? Function(DayPlan plan)? workoutForPlan;
   final List<DayPlan> plans;
   final ValueChanged<DayPlan> onPlanTap;
@@ -49,7 +49,11 @@ class WorkoutCarousel extends StatelessWidget {
             onTap: () => onPlanTap(plan),
             child: Padding(
               padding: const EdgeInsets.only(right: 12),
-              child: WorkoutCard(plan: plan, isToday: isToday),
+              child: WorkoutCard(
+                plan: plan,
+                isToday: isToday,
+                workout: workoutForPlan?.call(plan),
+              ),
             ),
           );
         },

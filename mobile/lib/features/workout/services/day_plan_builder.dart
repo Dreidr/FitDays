@@ -63,6 +63,20 @@ class DayPlanBuilder {
 
     switch (plan) {
       case 'strength training':
+        final days = profile?.workoutDays.length ?? 3;
+
+        if (days <= 3) {
+          return ['Push', 'Pull', 'Legs'];
+        }
+
+        if (days == 4) {
+          return ['Upper Body', 'Lower Body'];
+        }
+
+        if (days == 5) {
+          return ['Push', 'Pull', 'Legs', 'Upper Body', 'Lower Body'];
+        }
+
         return [
           'Push',
           'Pull',
@@ -95,7 +109,6 @@ class DayPlanBuilder {
         return ['Full Body'];
     }
   }
-  
 
   static DayPlan _buildDay({
     required DateTime date,

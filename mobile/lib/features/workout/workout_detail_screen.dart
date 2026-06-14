@@ -57,7 +57,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
       // only generate warm-up if toggle is ON
       if (_warmupOn) {
-        _warmupPlan = _generateRandomWarmup();
+        _warmupPlan = _generateWarmupForWorkout();
       } else {
         _warmupPlan = [];
       }
@@ -71,7 +71,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   static const int _warmupCount = 4;
 
-  List<PlannedExercise> _generateRandomWarmup() {
+  List<PlannedExercise> _generateWarmupForWorkout() {
     if (_allExercises.isEmpty) return [];
 
     bool isWarmupCandidate(Map<String, dynamic> e) {
@@ -85,13 +85,79 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       return okEq;
     }
 
-    final pool = _allExercises.where(isWarmupCandidate).toList();
-    if (pool.isEmpty) return [];
+    final allWarmups = _allExercises.where((e) {
+      final cat = (e["category"] ?? "").toString().toLowerCase();
+      return cat == "cardio" || cat == "stretching";
+    }).toList();
 
-    pool.shuffle();
+    debugPrint("ALL WARMUPS: ${allWarmups.length}");
+
+    for (final e in allWarmups.take(30)) {
+      debugPrint(
+        "${e["name"]} | "
+        "${e["equipment"]} | "
+        "${e["target"]}",
+      );
+    }
+
+    final pool = allWarmups.where(isWarmupCandidate).toList();
+
+    debugPrint("FILTERED WARMUPS: ${pool.length}");
+    final title = widget.title.toLowerCase();
+
+    List<Map<String, dynamic>> filtered = pool;
+
+    bool matches(String text, List<String> keywords) {
+      final t = text.toLowerCase();
+      return keywords.any((k) => t.contains(k));
+    }
+
+    if (title.contains("push")) {
+      filtered = pool.where((e) {
+        final body = (e["bodyPart"] ?? "").toString();
+        final target = (e["target"] ?? "").toString();
+
+        return matches("$body $target", ["shoulder", "chest", "tricep", "arm"]);
+      }).toList();
+    } else if (title.contains("pull")) {
+      filtered = pool.where((e) {
+        final body = (e["bodyPart"] ?? "").toString();
+        final target = (e["target"] ?? "").toString();
+
+        return matches("$body $target", ["back", "lat", "bicep", "rear"]);
+      }).toList();
+    } else if (title.contains("legs") || title.contains("lower")) {
+      filtered = pool.where((e) {
+        final body = (e["bodyPart"] ?? "").toString();
+        final target = (e["target"] ?? "").toString();
+
+        return matches("$body $target", [
+          "quad",
+          "hamstring",
+          "glute",
+          "calf",
+          "leg",
+        ]);
+      }).toList();
+    } else if (title.contains("upper")) {
+      filtered = pool.where((e) {
+        final body = (e["bodyPart"] ?? "").toString();
+
+        return matches(body, ["chest", "back", "shoulder", "arm"]);
+      }).toList();
+    }
+
+    if (filtered.isEmpty) {
+      filtered = pool;
+    }
+
+    filtered.shuffle();
 
     // ✅ take up to 5
-    final picked = pool.take(_warmupCount).toList();
+    final picked = filtered.take(_warmupCount).toList();
+    for (final e in picked) {
+      debugPrint("WARMUP: ${e["name"]}");
+    }
 
     return picked.map((e) {
       final id = (e["id"] ?? "").toString();
@@ -129,7 +195,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       if (!_warmupOn) {
         _warmupVisible = false; // collapse if off
       } else {
-        _warmupPlan = _generateRandomWarmup(); // randomize when turned on
+        _warmupPlan = _generateWarmupForWorkout(); // randomize when turned on
       }
 
       _future =
@@ -247,9 +313,12 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                           dayLabel: widget.dayLabel,
                           title: widget.title,
                           exerciseCount: planItems.length,
+                          exercises: planItems,
+                          muscleGroups: muscleGroupsForTitle(widget.title),
                           onBack: () => Navigator.pop(context),
                         ),
                         const SizedBox(height: 14),
+
                         Text(
                           "Total time: ${widget.totalTimeText}",
                           style: const TextStyle(
@@ -290,7 +359,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                     value: _warmupOn,
                                     onChanged: _toggleWarmup,
                                     activeThumbColor: Colors.white, // thumb
-                                    
+
                                     activeTrackColor: const Color(
                                       0xFF4442D9,
                                     ), // track (ON)
@@ -521,13 +590,17 @@ class _HeaderCard extends StatelessWidget {
     required this.dayLabel,
     required this.title,
     required this.exerciseCount,
+    required this.exercises,
     required this.onBack,
+    this.muscleGroups,
   });
 
   final String dayLabel;
   final String title;
   final int exerciseCount;
   final VoidCallback onBack;
+  final List<PlannedExercise> exercises;
+  final String? muscleGroups;
 
   @override
   Widget build(BuildContext context) {
@@ -594,6 +667,19 @@ class _HeaderCard extends StatelessWidget {
             ],
           ),
 
+          if (muscleGroups != null && muscleGroups!.isNotEmpty) ...[
+            const SizedBox(height: 6),
+
+            Text(
+              muscleGroups!,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+
           const SizedBox(height: 14),
 
           // thumbnails
@@ -601,12 +687,20 @@ class _HeaderCard extends StatelessWidget {
             height: 56,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: 4,
-              separatorBuilder: (_, _) => const SizedBox(width: 10),
-              itemBuilder: (_, _) => ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Container(width: 56, color: Colors.white24),
-              ),
+              itemCount: exercises.length > 5 ? 5 : exercises.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 6),
+              itemBuilder: (_, index) {
+                final ex = exercises[index];
+
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: ExerciseThumb(exerciseId: ex.exerciseId),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -615,94 +709,120 @@ class _HeaderCard extends StatelessWidget {
   }
 }
 
-  class _ExerciseRow extends StatelessWidget {
-    const _ExerciseRow({
-      required this.exerciseId,
-      required this.name,
-      required this.meta,
-      required this.onMore,
-      this.reorderIndex,
-      required this.onTap,
-    });
+String muscleGroupsForTitle(String title) {
+  final t = title.toLowerCase();
 
-    final String exerciseId;
-    final String name;
-    final String meta;
-    final VoidCallback onMore;
-    final int? reorderIndex;
-    final VoidCallback onTap;
-
-    @override
-    Widget build(BuildContext context) {
-      return InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: SizedBox(
-                  width: 54,
-                  height: 54,
-                  child: exerciseId.isEmpty
-                      ? const Icon(
-                          Icons.image_not_supported,
-                          color: Colors.black54,
-                        )
-                      : ExerciseThumb(exerciseId: exerciseId), // ✅ your widget
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      meta,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              IconButton(
-                onPressed: onMore,
-                icon: const Icon(Icons.more_horiz, color: Colors.black54),
-              ),
-              if (reorderIndex != null)
-                ReorderableDragStartListener(
-                  index: reorderIndex!,
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.drag_handle, color: Colors.black54),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      );
-    }
+  if (t.contains('push')) {
+    return 'Chest • Shoulders • Triceps';
   }
+
+  if (t.contains('pull')) {
+    return 'Back • Rear Delts • Biceps';
+  }
+
+  if (t.contains('legs') || t.contains('lower')) {
+    return 'Quads • Hamstrings • Glutes • Calves';
+  }
+
+  if (t.contains('upper')) {
+    return 'Chest • Back • Shoulders • Arms';
+  }
+
+  if (t.contains('full')) {
+    return 'Push • Pull • Legs • Core';
+  }
+
+  return '';
+}
+
+class _ExerciseRow extends StatelessWidget {
+  const _ExerciseRow({
+    required this.exerciseId,
+    required this.name,
+    required this.meta,
+    required this.onMore,
+    this.reorderIndex,
+    required this.onTap,
+  });
+
+  final String exerciseId;
+  final String name;
+  final String meta;
+  final VoidCallback onMore;
+  final int? reorderIndex;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
+                width: 54,
+                height: 54,
+                child: exerciseId.isEmpty
+                    ? const Icon(
+                        Icons.image_not_supported,
+                        color: Colors.black54,
+                      )
+                    : ExerciseThumb(exerciseId: exerciseId), // ✅ your widget
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    meta,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            IconButton(
+              onPressed: onMore,
+              icon: const Icon(Icons.more_horiz, color: Colors.black54),
+            ),
+            if (reorderIndex != null)
+              ReorderableDragStartListener(
+                index: reorderIndex!,
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.drag_handle, color: Colors.black54),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _EditExerciseSheet extends StatefulWidget {
   const _EditExerciseSheet({required this.initial, required this.onSave});

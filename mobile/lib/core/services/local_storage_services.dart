@@ -44,6 +44,7 @@ class LocalStorageService {
     workouts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return workouts;
   }
+  
 
   static SavedWorkout? getSavedWorkoutById(String id) {
     final list = _prefs?.getStringList(_savedWorkoutsKey) ?? <String>[];

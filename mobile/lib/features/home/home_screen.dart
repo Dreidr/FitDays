@@ -45,17 +45,15 @@ class _HomeScreenState extends State<HomeScreen> {
   bool get _profileCompleted => LocalStorageService.isProfileComplete;
 
   Future<void> _goToSetup() async {
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const ProfileSetupScreen(
-        allowSkip: false,
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ProfileSetupScreen(allowSkip: false),
       ),
-    ),
-  );
+    );
 
-  setState(() {});
-}
+    setState(() {});
+  }
 
   DayPlan _defaultPlan() {
     final today = DateTime.now();
@@ -115,7 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Greeting(userNameVN: widget.userNameVN),
 
-                    Divider(thickness: 1, color: Colors.grey.withValues(alpha: 0.25)),
+                    Divider(
+                      thickness: 1,
+                      color: Colors.grey.withValues(alpha: 0.25),
+                    ),
 
                     Calendar(
                       dates: PlanCalendarService.getPlanWeekDates(
@@ -128,6 +129,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 20),
                     WorkoutCarousel(
                       plans: plans,
+                      workoutForPlan: (plan) {
+                        final id = PlayStateResolver.workoutIdFor(
+                          plan.date,
+                          plan,
+                        );
+
+                        return LocalStorageService.getSavedWorkoutById(id);
+                      },
+
                       onPlanTap: (plan) async {
                         // Rest day: don’t generate, just inform (or navigate to a RestDay screen later)
                         if (!plan.isWorkoutDay) {
@@ -149,9 +159,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         // ✅ only generate if not saved yet
                         final existing =
                             LocalStorageService.getSavedWorkoutById(id);
-                       
 
-                       if (existing == null || existing.exercises.isEmpty) {
+                        if (existing == null || existing.exercises.isEmpty) {
                           final generated =
                               await WorkoutGenerator.generatePlannedExercises(
                                 profile: profile,

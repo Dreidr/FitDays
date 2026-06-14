@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:mobile/features/workout/models/day_plan.dart';
-
+import 'package:mobile/features/workout/models/saved_workout.dart';
+import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
 
 class WorkoutCard extends StatelessWidget {
-  const WorkoutCard({super.key, required this.plan, required this.isToday});
+  const WorkoutCard({
+    super.key,
+    required this.plan,
+    required this.isToday,
+    this.workout,
+  });
 
   final DayPlan plan;
   final bool isToday;
+  final SavedWorkout? workout;
 
   String get dayLabel {
     if (isToday) return "TODAY";
@@ -81,6 +88,36 @@ class WorkoutCard extends StatelessWidget {
                     plan.subtitle,
                     style: const TextStyle(color: Colors.white70, fontSize: 14),
                   ),
+
+                  if (workout != null && workout!.exercises.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+
+                    SizedBox(
+                      height: 48,
+                      child: Row(
+                        children: workout!.exercises
+                            .take(4)
+                            .map(
+                              (e) => Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: SizedBox(
+                                    width: 44,
+                                    height: 48,
+                                    child: ExerciseThumb(
+                                      exerciseId: e.exerciseId,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+                  ],
                 ],
               ),
             ],
