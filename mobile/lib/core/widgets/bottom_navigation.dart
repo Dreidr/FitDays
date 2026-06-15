@@ -156,6 +156,7 @@ class _BottomNavState extends State<BottomNav>
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => WorkoutDetailScreen(
+                plan: widget.todayPlan, // ✅ pass the whole plan
                 dayLabel: "Today",
                 title: widget.todayPlan.title,
                 totalTimeText: widget.todayPlan.isWorkoutDay

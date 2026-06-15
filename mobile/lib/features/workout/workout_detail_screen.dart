@@ -8,6 +8,8 @@ import 'package:mobile/app/theme/app_decorations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/features/workout/models/saved_workout.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
+import 'package:mobile/features/workout/models/day_plan.dart';
+import 'package:mobile/features/workout/services/workout_generator.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
@@ -17,8 +19,10 @@ class WorkoutDetailScreen extends StatefulWidget {
     required this.totalTimeText,
     required this.workoutId, // ✅ new,
     required this.warmupCount,
+    required this.plan,
   });
 
+  final DayPlan plan;
   final String dayLabel;
   final String title;
   final String totalTimeText;
@@ -38,7 +42,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   List<PlannedExercise> _userPlan = [];
   List<PlannedExercise> _warmupPlan = []; // ✅ warmup LIST (not a method)
-  List<Map<String, dynamic>> _lastApiItems = [];
+ List<Map<String, dynamic>> _lastExerciseItems = [];
 
   @override
   void initState() {
@@ -146,6 +150,78 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     );
   }
 
+  SavedWorkout? _previousWorkout;
+  bool _canUndoWorkout = false;
+
+  Future<void> _generateNewWorkout() async {
+    final profile = LocalStorageService.getUserProfile();
+
+    final generated = await WorkoutGenerator.generatePlannedExercises(
+      profile: profile,
+      plan: widget.plan,
+    );
+
+    final existing = LocalStorageService.getSavedWorkoutById(widget.workoutId);
+
+    if (existing == null) return;
+
+    // Save previous workout for Undo
+    _previousWorkout = existing;
+
+    final updated = SavedWorkout(
+      id: existing.id,
+      createdAt: existing.createdAt,
+      title: existing.title,
+      durationMinutes: existing.durationMinutes,
+      warmupOn: true,
+      exercises: generated,
+    );
+
+    await LocalStorageService.saveGeneratedWorkout(updated);
+
+    setState(() {
+      _savedWorkout = updated;
+      _canUndoWorkout = true;
+
+      _warmupPlan = generated.where((e) {
+        final id = int.tryParse(e.exerciseId) ?? 0;
+        return id >= 1107;
+      }).toList();
+
+      _userPlan = generated.where((e) {
+        final id = int.tryParse(e.exerciseId) ?? 0;
+        return id < 1107;
+      }).toList();
+
+      _future = _loadExercises();
+    });
+  }
+
+  Future<void> _undoWorkoutGeneration() async {
+    if (_previousWorkout == null) return;
+
+    await LocalStorageService.saveGeneratedWorkout(_previousWorkout!);
+
+    final restored = _previousWorkout!;
+
+    setState(() {
+      _savedWorkout = restored;
+      _canUndoWorkout = false;
+
+      _warmupPlan = restored.exercises.where((e) {
+        final id = int.tryParse(e.exerciseId) ?? 0;
+        return id >= 1107;
+      }).toList();
+
+      _userPlan = restored.exercises.where((e) {
+        final id = int.tryParse(e.exerciseId) ?? 0;
+        return id < 1107;
+      }).toList();
+
+      _future = _loadExercises();
+    });
+  }
+
   Future<void> _startWorkout() async {
     final playList = _warmupOn ? [..._warmupPlan, ..._userPlan] : _userPlan;
 
@@ -173,6 +249,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     final existing = LocalStorageService.getSavedWorkoutById(widget.workoutId);
 
     if (existing == null) return;
+    _previousWorkout = existing;
 
     final updated = SavedWorkout(
       id: existing.id,
@@ -219,10 +296,10 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       snap.connectionState == ConnectionState.waiting;
 
                   final apiItems =
-                      snap.data ?? (isLoading ? _lastApiItems : const []);
+                      snap.data ?? (isLoading ? _lastExerciseItems : const []);
                   if (!isLoading && snap.hasData) {
                     // ✅ update cache only when we have fresh data
-                    _lastApiItems = snap.data!;
+                    _lastExerciseItems = snap.data!;
                   }
                   if (snap.hasError) {
                     return Center(
@@ -238,7 +315,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                   final planItems =
                       _userPlan; // ✅ main list = only workout exercises
 
-                  final apiById = <String, Map<String, dynamic>>{
+                  final exerciseById = <String, Map<String, dynamic>>{
                     for (final ex in apiItems) _s(ex['id']): ex,
                   };
 
@@ -345,7 +422,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                   )
                                 else
                                   ..._warmupPlan.map((p) {
-                                    final ex = apiById[p.exerciseId];
+                                    final ex = exerciseById[p.exerciseId];
 
                                     final name = ex == null
                                         ? "Warm-up"
@@ -431,7 +508,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                           },
                           itemBuilder: (context, i) {
                             final planned = planItems[i];
-                            final ex = apiById[planned.exerciseId];
+                            final ex = exerciseById[planned.exerciseId];
                             final name = ex == null
                                 ? "Missing exercise"
                                 : _s(ex['name']);
@@ -499,9 +576,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         ),
 
                         const SizedBox(height: 6),
-
-                        // (optional) you can compute muscle groups/equipment from apiItems
-                        // we can do that next.
                       ],
                     ),
                   );
@@ -537,6 +611,39 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                           ),
                         ),
                       ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _canUndoWorkout
+                                ? _undoWorkoutGeneration
+                                : _generateNewWorkout,
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor: Colors.grey.shade200,
+                              minimumSize: const Size.fromHeight(56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: Text(
+                              _canUndoWorkout ? "Undo" : "New Workout",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: _canUndoWorkout
+                                    ? const Color(0xFFD32F2F) // red
+                                    : const Color(0xFF333333), // charcoal
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

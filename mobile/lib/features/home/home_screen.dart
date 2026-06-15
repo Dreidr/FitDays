@@ -185,6 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => WorkoutDetailScreen(
+                              plan: plan,
                               dayLabel: PlanCalendarService.dayLabel(plan.date),
                               title: plan.title,
                               totalTimeText: _totalTimeTextFor(plan, duration),

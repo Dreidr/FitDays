@@ -4,6 +4,7 @@ import 'package:mobile/features/home/home_screen.dart';
 import 'package:mobile/features/profile/profile_tab_root.dart';
 import 'package:mobile/core/widgets/bottom_navigation.dart'; // your sticky nav
 import 'package:mobile/features/workout/models/day_plan.dart';
+import 'package:mobile/features/workout/services/day_plan_builder.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({
@@ -33,49 +34,26 @@ class _AppShellState extends State<AppShell> {
 
   DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 
-  String _weekdayLabel(DateTime date) {
-    const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    return labels[date.weekday - 1];
-  }
-
   DayPlan _todayPlan() {
     final today = _dateOnly(DateTime.now());
-    final isWorkoutDay = _workoutDays.contains(_weekdayLabel(today));
 
-    debugPrint("Stored workoutDays: $_workoutDays");
+    final profile = LocalStorageService.getUserProfile();
 
-    // Simple 3-plan cycle (MVP). Later you can swap this to your real plan logic.
-    const titles = ["Upper Body", "Lower Body", "Full Body"];
-    const subtitles = ["Strength", "Strength", "Strength"];
+    final weekPlans = DayPlanBuilder.buildWeek(
+      startDate: _startDate,
+      workoutDays: _workoutDays,
+      durationMinutes: profile?.workoutDuration ?? 40,
+      profile: profile,
+    );
 
-    // Count workout days from startDate -> today (inclusive) to rotate titles only on workout days
-    int workoutCount = 0;
-    DateTime d = _startDate;
-
-    while (!d.isAfter(today)) {
-      final label = _weekdayLabel(d);
-      if (_workoutDays.contains(label)) workoutCount++;
-      d = d.add(const Duration(days: 1));
-    }
-
-    // If today is workout day, workoutCount >= 1. If rest day, workoutCount is still last workout index.
-    final idx = workoutCount == 0 ? 0 : (workoutCount - 1) % titles.length;
-
-    // For rest day, show a rest title/subtitle (nice UX for your preview too)
-    if (!isWorkoutDay) {
-      return DayPlan(
+    return weekPlans.firstWhere(
+      (p) => _dateOnly(p.date) == today,
+      orElse: () => DayPlan(
         date: today,
         isWorkoutDay: false,
         title: "Rest Day",
         subtitle: "Recovery",
-      );
-    }
-
-    return DayPlan(
-      date: today,
-      isWorkoutDay: true,
-      title: titles[idx],
-      subtitle: subtitles[idx],
+      ),
     );
   }
 
