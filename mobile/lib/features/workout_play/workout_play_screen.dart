@@ -603,7 +603,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                                       fontSize: 64,
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.2,
-                                      color: Color(0xFF4442D9),
+                                      color: Color.fromARGB(255, 244, 124, 38),
                                     ),
                                   ),
                                   const SizedBox(width: 24),

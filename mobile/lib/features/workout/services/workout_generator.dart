@@ -11,7 +11,7 @@ class WorkoutGenerator {
     if (minutes <= 30) return 5;
     if (minutes <= 40) return 6;
     if (minutes <= 50) return 8;
-    return 12;
+    return 10;
   }
 
   // ---------- helpers: normalize ----------
@@ -343,15 +343,6 @@ class WorkoutGenerator {
     return t.contains("calf");
   }
 
-  static bool _isLeg(Map<String, dynamic> e) {
-    final t = _norm(e["target"]?.toString());
-
-    return t.contains("quad") ||
-        t.contains("hamstring") ||
-        t.contains("glute") ||
-        t.contains("calf");
-  }
-
   static bool _isCore(Map<String, dynamic> e) {
     final t = _norm(e["target"]?.toString());
 
@@ -365,22 +356,32 @@ class WorkoutGenerator {
     List<Map<String, dynamic>> pool,
     int count,
   ) {
-    final result = <Map<String, dynamic>>[];
-
     final chest = pool.where(_isChest).toList()..shuffle(_rng);
-
     final shoulders = pool.where(_isShoulder).toList()..shuffle(_rng);
-
     final triceps = pool.where(_isTricep).toList()..shuffle(_rng);
 
-    if (chest.isNotEmpty) result.add(chest.first);
-    if (shoulders.isNotEmpty) result.add(shoulders.first);
-    if (triceps.isNotEmpty) result.add(triceps.first);
+    final result = <Map<String, dynamic>>[];
 
-    final remaining = pool.where((e) => !result.contains(e)).toList()
-      ..shuffle(_rng);
+    while (result.length < count) {
+      if (chest.isNotEmpty && result.length < count) {
+        result.add(chest.removeAt(0));
+      }
 
-    result.addAll(remaining.take(max(0, count - result.length)));
+      if (shoulders.isNotEmpty && result.length < count) {
+        result.add(shoulders.removeAt(0));
+      }
+
+      if (triceps.isNotEmpty && result.length < count) {
+        result.add(triceps.removeAt(0));
+      }
+    }
+
+    if (result.length < count) {
+      final remaining = pool.where((e) => !result.contains(e)).toList()
+        ..shuffle(_rng);
+
+      result.addAll(remaining.take(count - result.length));
+    }
 
     return result.take(count).toList();
   }
@@ -389,29 +390,37 @@ class WorkoutGenerator {
     List<Map<String, dynamic>> pool,
     int count,
   ) {
-    final result = <Map<String, dynamic>>[];
-
     final back = pool.where(_isBack).toList()..shuffle(_rng);
-
     final biceps = pool.where(_isBicep).toList()..shuffle(_rng);
-
     final rearDelts = pool.where((e) => _isRearDelt(e) || _isTrap(e)).toList()
       ..shuffle(_rng);
 
-    // 2 back exercises
-    if (back.isNotEmpty) result.add(back.first);
-    if (back.length > 1) result.add(back[1]);
+    final result = <Map<String, dynamic>>[];
 
-    // 1 rear delt / trap
-    if (rearDelts.isNotEmpty) result.add(rearDelts.first);
+    while (result.length < count) {
+      if (back.isNotEmpty && result.length < count) {
+        result.add(back.removeAt(0));
+      }
 
-    // 1 bicep
-    if (biceps.isNotEmpty) result.add(biceps.first);
+      if (back.isNotEmpty && result.length < count) {
+        result.add(back.removeAt(0));
+      }
 
-    final remaining = pool.where((e) => !result.contains(e)).toList()
-      ..shuffle(_rng);
+      if (rearDelts.isNotEmpty && result.length < count) {
+        result.add(rearDelts.removeAt(0));
+      }
 
-    result.addAll(remaining.take(max(0, count - result.length)));
+      if (biceps.isNotEmpty && result.length < count) {
+        result.add(biceps.removeAt(0));
+      }
+    }
+
+    if (result.length < count) {
+      final remaining = pool.where((e) => !result.contains(e)).toList()
+        ..shuffle(_rng);
+
+      result.addAll(remaining.take(count - result.length));
+    }
 
     return result.take(count).toList();
   }
@@ -420,27 +429,37 @@ class WorkoutGenerator {
     List<Map<String, dynamic>> pool,
     int count,
   ) {
+    final quads = pool.where(_isQuad).toList()..shuffle(_rng);
+    final hamstrings = pool.where(_isHamstring).toList()..shuffle(_rng);
+    final glutes = pool.where(_isGlute).toList()..shuffle(_rng);
+    final calves = pool.where(_isCalf).toList()..shuffle(_rng);
+
     final result = <Map<String, dynamic>>[];
 
-    final quads = pool.where(_isQuad).toList()..shuffle(_rng);
+    while (result.length < count) {
+      if (quads.isNotEmpty && result.length < count) {
+        result.add(quads.removeAt(0));
+      }
 
-    final hamstrings = pool.where(_isHamstring).toList()..shuffle(_rng);
+      if (hamstrings.isNotEmpty && result.length < count) {
+        result.add(hamstrings.removeAt(0));
+      }
 
-    final glutes = pool.where(_isGlute).toList()..shuffle(_rng);
+      if (glutes.isNotEmpty && result.length < count) {
+        result.add(glutes.removeAt(0));
+      }
 
-    final calves = pool.where(_isCalf).toList()..shuffle(_rng);
-    final leg = pool.where(_isLeg).toList()..shuffle(_rng);
+      if (calves.isNotEmpty && result.length < count) {
+        result.add(calves.removeAt(0));
+      }
+    }
 
-    if (quads.isNotEmpty) result.add(quads.first);
-    if (hamstrings.isNotEmpty) result.add(hamstrings.first);
-    if (glutes.isNotEmpty) result.add(glutes.first);
-    if (calves.isNotEmpty) result.add(calves.first);
-    if (leg.isNotEmpty) result.add(leg.first);
+    if (result.length < count) {
+      final remaining = pool.where((e) => !result.contains(e)).toList()
+        ..shuffle(_rng);
 
-    final remaining = pool.where((e) => !result.contains(e)).toList()
-      ..shuffle(_rng);
-
-    result.addAll(remaining.take(max(0, count - result.length)));
+      result.addAll(remaining.take(count - result.length));
+    }
 
     return result.take(count).toList();
   }
@@ -449,28 +468,42 @@ class WorkoutGenerator {
     List<Map<String, dynamic>> pool,
     int count,
   ) {
-    final result = <Map<String, dynamic>>[];
-
     final chest = pool.where(_isChest).toList()..shuffle(_rng);
-
     final back = pool.where(_isBack).toList()..shuffle(_rng);
-
     final shoulders = pool.where(_isShoulder).toList()..shuffle(_rng);
-
     final biceps = pool.where(_isBicep).toList()..shuffle(_rng);
-
     final triceps = pool.where(_isTricep).toList()..shuffle(_rng);
 
-    if (chest.isNotEmpty) result.add(chest.first);
-    if (back.isNotEmpty) result.add(back.first);
-    if (shoulders.isNotEmpty) result.add(shoulders.first);
-    if (biceps.isNotEmpty) result.add(biceps.first);
-    if (triceps.isNotEmpty) result.add(triceps.first);
+    final result = <Map<String, dynamic>>[];
 
-    final remaining = pool.where((e) => !result.contains(e)).toList()
-      ..shuffle(_rng);
+    while (result.length < count) {
+      if (chest.isNotEmpty && result.length < count) {
+        result.add(chest.removeAt(0));
+      }
 
-    result.addAll(remaining.take(max(0, count - result.length)));
+      if (back.isNotEmpty && result.length < count) {
+        result.add(back.removeAt(0));
+      }
+
+      if (shoulders.isNotEmpty && result.length < count) {
+        result.add(shoulders.removeAt(0));
+      }
+
+      if (biceps.isNotEmpty && result.length < count) {
+        result.add(biceps.removeAt(0));
+      }
+
+      if (triceps.isNotEmpty && result.length < count) {
+        result.add(triceps.removeAt(0));
+      }
+    }
+
+    if (result.length < count) {
+      final remaining = pool.where((e) => !result.contains(e)).toList()
+        ..shuffle(_rng);
+
+      result.addAll(remaining.take(count - result.length));
+    }
 
     return result.take(count).toList();
   }
@@ -479,8 +512,6 @@ class WorkoutGenerator {
     List<Map<String, dynamic>> pool,
     int count,
   ) {
-    final result = <Map<String, dynamic>>[];
-
     final push =
         pool
             .where((e) => _isChest(e) || _isShoulder(e) || _isTricep(e))
@@ -492,20 +523,41 @@ class WorkoutGenerator {
           ..shuffle(_rng);
 
     final legs =
-        pool.where((e) => _isQuad(e) || _isHamstring(e) || _isGlute(e)).toList()
+        pool
+            .where(
+              (e) => _isQuad(e) || _isHamstring(e) || _isGlute(e) || _isCalf(e),
+            )
+            .toList()
           ..shuffle(_rng);
 
     final core = pool.where(_isCore).toList()..shuffle(_rng);
 
-    if (push.isNotEmpty) result.add(push.first);
-    if (pull.isNotEmpty) result.add(pull.first);
-    if (legs.isNotEmpty) result.add(legs.first);
-    if (core.isNotEmpty) result.add(core.first);
+    final result = <Map<String, dynamic>>[];
 
-    final remaining = pool.where((e) => !result.contains(e)).toList()
-      ..shuffle(_rng);
+    while (result.length < count) {
+      if (push.isNotEmpty && result.length < count) {
+        result.add(push.removeAt(0));
+      }
 
-    result.addAll(remaining.take(max(0, count - result.length)));
+      if (pull.isNotEmpty && result.length < count) {
+        result.add(pull.removeAt(0));
+      }
+
+      if (legs.isNotEmpty && result.length < count) {
+        result.add(legs.removeAt(0));
+      }
+
+      if (core.isNotEmpty && result.length < count) {
+        result.add(core.removeAt(0));
+      }
+    }
+
+    if (result.length < count) {
+      final remaining = pool.where((e) => !result.contains(e)).toList()
+        ..shuffle(_rng);
+
+      result.addAll(remaining.take(count - result.length));
+    }
 
     return result.take(count).toList();
   }
@@ -525,7 +577,6 @@ class WorkoutGenerator {
     required DayPlan plan,
   }) async {
     final all = await LocalExerciseRepo.loadAll();
-    final warmups = await LocalExerciseRepo.loadWarmups();
 
     final generatedWarmups = await _generateWarmups(plan.title.toLowerCase());
 

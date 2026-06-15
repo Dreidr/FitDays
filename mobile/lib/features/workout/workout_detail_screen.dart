@@ -10,6 +10,7 @@ import 'package:mobile/features/workout/models/saved_workout.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/workout/models/day_plan.dart';
 import 'package:mobile/features/workout/services/workout_generator.dart';
+import 'package:mobile/features/workout/all_exercises_screen.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
@@ -42,7 +43,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   List<PlannedExercise> _userPlan = [];
   List<PlannedExercise> _warmupPlan = []; // ✅ warmup LIST (not a method)
- List<Map<String, dynamic>> _lastExerciseItems = [];
+  List<Map<String, dynamic>> _lastExerciseItems = [];
 
   @override
   void initState() {
@@ -142,6 +143,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         onSave: (updated) {
           setState(() {
             _userPlan[index] = updated;
+            _future = _loadExercises();
           });
 
           Navigator.pop(context);
@@ -1025,6 +1027,43 @@ class _EditExerciseSheetState extends State<_EditExerciseSheet> {
 
           const SizedBox(height: 16),
 
+          Row(
+            children: [
+              TextButton.icon(
+                onPressed: () async {
+                  final currentExercise = await LocalExerciseRepo.getById(
+                    widget.initial.exerciseId,
+                  );
+
+                  final target = currentExercise?["target"];
+
+                  final replacement = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AllExercisesScreen(
+                        targetFilter: target,
+                        selectionMode: true,
+                        warmupOnly: true,
+                      ),
+                    ),
+                  );
+
+                  if (replacement == null) return;
+
+                  widget.onSave(
+                    PlannedExercise(
+                      exerciseId: replacement["id"].toString(),
+                      sets: _sets,
+                      reps: _reps,
+                      weightKg: _parseWeight(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.swap_horiz),
+                label: const Text("Replace Exercise"),
+              ),
+            ],
+          ),
           Row(
             children: [
               TextButton(

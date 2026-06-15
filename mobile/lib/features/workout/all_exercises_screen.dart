@@ -4,7 +4,16 @@ import 'package:mobile/features/workout/exercise_detail_screen.dart';
 import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
 
 class AllExercisesScreen extends StatefulWidget {
-  const AllExercisesScreen({super.key});
+  final String? targetFilter;
+  final bool selectionMode;
+  final bool warmupOnly;
+
+  const AllExercisesScreen({
+    super.key,
+    this.targetFilter,
+    this.selectionMode = false,
+    this.warmupOnly = false,
+  });
 
   @override
   State<AllExercisesScreen> createState() => _AllExercisesScreenState();
@@ -39,18 +48,28 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
   Future<void> _bootstrap() async {
     setState(() => _loading = true);
     try {
-      final all = await LocalExerciseRepo.loadAll();
+      final all = widget.warmupOnly
+          ? await LocalExerciseRepo.loadWarmups()
+          : await LocalExerciseRepo.loadAll();
       final parts = await LocalExerciseRepo.bodyParts();
       final warmups = await LocalExerciseRepo.loadWarmups();
 
-      for (final w in warmups.take(30)) {
-        debugPrint("${w['name']}");
+      var filtered = all;
+
+      if (widget.targetFilter != null) {
+        filtered = all.where((e) {
+          return _s(e["target"]).toLowerCase() ==
+              widget.targetFilter!.toLowerCase();
+        }).toList();
       }
 
+      for (final w in warmups.take(30)) {}
+
       if (!mounted) return;
+
       setState(() {
-        _items = all;
-        _totalAll = all.length;
+        _items = filtered;
+        _totalAll = filtered.length;
         _bodyParts = parts;
       });
     } finally {
@@ -202,6 +221,11 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
+                              if (widget.selectionMode) {
+                                Navigator.pop(context, ex);
+                                return;
+                              }
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
