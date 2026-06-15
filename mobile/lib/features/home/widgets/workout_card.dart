@@ -28,6 +28,13 @@ class WorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final previewExercises = workout!.exercises
+        .where((e) {
+          final id = int.tryParse(e.exerciseId) ?? 0;
+          return id < 1107;
+        })
+        .take(4)
+        .toList();
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -95,8 +102,7 @@ class WorkoutCard extends StatelessWidget {
                     SizedBox(
                       height: 48,
                       child: Row(
-                        children: workout!.exercises
-                            .take(4)
+                        children: previewExercises
                             .map(
                               (e) => Padding(
                                 padding: const EdgeInsets.only(right: 8),

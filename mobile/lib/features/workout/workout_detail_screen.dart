@@ -38,8 +38,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   List<PlannedExercise> _userPlan = [];
   List<PlannedExercise> _warmupPlan = []; // ✅ warmup LIST (not a method)
-  List<Map<String, dynamic>> _allExercises = []; // ✅ dataset cache
-
   List<Map<String, dynamic>> _lastApiItems = [];
 
   @override
@@ -49,133 +47,31 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     // ✅ Load saved workout (source of truth)
     _savedWorkout = LocalStorageService.getSavedWorkoutById(widget.workoutId);
 
-    // If not found, start with empty plan (and show UI message later)
-    _userPlan = List.of(_savedWorkout?.exercises ?? const <PlannedExercise>[]);
+    final allExercises = List<PlannedExercise>.from(
+      _savedWorkout?.exercises ?? const <PlannedExercise>[],
+    );
+
+    _warmupPlan = allExercises.where((e) {
+      final id = int.tryParse(e.exerciseId) ?? 0;
+      return id >= 1107;
+    }).toList();
+
+    _userPlan = allExercises.where((e) {
+      final id = int.tryParse(e.exerciseId) ?? 0;
+      return id < 1107;
+    }).toList();
 
     () async {
-      _allExercises = await LocalExerciseRepo.loadAll();
-
-      // only generate warm-up if toggle is ON
-      if (_warmupOn) {
-        _warmupPlan = _generateWarmupForWorkout();
-      } else {
-        _warmupPlan = [];
-      }
-
-      // ✅ now load exercises AFTER warm-up list is ready
       _future = _loadExercises();
 
       if (mounted) setState(() {});
     }();
-  }
 
-  static const int _warmupCount = 4;
+    () async {
+      _future = _loadExercises();
 
-  List<PlannedExercise> _generateWarmupForWorkout() {
-    if (_allExercises.isEmpty) return [];
-
-    bool isWarmupCandidate(Map<String, dynamic> e) {
-      final cat = (e["category"] ?? "").toString().toLowerCase();
-      final eq = (e["equipment"] ?? "").toString().toLowerCase();
-
-      if (cat != "cardio" && cat != "stretching") return false;
-
-      // dataset may use: body weight / body only / other
-      final okEq = eq.contains("body") || eq.contains("other");
-      return okEq;
-    }
-
-    final allWarmups = _allExercises.where((e) {
-      final cat = (e["category"] ?? "").toString().toLowerCase();
-      return cat == "cardio" || cat == "stretching";
-    }).toList();
-
-    debugPrint("ALL WARMUPS: ${allWarmups.length}");
-
-    for (final e in allWarmups.take(30)) {
-      debugPrint(
-        "${e["name"]} | "
-        "${e["equipment"]} | "
-        "${e["target"]}",
-      );
-    }
-
-    final pool = allWarmups.where(isWarmupCandidate).toList();
-
-    debugPrint("FILTERED WARMUPS: ${pool.length}");
-    final title = widget.title.toLowerCase();
-
-    List<Map<String, dynamic>> filtered = pool;
-
-    bool matches(String text, List<String> keywords) {
-      final t = text.toLowerCase();
-      return keywords.any((k) => t.contains(k));
-    }
-
-    if (title.contains("push")) {
-      filtered = pool.where((e) {
-        final body = (e["bodyPart"] ?? "").toString();
-        final target = (e["target"] ?? "").toString();
-
-        return matches("$body $target", ["shoulder", "chest", "tricep", "arm"]);
-      }).toList();
-    } else if (title.contains("pull")) {
-      filtered = pool.where((e) {
-        final body = (e["bodyPart"] ?? "").toString();
-        final target = (e["target"] ?? "").toString();
-
-        return matches("$body $target", ["back", "lat", "bicep", "rear"]);
-      }).toList();
-    } else if (title.contains("legs") || title.contains("lower")) {
-      filtered = pool.where((e) {
-        final body = (e["bodyPart"] ?? "").toString();
-        final target = (e["target"] ?? "").toString();
-
-        return matches("$body $target", [
-          "quad",
-          "hamstring",
-          "glute",
-          "calf",
-          "leg",
-        ]);
-      }).toList();
-    } else if (title.contains("upper")) {
-      filtered = pool.where((e) {
-        final body = (e["bodyPart"] ?? "").toString();
-
-        return matches(body, ["chest", "back", "shoulder", "arm"]);
-      }).toList();
-    }
-
-    if (filtered.isEmpty) {
-      filtered = pool;
-    }
-
-    filtered.shuffle();
-
-    // ✅ take up to 5
-    final picked = filtered.take(_warmupCount).toList();
-    for (final e in picked) {
-      debugPrint("WARMUP: ${e["name"]}");
-    }
-
-    return picked.map((e) {
-      final id = (e["id"] ?? "").toString();
-      final cat = (e["category"] ?? "").toString().toLowerCase();
-
-      // simple warm-up prescription
-      if (cat == "cardio") {
-        return PlannedExercise(
-          exerciseId: id,
-          sets: 1,
-          reps: 30, // 30 seconds / reps-ish
-          weightKg: null,
-        );
-      }
-
-      // stretching
-      return PlannedExercise(exerciseId: id, sets: 1, reps: 20, weightKg: null);
-    }).toList();
+      if (mounted) setState(() {});
+    }();
   }
 
   List<PlannedExercise> get _activePlan {
@@ -188,24 +84,48 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     return LocalExerciseRepo.fetchExercisesByIds(ids);
   }
 
-  void _toggleWarmup(bool v) {
+  void _toggleWarmup(bool v) async {
     setState(() {
       _warmupOn = v;
 
       if (!_warmupOn) {
-        _warmupVisible = false; // collapse if off
-      } else {
-        _warmupPlan = _generateWarmupForWorkout(); // randomize when turned on
+        _warmupVisible = false;
       }
 
-      _future =
-          _loadExercises(); // still reload because active IDs changed for play list
+      _future = _loadExercises();
     });
+
+    await _saveCurrentWorkout();
   }
 
-  void _editExercise(int index) {
-    final current = _userPlan[index];
+  void _editExerciseWarmup(PlannedExercise current) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (_) => _EditExerciseSheet(
+        initial: current,
+        onSave: (updated) {
+          setState(() {
+            final index = _warmupPlan.indexWhere(
+              (e) => e.exerciseId == current.exerciseId,
+            );
 
+            if (index != -1) {
+              _warmupPlan[index] = updated;
+            }
+          });
+
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  void _editExerciseWorkout(int index, PlannedExercise current) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -219,6 +139,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
           setState(() {
             _userPlan[index] = updated;
           });
+
           Navigator.pop(context);
         },
       ),
@@ -247,6 +168,23 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   }
 
   String _s(dynamic v) => (v ?? '').toString();
+
+  Future<void> _saveCurrentWorkout() async {
+    final existing = LocalStorageService.getSavedWorkoutById(widget.workoutId);
+
+    if (existing == null) return;
+
+    final updated = SavedWorkout(
+      id: existing.id,
+      createdAt: existing.createdAt,
+      title: existing.title,
+      durationMinutes: existing.durationMinutes,
+      warmupOn: _warmupOn,
+      exercises: [..._warmupPlan, ..._userPlan],
+    );
+
+    await LocalStorageService.saveGeneratedWorkout(updated);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -421,27 +359,50 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                       if (cat.isNotEmpty) cat,
                                     ].join(" • ");
 
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 10,
+                                    return Slidable(
+                                      key: ValueKey(p),
+                                      endActionPane: ActionPane(
+                                        extentRatio: 0.28,
+                                        motion: const DrawerMotion(),
+                                        children: [
+                                          SlidableAction(
+                                            onPressed: (_) async {
+                                              setState(() {
+                                                _warmupPlan.remove(p);
+                                              });
+
+                                              await _saveCurrentWorkout();
+                                            },
+                                            backgroundColor: Colors.red,
+                                            foregroundColor: Colors.white,
+                                            icon: Icons.delete,
+                                            label: "Delete",
+                                          ),
+                                        ],
                                       ),
-                                      child: _ExerciseRow(
-                                        exerciseId: p.exerciseId,
-                                        name: name.isEmpty ? "Warm-up" : name,
-                                        meta: subtitle,
-                                        onMore: () {},
-                                        onTap: () {
-                                          if (ex == null) return;
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  ExerciseDetailScreen(
-                                                    exercise: ex,
-                                                  ),
-                                            ),
-                                          );
-                                        },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 10,
+                                        ),
+                                        child: _ExerciseRow(
+                                          exerciseId: p.exerciseId,
+                                          name: name.isEmpty ? "Warm-up" : name,
+                                          meta: subtitle,
+                                          onMore: () => _editExerciseWarmup(p),
+                                          onTap: () {
+                                            if (ex == null) return;
+
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    ExerciseDetailScreen(
+                                                      exercise: ex,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
                                     );
                                   }),
@@ -459,13 +420,14 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                               const NeverScrollableScrollPhysics(), // because you're inside SingleChildScrollView
                           buildDefaultDragHandles: false,
                           itemCount: planItems.length,
-                          onReorder: (oldIndex, newIndex) {
+                          onReorder: (oldIndex, newIndex) async {
                             setState(() {
                               if (newIndex > oldIndex) newIndex -= 1;
                               final item = _userPlan.removeAt(oldIndex);
                               _userPlan.insert(newIndex, item);
                             });
-                            // No need to reload _future because IDs didn't change.
+
+                            await _saveCurrentWorkout();
                           },
                           itemBuilder: (context, i) {
                             final planned = planItems[i];
@@ -484,12 +446,13 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                 motion: const DrawerMotion(),
                                 children: [
                                   SlidableAction(
-                                    onPressed: (_) {
+                                    onPressed: (_) async {
                                       setState(() {
                                         _userPlan.removeAt(i);
-                                        _future =
-                                            _loadExercises(); // reload because IDs changed
+                                        _future = _loadExercises();
                                       });
+
+                                      await _saveCurrentWorkout();
                                     },
                                     backgroundColor: Colors.red,
                                     foregroundColor: Colors.white,
@@ -504,7 +467,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                   exerciseId: planned.exerciseId,
                                   name: name.isEmpty ? "Exercise" : name,
                                   meta: planned.metaText(),
-                                  onMore: () => _editExercise(i),
+                                  onMore: () =>
+                                      _editExerciseWorkout(i, planned),
                                   reorderIndex:
                                       i, // ✅ new (see _ExerciseRow change below)
                                   onTap: () {
@@ -604,6 +568,10 @@ class _HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final previewExercises = exercises.where((e) {
+      final id = int.tryParse(e.exerciseId) ?? 0;
+      return id < 1107;
+    }).toList();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -687,10 +655,12 @@ class _HeaderCard extends StatelessWidget {
             height: 56,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: exercises.length > 5 ? 5 : exercises.length,
+              itemCount: previewExercises.length > 5
+                  ? 5
+                  : previewExercises.length,
               separatorBuilder: (_, _) => const SizedBox(width: 6),
               itemBuilder: (_, index) {
-                final ex = exercises[index];
+                final ex = previewExercises[index];
 
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(14),

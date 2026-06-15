@@ -41,6 +41,11 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
     try {
       final all = await LocalExerciseRepo.loadAll();
       final parts = await LocalExerciseRepo.bodyParts();
+      final warmups = await LocalExerciseRepo.loadWarmups();
+
+      for (final w in warmups.take(30)) {
+        debugPrint("${w['name']}");
+      }
 
       if (!mounted) return;
       setState(() {

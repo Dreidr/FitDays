@@ -175,24 +175,26 @@ class _HomeScreenState extends State<HomeScreen> {
                             warmupOn: true,
                             exercises: generated,
                           );
-
+                          print("SAVING EXERCISES: ${saved.exercises.length}");
                           await LocalStorageService.saveGeneratedWorkout(saved);
                         }
 
                         if (!context.mounted) return;
 
-                        Navigator.push(
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => WorkoutDetailScreen(
                               dayLabel: PlanCalendarService.dayLabel(plan.date),
                               title: plan.title,
                               totalTimeText: _totalTimeTextFor(plan, duration),
-                              workoutId: id, // ✅ changed
+                              workoutId: id,
                               warmupCount: 0,
                             ),
                           ),
                         );
+
+                        setState(() {});
                       },
 
                       // ✅ For skippers only: 2nd swipe = complete setup banner

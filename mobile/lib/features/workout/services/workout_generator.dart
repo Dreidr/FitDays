@@ -525,6 +525,9 @@ class WorkoutGenerator {
     required DayPlan plan,
   }) async {
     final all = await LocalExerciseRepo.loadAll();
+    final warmups = await LocalExerciseRepo.loadWarmups();
+
+    final generatedWarmups = await _generateWarmups(plan.title.toLowerCase());
 
     final lane = _laneFromProfile(profile);
     final duration = profile?.workoutDuration ?? 40;
@@ -593,10 +596,11 @@ class WorkoutGenerator {
     }
 
     // Strength lane
+    // Strength lane
     final rx = _strengthRx(profile);
     final baseSets = _tweakSetsForDuration(rx.sets, duration);
 
-    return picked.map((e) {
+    final exercises = picked.map((e) {
       final id = (e["id"] ?? "").toString();
       final reps = _randInt(rx.repsMin, rx.repsMax);
       final sets = _setsForExercise(baseSets, e);
@@ -608,6 +612,116 @@ class WorkoutGenerator {
         sets: sets,
         reps: reps,
         weightKg: weight,
+      );
+    }).toList();
+
+    return [...generatedWarmups, ...exercises];
+  }
+
+  static Future<List<PlannedExercise>> _generateWarmups(
+    String workoutType,
+  ) async {
+    final warmups = await LocalExerciseRepo.loadWarmups();
+
+    const excludedKeywords = [
+      'push up',
+      'dragon flag',
+      'ab wheel',
+      'jump squat',
+      'jump box',
+      'burpee',
+      'crow pose',
+      'goblet squat',
+      'hanging leg',
+      'hollow hold',
+      'depth jump',
+    ];
+
+    bool isWarmupCandidate(Map<String, dynamic> e) {
+      final name = (e['name'] ?? '').toString().toLowerCase();
+
+      return !excludedKeywords.any((k) => name.contains(k));
+    }
+
+    List<Map<String, dynamic>> filtered = [];
+
+    if (workoutType.contains("push")) {
+      filtered = warmups.where((e) {
+        if (!isWarmupCandidate(e)) return false;
+
+        final body = (e["bodyPart"] ?? "").toString().toLowerCase();
+        final target = (e["target"] ?? "").toString().toLowerCase();
+
+        return "$body $target".contains("shoulder") ||
+            "$body $target".contains("delt") ||
+            "$body $target".contains("chest");
+      }).toList();
+    } else if (workoutType.contains("pull")) {
+      filtered = warmups.where((e) {
+        if (!isWarmupCandidate(e)) return false;
+
+        final body = (e["bodyPart"] ?? "").toString().toLowerCase();
+        final target = (e["target"] ?? "").toString().toLowerCase();
+
+        return "$body $target".contains("back") ||
+            "$body $target".contains("lat");
+      }).toList();
+    } else if (workoutType.contains("upper")) {
+      filtered = warmups.where((e) {
+        if (!isWarmupCandidate(e)) return false;
+
+        final body = (e["bodyPart"] ?? "").toString().toLowerCase();
+        final target = (e["target"] ?? "").toString().toLowerCase();
+
+        return "$body $target".contains("shoulder") ||
+            "$body $target".contains("delt") ||
+            "$body $target".contains("chest") ||
+            "$body $target".contains("back") ||
+            "$body $target".contains("lat");
+      }).toList();
+    } else if (workoutType.contains("legs") || workoutType.contains("lower")) {
+      filtered = warmups.where((e) {
+        if (!isWarmupCandidate(e)) return false;
+
+        final body = (e["bodyPart"] ?? "").toString().toLowerCase();
+        final target = (e["target"] ?? "").toString().toLowerCase();
+
+        return "$body $target".contains("quad") ||
+            "$body $target".contains("hamstring") ||
+            "$body $target".contains("glute");
+      }).toList();
+    } else if (workoutType.contains("full")) {
+      filtered = warmups.where((e) {
+        if (!isWarmupCandidate(e)) return false;
+
+        final body = (e["bodyPart"] ?? "").toString().toLowerCase();
+        final target = (e["target"] ?? "").toString().toLowerCase();
+
+        return "$body $target".contains("shoulder") ||
+            "$body $target".contains("delt") ||
+            "$body $target".contains("chest") ||
+            "$body $target".contains("back") ||
+            "$body $target".contains("lat") ||
+            "$body $target".contains("quad") ||
+            "$body $target".contains("hamstring") ||
+            "$body $target".contains("glute");
+      }).toList();
+    }
+
+    if (filtered.isEmpty) {
+      filtered = warmups.where(isWarmupCandidate).toList();
+    }
+
+    filtered.shuffle();
+
+    final picked = filtered.take(3).toList();
+
+    return picked.map((e) {
+      return PlannedExercise(
+        exerciseId: e["id"].toString(),
+        sets: 1,
+        reps: 20,
+        weightKg: null,
       );
     }).toList();
   }

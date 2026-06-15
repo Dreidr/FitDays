@@ -1,0 +1,2195 @@
+[
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1107",
+        "name": "ab wheel workout",
+        "target": "abs",
+        "secondaryMuscles": [
+            "lower back",
+            "shoulders"
+        ],
+        "instructions": [
+            "Kneel on the floor and grip the ab wheel handles with both hands, positioning it directly beneath your shoulders.",
+            "Engage your core and slowly roll the wheel forward, extending your body towards the ground.",
+            "Continue rolling out as far as you can while keeping your back flat and hips from sagging.",
+            "Pause briefly at full extension, then use your core to pull the wheel back to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "The ab wheel workout is a bodyweight core exercise that targets the abdominal muscles while engaging the lower back and shoulders as stabilizers. It involves rolling out and back on an ab wheel from a kneeling position, demanding full core tension throughout the movement.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1108",
+        "name": "ardha matsyendrasana (seated spinal twist)",
+        "target": "abs",
+        "secondaryMuscles": [
+            "obliques",
+            "lower back"
+        ],
+        "instructions": [
+            "Sit on the floor with your legs extended straight in front of you.",
+            "Bend your right knee and place your right foot flat on the floor outside your left thigh.",
+            "Place your right hand behind you on the floor for support and wrap your left arm around your right knee.",
+            "Inhale to lengthen your spine, then exhale and twist your torso to the right as far as comfortably possible.",
+            "Hold for 20-30 seconds, then return to center and repeat on the opposite side."
+        ],
+        "description": "Ardha matsyendrasana, or the seated spinal twist, is a bodyweight mobility exercise targeting the abdominal muscles and spine. It involves rotating the torso from a seated position to improve spinal mobility and engage the core and obliques.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1109",
+        "name": "arm stretch",
+        "target": "delts",
+        "secondaryMuscles": [
+            "traps",
+            "upper arms"
+        ],
+        "instructions": [
+            "Stand with your feet shoulder-width apart and your back straight.",
+            "Extend one arm across your body at chest height.",
+            "Use your opposite hand to gently pull the extended arm closer to your chest.",
+            "Hold the stretch for 20-30 seconds, feeling the tension in your shoulder.",
+            "Release and repeat on the other side for the desired number of repetitions."
+        ],
+        "description": "The arm stretch is a bodyweight stretching exercise targeting the deltoids, with secondary engagement of the traps and upper arms. It is performed standing by pulling one arm across the chest to release tension and improve shoulder flexibility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1110",
+        "name": "bird dog advanced (both hands raise)",
+        "target": "lats",
+        "secondaryMuscles": [
+            "abs",
+            "glutes",
+            "lower back"
+        ],
+        "instructions": [
+            "Begin on all fours with your hands directly under your shoulders and knees under your hips.",
+            "Engage your core to stabilize your spine and keep your back flat.",
+            "Simultaneously raise both arms straight forward while extending both legs behind you, balancing on your torso.",
+            "Hold the position for 2-3 seconds, maintaining a neutral spine and avoiding rotation.",
+            "Lower back to the starting position and repeat for the desired number of repetitions."
+        ],
+        "description": "The bird dog advanced (both hands raise) is a challenging bodyweight exercise targeting the lats and lower back, with secondary engagement of the abs and glutes. It involves simultaneously lifting both arms and both legs from a tabletop position, demanding exceptional core stability and balance.",
+        "difficulty": "advanced",
+        "category": "balance"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1111",
+        "name": "bird dog",
+        "target": "lats",
+        "secondaryMuscles": [
+            "abs",
+            "glutes",
+            "lower back"
+        ],
+        "instructions": [
+            "Begin on all fours with your hands directly under your shoulders and knees under your hips.",
+            "Engage your core and keep your back flat throughout the movement.",
+            "Simultaneously extend your right arm forward and your left leg back, keeping both parallel to the floor.",
+            "Hold for 2-3 seconds, then return to the starting position.",
+            "Repeat on the opposite side, extending your left arm and right leg, and continue alternating for the desired number of repetitions."
+        ],
+        "description": "The bird dog is a bodyweight exercise targeting the lats and lower back, with secondary engagement of the abs and glutes. It involves alternately extending opposite arm and leg from a quadruped position to develop core stability, balance, and spinal control.",
+        "difficulty": "beginner",
+        "category": "balance"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1112",
+        "name": "bridge pose - wheel prep bridge",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hamstrings",
+            "lower back",
+            "abs"
+        ],
+        "instructions": [
+            "Lie flat on your back with your knees bent and feet flat on the floor, hip-width apart.",
+            "Place your arms alongside your body with palms facing down.",
+            "Press through your feet and engage your glutes to lift your hips off the floor until your body forms a straight line from shoulders to knees.",
+            "Hold at the top for 2-3 seconds, squeezing your glutes and keeping your core engaged.",
+            "Slowly lower your hips back to the starting position and repeat for the desired number of repetitions."
+        ],
+        "description": "The bridge pose wheel prep bridge is a bodyweight exercise targeting the glutes, with secondary engagement of the hamstrings, lower back, and abs. It involves lifting the hips from a supine position to strengthen the posterior chain and prepare the spine for deeper backbend movements.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1113",
+        "name": "bulgarian split squat",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings"
+        ],
+        "instructions": [
+            "Stand about two feet in front of a bench or elevated surface and place the top of one foot on the bench behind you.",
+            "Ensure your front foot is far enough forward that your knee does not travel past your toes during the descent.",
+            "Engage your core and lower your back knee towards the ground by bending your front leg.",
+            "Descend until your front thigh is approximately parallel to the floor.",
+            "Drive through your front heel to return to the starting position and repeat for the desired number of repetitions before switching legs."
+        ],
+        "description": "The Bulgarian split squat is a bodyweight lower body exercise targeting the quadriceps, with secondary emphasis on the glutes and hamstrings. It is performed with the rear foot elevated, creating a unilateral loading pattern that challenges leg strength, stability, and hip mobility.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1114",
+        "name": "burpee",
+        "target": "abs",
+        "secondaryMuscles": [
+            "chest",
+            "quads",
+            "shoulders"
+        ],
+        "instructions": [
+            "Stand with your feet shoulder-width apart and your arms by your sides.",
+            "Bend your knees and place your hands on the floor, then jump or step your feet back into a push-up position.",
+            "Perform one push-up, keeping your body in a straight line.",
+            "Jump or step your feet back towards your hands, then explosively jump upward with your arms overhead.",
+            "Land softly with slightly bent knees and immediately begin the next repetition."
+        ],
+        "description": "The burpee is a full-body bodyweight exercise targeting the abs and cardiovascular system, with secondary engagement of the chest, quads, and shoulders. It combines a squat, plank, push-up, and jump into one continuous movement, making it highly effective for conditioning and calorie expenditure.",
+        "difficulty": "intermediate",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "lower legs",
+        "equipment": "body weight",
+        "id": "1115",
+        "name": "butt kick jog cardio",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "quads",
+            "glutes"
+        ],
+        "instructions": [
+            "Stand tall with your feet hip-width apart and your arms bent at 90 degrees at your sides.",
+            "Begin jogging in place at a moderate pace.",
+            "With each stride, kick your heel up towards your glutes as high as comfortably possible.",
+            "Alternate legs in a continuous jogging rhythm, keeping your core engaged and your torso upright.",
+            "Continue for the desired duration or number of repetitions."
+        ],
+        "description": "Butt kick jog cardio is a bodyweight cardiovascular exercise targeting the hamstrings, with secondary engagement of the quads and glutes. It involves jogging in place while kicking the heels up to the glutes with each stride, elevating heart rate while warming up the lower body.",
+        "difficulty": "beginner",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1116",
+        "name": "cat pose stretching",
+        "target": "lats",
+        "secondaryMuscles": [
+            "abs",
+            "lower back"
+        ],
+        "instructions": [
+            "Begin on all fours with your wrists directly under your shoulders and your knees under your hips.",
+            "Inhale to prepare, then exhale and round your spine upward toward the ceiling, tucking your chin to your chest and your tailbone under.",
+            "Hold the rounded position for 2-3 seconds, feeling the stretch through your back.",
+            "Slowly return your spine to a neutral position.",
+            "Repeat for the desired number of repetitions, coordinating the movement with your breath."
+        ],
+        "description": "Cat pose stretching is a bodyweight mobility exercise targeting the lats and back, with secondary engagement of the abs and lower back. Performed on all fours, it involves rounding the spine upward to release tension along the back and improve spinal flexibility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1117",
+        "name": "chaturanga to upward dog",
+        "target": "chest",
+        "secondaryMuscles": [
+            "shoulders",
+            "lower back",
+            "abs"
+        ],
+        "instructions": [
+            "Begin in a high plank position with your hands placed slightly narrower than shoulder-width apart.",
+            "Lower your body slowly by bending your elbows close to your sides until your upper arms are parallel to the floor.",
+            "Hold the chaturanga position briefly, then press through your hands and extend your arms while lifting your chest and rolling over your toes into upward-facing dog.",
+            "In upward dog, ensure your thighs and shins are off the floor, your shoulders are away from your ears, and your chest is open.",
+            "Hold for a breath, then transition back to downward dog or repeat the sequence for the desired number of repetitions."
+        ],
+        "description": "Chaturanga to upward dog is a bodyweight strength and mobility sequence targeting the chest, with secondary engagement of the shoulders, lower back, and abs. It transitions from a low plank position into a spine-extending backbend, building upper body strength and spinal mobility.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1118",
+        "name": "child pose",
+        "target": "lats",
+        "secondaryMuscles": [
+            "lower back",
+            "glutes"
+        ],
+        "instructions": [
+            "Kneel on the floor with your big toes together and knees hip-width apart.",
+            "Sit back onto your heels, then fold your torso forward and extend your arms straight out in front of you on the floor.",
+            "Rest your forehead gently on the ground and relax your shoulders toward the floor.",
+            "Hold the position for 20-30 seconds, breathing deeply and allowing your back to lengthen.",
+            "Slowly walk your hands back in and rise to the starting position."
+        ],
+        "description": "Child pose is a bodyweight stretching exercise targeting the lats, with secondary engagement of the lower back and glutes. It involves folding the torso forward from a kneeling position to gently decompress the spine and release tension throughout the back.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1119",
+        "name": "clap push up",
+        "target": "chest",
+        "secondaryMuscles": [
+            "shoulders",
+            "upper arms",
+            "abs"
+        ],
+        "instructions": [
+            "Begin in a standard push-up position with your hands slightly wider than shoulder-width apart.",
+            "Lower your chest toward the floor in a controlled manner, keeping your body in a straight line.",
+            "Explosively push up with maximum force so your hands leave the ground.",
+            "While airborne, quickly clap your hands together, then return your hands to the floor to catch yourself.",
+            "Absorb the landing with slightly bent elbows and immediately begin the next repetition."
+        ],
+        "description": "The clap push up is an advanced bodyweight plyometric exercise targeting the chest, with secondary engagement of the shoulders, upper arms, and abs. It involves an explosive push-up that generates enough force to clap the hands mid-air, developing upper body power and fast-twitch muscle activation.",
+        "difficulty": "advanced",
+        "category": "plyometrics"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1120",
+        "name": "close grip push ups",
+        "target": "chest",
+        "secondaryMuscles": [
+            "upper arms",
+            "shoulders"
+        ],
+        "instructions": [
+            "Begin in a plank position with your hands placed directly under your chest, closer than shoulder-width apart.",
+            "Keep your elbows close to your sides throughout the movement.",
+            "Lower your chest toward the floor in a controlled manner, keeping your core engaged and your body in a straight line.",
+            "Pause briefly at the bottom, then press through your palms to return to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "Close grip push ups are a bodyweight exercise targeting the chest with increased emphasis on the upper arms. The narrow hand position shifts the workload to the triceps and inner chest, making this a highly effective compound pressing movement.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1121",
+        "name": "contract release - pnf-hamstring stretch",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "lower back"
+        ],
+        "instructions": [
+            "Lie flat on your back and raise one leg toward the ceiling, holding it with both hands behind the thigh.",
+            "Gently pull the leg toward you until you feel a mild stretch in the hamstring.",
+            "Resist the stretch by pressing your leg into your hands for 5-8 seconds, then relax completely.",
+            "Immediately pull the leg further toward you to deepen the stretch and hold for 20-30 seconds.",
+            "Release and repeat on the opposite leg."
+        ],
+        "description": "The contract release PNF hamstring stretch is a bodyweight rehabilitation and flexibility exercise targeting the hamstrings, with secondary engagement of the glutes and lower back. It uses proprioceptive neuromuscular facilitation principles, alternating between muscle contraction and passive stretching to progressively increase range of motion.",
+        "difficulty": "beginner",
+        "category": "rehabilitation"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1122",
+        "name": "controlled kick forearm stand flow",
+        "target": "delts",
+        "secondaryMuscles": [
+            "abs",
+            "upper arms",
+            "traps"
+        ],
+        "instructions": [
+            "Begin in a forearm plank position with your elbows directly under your shoulders and forearms flat on the floor.",
+            "Walk your feet in toward your elbows, lifting your hips high to create an inverted V shape.",
+            "Engage your core and kick one leg upward while pressing firmly into your forearms.",
+            "Control the kick and hold the forearm stand position for 2-3 seconds, stacking your hips over your shoulders.",
+            "Slowly lower the leg back down and repeat on the other side for the desired number of repetitions."
+        ],
+        "description": "The controlled kick forearm stand flow is an advanced bodyweight balance exercise targeting the deltoids, with secondary engagement of the abs, upper arms, and traps. It involves kicking into a forearm stand with control, building shoulder stability, core strength, and body awareness.",
+        "difficulty": "advanced",
+        "category": "balance"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1123",
+        "name": "cow pose stretch",
+        "target": "lats",
+        "secondaryMuscles": [
+            "abs",
+            "lower back"
+        ],
+        "instructions": [
+            "Begin on all fours with your wrists directly under your shoulders and knees under your hips.",
+            "Inhale and slowly let your belly drop toward the floor, lifting your head and tailbone upward.",
+            "Hold the arched position for 2-3 seconds, feeling the stretch through your chest and lower back.",
+            "Exhale and return your spine to a neutral position.",
+            "Repeat for the desired number of repetitions, coordinating the movement with your breath."
+        ],
+        "description": "Cow pose stretch is a bodyweight mobility exercise targeting the lats and back, with secondary engagement of the abs and lower back. Performed on all fours, it involves dropping the belly toward the floor to extend the spine and open the chest, often paired with cat pose.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1124",
+        "name": "cross-body shoulder stretch",
+        "target": "delts",
+        "secondaryMuscles": [
+            "traps",
+            "upper arms"
+        ],
+        "instructions": [
+            "Stand or sit upright with your back straight and core engaged.",
+            "Extend one arm straight across your body at chest height.",
+            "Use your opposite forearm or hand to press the arm gently toward your chest.",
+            "Hold the stretch for 20-30 seconds, feeling tension in the back of your shoulder.",
+            "Release and repeat on the other side."
+        ],
+        "description": "The cross-body shoulder stretch is a bodyweight stretching exercise targeting the posterior deltoids, with secondary engagement of the traps and upper arms. It involves pulling one arm horizontally across the body to release tightness in the shoulder and improve joint flexibility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1125",
+        "name": "crow pose",
+        "target": "delts",
+        "secondaryMuscles": [
+            "abs",
+            "upper arms",
+            "lower arms"
+        ],
+        "instructions": [
+            "Squat down and place your hands flat on the floor, shoulder-width apart, with fingers spread wide.",
+            "Bend your elbows slightly and place your knees on the backs of your upper arms, as high up as possible.",
+            "Lean your weight forward into your hands and slowly lift one foot off the floor, then the other.",
+            "Balance on your hands with your core engaged and your gaze slightly forward.",
+            "Hold the position for as long as possible, then slowly lower your feet back to the floor."
+        ],
+        "description": "Crow pose is an advanced bodyweight balance exercise targeting the deltoids, with secondary engagement of the abs, upper arms, and lower arms. It involves balancing the body on bent arms with the knees resting on the triceps, demanding significant upper body strength and core stability.",
+        "difficulty": "advanced",
+        "category": "balance"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1126",
+        "name": "decline push ups",
+        "target": "chest",
+        "secondaryMuscles": [
+            "shoulders",
+            "upper arms",
+            "abs"
+        ],
+        "instructions": [
+            "Place your feet on an elevated surface such as a bench or step and position your hands on the floor, slightly wider than shoulder-width apart.",
+            "Ensure your body forms a straight line from head to heels with your core engaged.",
+            "Lower your chest toward the floor by bending your elbows, keeping them at roughly a 45-degree angle to your body.",
+            "Pause briefly at the bottom when your chest is just above the floor.",
+            "Press back up to the starting position and repeat for the desired number of repetitions."
+        ],
+        "description": "Decline push ups are a bodyweight exercise targeting the upper chest, with secondary engagement of the shoulders, upper arms, and abs. By elevating the feet, the angle shifts the emphasis onto the upper portion of the pectoral muscles and increases overall difficulty.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1127",
+        "name": "depth jump",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand on top of a sturdy box or elevated platform with your feet hip-width apart.",
+            "Step off the box and land with both feet simultaneously on the floor below.",
+            "Upon landing, immediately and explosively jump upward as high as possible with your arms swinging overhead.",
+            "Land softly with slightly bent knees to absorb the impact.",
+            "Reset and repeat for the desired number of repetitions."
+        ],
+        "description": "The depth jump is an advanced bodyweight plyometric exercise targeting the quadriceps, with secondary engagement of the glutes, hamstrings, and lower legs. It involves stepping off an elevated surface and immediately jumping upon landing, utilizing the stretch-shortening cycle to develop explosive lower body power.",
+        "difficulty": "advanced",
+        "category": "plyometrics"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1128",
+        "name": "diamond push up",
+        "target": "chest",
+        "secondaryMuscles": [
+            "upper arms",
+            "shoulders"
+        ],
+        "instructions": [
+            "Begin in a plank position and bring your hands together beneath your sternum, touching your thumbs and index fingers to form a diamond shape.",
+            "Keep your elbows close to your body throughout the movement and engage your core.",
+            "Lower your chest toward your hands in a controlled manner until it nearly touches the floor.",
+            "Pause briefly at the bottom, then press back up to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "The diamond push up is a bodyweight exercise targeting the chest with strong emphasis on the triceps. The close diamond-shaped hand position shifts the workload to the inner chest and upper arms, making it one of the most effective bodyweight movements for triceps development.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1129",
+        "name": "dolphin plank hold",
+        "target": "abs",
+        "secondaryMuscles": [
+            "shoulders",
+            "lower back"
+        ],
+        "instructions": [
+            "Begin in a forearm plank position with your elbows directly beneath your shoulders and forearms flat on the floor.",
+            "Engage your core, glutes, and legs to maintain a straight line from head to heels.",
+            "Press your forearms firmly into the floor and keep your hips level, avoiding any sagging or piking.",
+            "Hold the position for the desired duration while breathing steadily.",
+            "Release by lowering your knees to the floor."
+        ],
+        "description": "The dolphin plank hold is a bodyweight isometric exercise targeting the abs, with secondary engagement of the shoulders and lower back. It is performed in a forearm plank position, requiring sustained core and shoulder stability to maintain proper alignment throughout the hold.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1130",
+        "name": "downward dog hold",
+        "target": "delts",
+        "secondaryMuscles": [
+            "lats",
+            "hamstrings",
+            "lower back"
+        ],
+        "instructions": [
+            "Begin in a plank position with your hands shoulder-width apart and fingers spread wide.",
+            "Press through your palms and lift your hips toward the ceiling, straightening your legs and lowering your heels toward the floor.",
+            "Your body should form an inverted V-shape with your head positioned between your arms.",
+            "Engage your core and press your chest gently toward your thighs to deepen the shoulder stretch.",
+            "Hold for 20-30 seconds, breathing steadily, then return to the starting position."
+        ],
+        "description": "The downward dog hold is a bodyweight stretching and strengthening exercise targeting the deltoids, with secondary engagement of the lats, hamstrings, and lower back. It involves holding an inverted V-shape position to simultaneously stretch the posterior chain and build shoulder and core stability.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1131",
+        "name": "dragon flags - core mastery",
+        "target": "abs",
+        "secondaryMuscles": [
+            "lower back",
+            "upper arms",
+            "shoulders"
+        ],
+        "instructions": [
+            "Lie on a flat bench and grip the sides or top of the bench above your head for support.",
+            "Engage your entire core and lift your legs, hips, and lower back off the bench, keeping your body in a rigid straight line from shoulders to feet.",
+            "Slowly lower your body toward the bench in a controlled manner, keeping your torso stiff and only your upper back remaining in contact with the bench.",
+            "Stop just before your body touches the bench, then press back up to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "Dragon flags core mastery is an advanced bodyweight exercise targeting the abs, with secondary engagement of the lower back, upper arms, and shoulders. It involves lowering and raising a rigid body from the shoulder pivot point, requiring exceptional total-body tension and core strength.",
+        "difficulty": "advanced",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1132",
+        "name": "dynamic arms stretch",
+        "target": "delts",
+        "secondaryMuscles": [
+            "traps",
+            "chest",
+            "upper arms"
+        ],
+        "instructions": [
+            "Stand with your feet shoulder-width apart and your arms extended out to the sides.",
+            "Begin making controlled forward circles with both arms simultaneously, starting small and gradually increasing the size of the circles.",
+            "After the desired number of rotations, reverse the direction and perform backward arm circles.",
+            "Keep your core engaged and your shoulders away from your ears throughout the movement.",
+            "Continue for the desired duration or repetitions."
+        ],
+        "description": "Dynamic arms stretch is a bodyweight warm-up and mobility exercise targeting the deltoids, with secondary engagement of the traps, chest, and upper arms. It involves performing controlled arm circles in both directions to increase shoulder joint mobility and blood flow to the upper body.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1133",
+        "name": "dynamic upper body stretch",
+        "target": "chest",
+        "secondaryMuscles": [
+            "shoulders",
+            "traps",
+            "lats"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and your arms extended in front of you at chest height.",
+            "Inhale and sweep your arms out and back in a wide arc, opening your chest and squeezing your shoulder blades together.",
+            "Exhale and return your arms to the starting position in front of you.",
+            "Perform the movement in a smooth, rhythmic pattern, gradually increasing the range of motion.",
+            "Continue for the desired number of repetitions."
+        ],
+        "description": "The dynamic upper body stretch is a bodyweight mobility exercise targeting the chest, with secondary engagement of the shoulders, traps, and lats. It involves sweeping the arms in a wide arc to open the chest and loosen the upper body, making it an effective warm-up or cool-down movement.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1134",
+        "name": "fast feet sprint (low stance)",
+        "target": "quads",
+        "secondaryMuscles": [
+            "hamstrings",
+            "glutes",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand in a low athletic stance with your knees slightly bent, feet hip-width apart, and your weight on the balls of your feet.",
+            "Lower your hips slightly as if in a quarter squat, keeping your chest up and back straight.",
+            "Begin rapidly alternating your feet in short, quick steps while maintaining the low stance.",
+            "Pump your arms quickly to drive the pace of your feet.",
+            "Continue for the desired duration, keeping the tempo as fast as possible throughout."
+        ],
+        "description": "Fast feet sprint in low stance is a bodyweight cardio exercise targeting the quadriceps, with secondary engagement of the hamstrings, glutes, and lower legs. It involves rapid foot shuffles from a low athletic position to develop speed, agility, and cardiovascular endurance.",
+        "difficulty": "intermediate",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1135",
+        "name": "fold with hinge",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and a slight bend in your knees.",
+            "Hinge forward at the hips, pushing your hips backward while keeping your back flat and chest lifted.",
+            "Lower your torso until you feel a deep stretch in your hamstrings, then allow your torso to round gently into a full forward fold.",
+            "Hold the folded position for 2-3 seconds, then re-engage your core and hinge back up to standing.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "Fold with hinge is a bodyweight mobility exercise targeting the hamstrings, with secondary engagement of the glutes and lower back. It combines a controlled hip hinge with a forward fold to dynamically stretch the posterior chain and improve hip mobility.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1136",
+        "name": "forward lunges",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings"
+        ],
+        "instructions": [
+            "Stand tall with your feet together and your hands on your hips or hanging by your sides.",
+            "Step one foot forward into a wide stance and lower your back knee toward the floor by bending both legs.",
+            "Descend until your front thigh is approximately parallel to the floor and your back knee hovers just above the ground.",
+            "Drive through your front heel to push back to the starting position.",
+            "Alternate legs and repeat for the desired number of repetitions."
+        ],
+        "description": "Forward lunges are a bodyweight lower body exercise targeting the quadriceps, with secondary engagement of the glutes and hamstrings. The movement involves stepping forward and lowering the hips in an alternating pattern, developing unilateral leg strength, balance, and coordination.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1137",
+        "name": "full wheel entry - wheel prep bridge",
+        "target": "lats",
+        "secondaryMuscles": [
+            "chest",
+            "shoulders",
+            "lower back"
+        ],
+        "instructions": [
+            "Lie on your back with your knees bent and feet flat on the floor near your glutes.",
+            "Place your hands beside your ears on the floor with your fingers pointing toward your shoulders.",
+            "Press into your hands and feet simultaneously to lift your hips, then your torso, off the floor.",
+            "Extend your arms and legs as fully as possible, lifting the crown of your head off the floor and opening your chest.",
+            "Hold for the desired duration, then tuck your chin and slowly lower back down to the floor with control."
+        ],
+        "description": "The full wheel entry wheel prep bridge is an advanced bodyweight exercise targeting the lats and spine, with secondary engagement of the chest, shoulders, and lower back. It involves pressing into a deep backbend from a supine position, demanding significant spinal flexibility, shoulder mobility, and total-body strength.",
+        "difficulty": "advanced",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1138",
+        "name": "gentle fold seated forward fold",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "lower back",
+            "glutes"
+        ],
+        "instructions": [
+            "Sit on the floor with your legs extended straight in front of you and your feet flexed.",
+            "Sit up tall with your spine lengthened and your hands resting beside your thighs.",
+            "Inhale to lengthen your spine, then exhale and gently hinge forward from your hips, reaching your hands toward your feet.",
+            "Go only as far as comfortable without rounding your lower back excessively.",
+            "Hold the position for 20-30 seconds, breathing deeply, then slowly sit back up."
+        ],
+        "description": "The gentle fold seated forward fold is a bodyweight stretching exercise targeting the hamstrings, with secondary engagement of the lower back and glutes. It involves hinging forward from a seated position with straight legs to gradually lengthen the posterior chain and improve flexibility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1139",
+        "name": "glute bridge",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hamstrings",
+            "lower back",
+            "abs"
+        ],
+        "instructions": [
+            "Lie flat on your back with your knees bent and feet flat on the floor, hip-width apart.",
+            "Place your arms alongside your body with palms facing down.",
+            "Engage your glutes and core, then press through your feet to lift your hips off the floor.",
+            "Rise until your body forms a straight line from your knees to your shoulders, squeezing your glutes at the top.",
+            "Slowly lower your hips back to the starting position and repeat for the desired number of repetitions."
+        ],
+        "description": "The glute bridge is a bodyweight exercise targeting the glutes, with secondary engagement of the hamstrings, lower back, and abs. It involves lifting the hips from a supine position to strengthen the posterior chain, improve hip extension, and stabilize the core.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1140",
+        "name": "goblet squat entry",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "abs"
+        ],
+        "instructions": [
+            "Stand with your feet slightly wider than shoulder-width apart and toes turned out slightly.",
+            "Clasp your hands together at chest height or hold them as if gripping an imaginary weight at your sternum.",
+            "Engage your core and push your hips back and down as you lower into a squat.",
+            "Descend until your thighs are at or below parallel to the floor, keeping your chest upright and knees tracking over your toes.",
+            "Drive through your heels to return to the starting position and repeat for the desired number of repetitions."
+        ],
+        "description": "The goblet squat entry is a bodyweight lower body exercise targeting the quadriceps, with secondary engagement of the glutes, hamstrings, and abs. It mimics the goblet squat movement pattern using bodyweight, reinforcing proper squat mechanics with an upright torso and controlled descent.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1141",
+        "name": "half lift transition yoga",
+        "target": "abs",
+        "secondaryMuscles": [
+            "lower back",
+            "hamstrings"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and hinge forward from your hips into a forward fold.",
+            "Place your hands on your shins or thighs for support.",
+            "Inhale and lift your torso halfway up until your back is flat and parallel to the floor.",
+            "Draw your shoulders away from your ears and lengthen your neck to extend your spine.",
+            "Hold for a breath, then exhale and fold back down or continue into the next yoga pose."
+        ],
+        "description": "Half lift transition yoga is a bodyweight yoga exercise targeting the abs and core, with secondary engagement of the lower back and hamstrings. It involves lifting the torso to a flat-back position from a forward fold, creating spinal extension and activating the core as a transitional movement.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1142",
+        "name": "hanging leg raises",
+        "target": "abs",
+        "secondaryMuscles": [
+            "hip flexors",
+            "lower back"
+        ],
+        "instructions": [
+            "Hang from a pull-up bar with a shoulder-width overhand grip and your arms fully extended.",
+            "Engage your core and keep your legs straight as you raise them upward in front of you.",
+            "Continue lifting until your legs are parallel to the floor or as high as your flexibility allows.",
+            "Pause at the top, then slowly lower your legs back to the starting position.",
+            "Repeat for the desired number of repetitions without swinging your body."
+        ],
+        "description": "Hanging leg raises are a bodyweight core exercise targeting the abs, with secondary engagement of the hip flexors and lower back. Performed while hanging from a bar, the movement involves raising straight legs to challenge lower abdominal strength and hip flexor endurance.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1143",
+        "name": "high knee butt kick",
+        "target": "quads",
+        "secondaryMuscles": [
+            "hamstrings",
+            "glutes",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and begin jogging in place.",
+            "Alternate between driving your knees up toward your chest and kicking your heels up toward your glutes with each stride.",
+            "Pump your arms in coordination with your legs to maintain an athletic rhythm.",
+            "Keep your core engaged and your posture upright throughout the movement.",
+            "Continue alternating for the desired duration or number of repetitions."
+        ],
+        "description": "High knee butt kick is a bodyweight cardio exercise targeting the quadriceps and hamstrings, with secondary engagement of the glutes and lower legs. It combines high knee drives with heel kicks in an alternating running pattern to elevate heart rate and warm up the lower body dynamically.",
+        "difficulty": "beginner",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1144",
+        "name": "high knee cardio",
+        "target": "quads",
+        "secondaryMuscles": [
+            "abs",
+            "hip flexors",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and your arms bent at your sides.",
+            "Begin running in place, driving your knees up toward your chest with each stride.",
+            "Aim to bring each knee to at least hip height with every step.",
+            "Pump your arms opposite to your legs to maintain balance and rhythm.",
+            "Continue at a fast pace for the desired duration."
+        ],
+        "description": "High knee cardio is a bodyweight cardiovascular exercise targeting the quadriceps, with secondary engagement of the abs, hip flexors, and lower legs. It involves rapidly alternating high knee drives while running in place to increase heart rate, improve coordination, and warm up the lower body.",
+        "difficulty": "beginner",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1145",
+        "name": "hip circle version 2",
+        "target": "abs",
+        "secondaryMuscles": [
+            "obliques",
+            "lower back",
+            "glutes"
+        ],
+        "instructions": [
+            "Stand with your feet shoulder-width apart and place your hands on your hips.",
+            "Begin rotating your hips in a large, slow circle by moving them forward, to the side, back, and to the other side.",
+            "Complete full circles in one direction for the desired number of repetitions.",
+            "Reverse the direction and perform the same number of circles.",
+            "Keep your upper body relatively still throughout the movement."
+        ],
+        "description": "Hip circle version 2 is a bodyweight mobility exercise targeting the abs and core, with secondary engagement of the obliques, lower back, and glutes. It involves rotating the hips in full circles while standing to improve hip joint mobility, loosen the lower back, and activate the core musculature.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1146",
+        "name": "hip flexor stretch (kneeling)",
+        "target": "quads",
+        "secondaryMuscles": [
+            "hamstrings",
+            "glutes"
+        ],
+        "instructions": [
+            "Kneel on one knee with your other foot planted flat on the floor in front of you, creating a 90-degree angle at both knees.",
+            "Keep your torso upright and engage your core.",
+            "Gently shift your weight forward, pushing your front hip toward the floor until you feel a stretch in the front of your rear hip.",
+            "Hold the position for 20-30 seconds, breathing deeply.",
+            "Release and repeat on the other side."
+        ],
+        "description": "The hip flexor stretch kneeling is a bodyweight stretching exercise targeting the quadriceps and hip flexors, with secondary engagement of the hamstrings and glutes. Performed in a kneeling lunge position, it effectively lengthens the hip flexor muscles, which are commonly tight from prolonged sitting.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1147",
+        "name": "hip stretch",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hip flexors",
+            "lower back"
+        ],
+        "instructions": [
+            "Lie on your back with both knees bent and feet flat on the floor.",
+            "Cross your right ankle over your left knee, creating a figure-4 shape with your legs.",
+            "Flex your right foot and gently press your right knee away from you.",
+            "Reach behind your left thigh or shin and pull your left leg toward your chest until you feel a stretch in your right glute and outer hip.",
+            "Hold for 20-30 seconds, then release and repeat on the other side."
+        ],
+        "description": "Hip stretch is a bodyweight stretching exercise targeting the glutes and outer hip, with secondary engagement of the hip flexors and lower back. It involves a figure-4 supine position to stretch the piriformis and external hip rotators, commonly used to relieve hip tightness and lower back tension.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1148",
+        "name": "hips flexor lunges",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "hip flexors"
+        ],
+        "instructions": [
+            "Stand with your feet together and your hands on your hips.",
+            "Step one foot forward and lower into a lunge until your back knee nearly touches the floor.",
+            "At the bottom of the lunge, tilt your pelvis slightly posteriorly to feel an increased stretch in the front of your rear hip.",
+            "Hold for 2-3 seconds at the bottom, then drive through your front heel to return to standing.",
+            "Alternate legs and repeat for the desired number of repetitions."
+        ],
+        "description": "Hips flexor lunges are a bodyweight exercise targeting the quadriceps and hip flexors, with secondary engagement of the glutes and hamstrings. They combine a forward lunge with a posterior pelvic tilt at the bottom to actively stretch and strengthen the hip flexors through a full range of motion.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1149",
+        "name": "hollow hold",
+        "target": "abs",
+        "secondaryMuscles": [
+            "lower back",
+            "hip flexors"
+        ],
+        "instructions": [
+            "Lie flat on your back with your arms extended overhead and your legs straight.",
+            "Press your lower back firmly into the floor and engage your abs.",
+            "Simultaneously lift your arms, head, shoulders, and legs off the floor, keeping your legs straight and together.",
+            "Your body should form a slightly curved dish or hollow shape.",
+            "Hold the position for the desired duration while breathing steadily."
+        ],
+        "description": "The hollow hold is a bodyweight isometric exercise targeting the abs, with secondary engagement of the lower back and hip flexors. It involves maintaining a curved body position with arms and legs raised off the floor, demanding sustained core compression and stability.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1150",
+        "name": "inchworm walkout",
+        "target": "abs",
+        "secondaryMuscles": [
+            "shoulders",
+            "hamstrings",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart.",
+            "Hinge forward at the hips and place your hands on the floor in front of your feet.",
+            "Walk your hands forward one at a time until you reach a full plank position.",
+            "Hold the plank briefly, then walk your hands back toward your feet.",
+            "Stand back up and repeat for the desired number of repetitions."
+        ],
+        "description": "The inchworm walkout is a bodyweight exercise targeting the abs, with secondary engagement of the shoulders, hamstrings, and lower back. It involves walking the hands out from a standing forward fold into a plank and back, warming up the entire body and challenging core and shoulder stability.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1151",
+        "name": "incline push ups",
+        "target": "chest",
+        "secondaryMuscles": [
+            "shoulders",
+            "upper arms"
+        ],
+        "instructions": [
+            "Place your hands on an elevated surface such as a bench, step, or wall, with hands slightly wider than shoulder-width apart.",
+            "Step your feet back so your body forms a straight line from head to heels.",
+            "Lower your chest toward the elevated surface by bending your elbows.",
+            "Pause briefly at the bottom, then press back up to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "Incline push ups are a bodyweight exercise targeting the lower chest, with secondary engagement of the shoulders and upper arms. By placing the hands on an elevated surface, the angle shifts the emphasis to the lower pectoral region and reduces the overall difficulty, making it suitable for beginners.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1152",
+        "name": "jump box",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand in front of a sturdy box or platform with your feet hip-width apart.",
+            "Bend your knees and swing your arms back to prepare for the jump.",
+            "Explosively jump upward and forward, driving your arms overhead and landing softly on top of the box with both feet.",
+            "Stand fully upright on the box, then step or jump back down to the starting position.",
+            "Reset and repeat for the desired number of repetitions."
+        ],
+        "description": "The jump box is a bodyweight plyometric exercise targeting the quadriceps, with secondary engagement of the glutes, hamstrings, and lower legs. It involves jumping onto an elevated box to develop explosive lower body power, landing mechanics, and athletic conditioning.",
+        "difficulty": "intermediate",
+        "category": "plyometrics"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1153",
+        "name": "jump squats",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand with your feet shoulder-width apart and toes slightly pointed outward.",
+            "Lower into a squat by bending your knees and pushing your hips back, keeping your chest upright.",
+            "Explosively drive through your heels and jump as high as possible off the ground, extending your arms overhead.",
+            "Land softly with slightly bent knees to absorb the impact.",
+            "Immediately lower back into the next squat and repeat for the desired number of repetitions."
+        ],
+        "description": "Jump squats are a bodyweight plyometric exercise targeting the quadriceps, with secondary engagement of the glutes, hamstrings, and lower legs. They combine a squat with an explosive jump to develop lower body power, cardiovascular conditioning, and fast-twitch muscle activation.",
+        "difficulty": "intermediate",
+        "category": "plyometrics"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1154",
+        "name": "jumping jack with high knee",
+        "target": "quads",
+        "secondaryMuscles": [
+            "abs",
+            "hip flexors",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand with your feet together and your arms by your sides.",
+            "Jump your feet outward while raising your arms overhead as in a standard jumping jack.",
+            "Jump your feet back together, then immediately drive one knee up toward your chest.",
+            "Lower that foot and perform another jumping jack, then drive the opposite knee up on the return.",
+            "Continue alternating for the desired number of repetitions."
+        ],
+        "description": "The jumping jack with high knee is a bodyweight cardio exercise targeting the quadriceps, with secondary engagement of the abs, hip flexors, and lower legs. It combines the lateral jumping motion of a jumping jack with an alternating high knee drive to increase intensity and challenge coordination.",
+        "difficulty": "beginner",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1155",
+        "name": "jumping jack",
+        "target": "quads",
+        "secondaryMuscles": [
+            "shoulders",
+            "lower legs",
+            "glutes"
+        ],
+        "instructions": [
+            "Stand with your feet together and your arms by your sides.",
+            "Jump your feet outward to slightly wider than shoulder-width apart while simultaneously raising your arms out to the sides and overhead.",
+            "Pause briefly at the top, then jump your feet back together while lowering your arms to your sides.",
+            "Maintain a rhythmic, continuous pace throughout the exercise.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "The jumping jack is a classic bodyweight cardio exercise targeting the quadriceps, with secondary engagement of the shoulders, lower legs, and glutes. It involves simultaneous lateral jumping and arm raising in a rhythmic pattern to elevate heart rate and develop cardiovascular endurance.",
+        "difficulty": "beginner",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1156",
+        "name": "kapalabhati pulses pranayama ladder",
+        "target": "abs",
+        "secondaryMuscles": [
+            "lower back"
+        ],
+        "instructions": [
+            "Sit comfortably in a cross-legged position with your spine tall and shoulders relaxed.",
+            "Take a deep inhale to begin, then perform rapid, forceful exhales through the nose by sharply contracting your lower abdomen.",
+            "Allow the inhale to occur passively between each forced exhale, without conscious effort.",
+            "Start with a slow pace, then progressively increase the speed of the exhales in rounds or a ladder pattern.",
+            "Complete the desired number of rounds, then rest with natural breathing."
+        ],
+        "description": "Kapalabhati pulses pranayama ladder is a bodyweight breathing exercise targeting the abs, with secondary engagement of the lower back. It involves rhythmic diaphragmatic pulses with progressively increasing intensity, cleansing the respiratory system and activating the core through controlled breathwork.",
+        "difficulty": "intermediate",
+        "category": "rehabilitation"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1157",
+        "name": "knuckle push ups",
+        "target": "chest",
+        "secondaryMuscles": [
+            "upper arms",
+            "shoulders",
+            "lower arms"
+        ],
+        "instructions": [
+            "Begin in a push-up position but make fists with both hands and place your knuckles on the floor, aligned under your shoulders.",
+            "Keep your wrists neutral and straight throughout the movement.",
+            "Lower your chest toward the floor in a controlled manner, keeping your elbows at roughly a 45-degree angle to your body.",
+            "Pause briefly at the bottom, then press back up to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "Knuckle push ups are a bodyweight exercise targeting the chest, with secondary engagement of the upper arms, shoulders, and lower arms. Performing push ups on the knuckles maintains neutral wrist alignment, reduces wrist strain, and increases the range of motion during the descent.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1158",
+        "name": "l-sit hold",
+        "target": "abs",
+        "secondaryMuscles": [
+            "hip flexors",
+            "upper arms",
+            "shoulders"
+        ],
+        "instructions": [
+            "Sit on the floor with your legs extended straight in front of you.",
+            "Place your hands flat on the floor beside your hips, fingers pointing forward.",
+            "Press through your palms to lift your entire body off the floor, keeping your legs straight and parallel to the ground.",
+            "Hold the L-shape position for as long as possible, engaging your abs and keeping your back straight.",
+            "Slowly lower back down to the floor and rest before repeating."
+        ],
+        "description": "The L-sit hold is an advanced bodyweight isometric exercise targeting the abs, with secondary engagement of the hip flexors, upper arms, and shoulders. It involves suspending the body off the floor in an L-shape by pressing through the hands, requiring tremendous core compression and upper body pressing strength.",
+        "difficulty": "advanced",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1159",
+        "name": "lateral sprint shuffles",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand in a low athletic stance with your knees slightly bent and your weight on the balls of your feet.",
+            "Push off your inside foot and shuffle laterally in one direction by stepping and bringing your feet together repeatedly.",
+            "Keep your hips low and your chest up throughout the movement.",
+            "After the desired distance, plant your outside foot and shuffle back in the opposite direction.",
+            "Continue shuffling back and forth for the desired duration."
+        ],
+        "description": "Lateral sprint shuffles are a bodyweight cardio and agility exercise targeting the quadriceps, with secondary engagement of the glutes, hamstrings, and lower legs. They involve rapid side-to-side shuffling in a low athletic stance to develop lateral speed, footwork, and cardiovascular conditioning.",
+        "difficulty": "intermediate",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1160",
+        "name": "leg lift progression - headstand preparation",
+        "target": "abs",
+        "secondaryMuscles": [
+            "hip flexors",
+            "shoulders"
+        ],
+        "instructions": [
+            "Begin in a forearm stand or tripod position against a wall for support.",
+            "Engage your core and press firmly through your forearms or hands.",
+            "Slowly lift one leg up toward the ceiling, holding it for 2-3 seconds.",
+            "Lower the leg with control and repeat on the other side.",
+            "Progress toward lifting both legs simultaneously as strength and balance improve."
+        ],
+        "description": "The leg lift progression for headstand preparation is a bodyweight balance exercise targeting the abs, with secondary engagement of the hip flexors and shoulders. It involves controlled single-leg lifts in an inverted position to build the core strength and body awareness needed for a full headstand.",
+        "difficulty": "intermediate",
+        "category": "balance"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1161",
+        "name": "leg stretch hand on hips",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand with your feet wider than shoulder-width apart and place your hands on your hips.",
+            "Hinge forward from the hips, keeping your back flat and your core engaged.",
+            "Lower your torso toward the floor until you feel a stretch in your hamstrings.",
+            "Hold the position for 20-30 seconds, breathing deeply.",
+            "Slowly return to the upright position and repeat as needed."
+        ],
+        "description": "Leg stretch with hands on hips is a bodyweight stretching exercise targeting the hamstrings, with secondary engagement of the glutes and lower back. It involves hinging forward from a wide-stance position with hands on hips to deepen the hamstring stretch while maintaining an upright postural awareness.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1162",
+        "name": "leg swing front to back",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "hip flexors"
+        ],
+        "instructions": [
+            "Stand on one leg with your hand on a wall or support for balance.",
+            "Engage your core and swing the free leg forward to hip height, then smoothly swing it behind you as far as comfortably possible.",
+            "Keep the movement controlled and use momentum to gradually increase your range of motion.",
+            "Complete the desired number of swings, then switch legs and repeat."
+        ],
+        "description": "Leg swing front to back is a bodyweight dynamic stretching exercise targeting the hamstrings, with secondary engagement of the glutes and hip flexors. It involves rhythmically swinging one leg forward and backward to warm up the hip joint and improve sagittal plane mobility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1163",
+        "name": "leg swing in circle",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hip flexors",
+            "hamstrings"
+        ],
+        "instructions": [
+            "Stand on one leg and hold a wall or support for balance.",
+            "Lift the opposite leg slightly off the floor and begin tracing large, controlled circles with that leg.",
+            "Move the leg forward, out to the side, behind you, and back to the start in a full circular motion.",
+            "Complete the desired number of circles in one direction, then reverse.",
+            "Switch legs and repeat on the other side."
+        ],
+        "description": "Leg swing in circle is a bodyweight dynamic stretching exercise targeting the glutes and hip joint, with secondary engagement of the hip flexors and hamstrings. It involves tracing full circular paths with the leg to lubricate the hip joint and improve multi-directional mobility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1164",
+        "name": "leg swing side to side",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hip flexors",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand sideways next to a wall or support and place one hand on it for balance.",
+            "Engage your core and swing the free leg across your body to the opposite side, then swing it outward as far as comfortably possible.",
+            "Keep the swinging motion controlled and allow momentum to gradually open the range of motion.",
+            "Complete the desired number of swings, then turn around and repeat on the other leg."
+        ],
+        "description": "Leg swing side to side is a bodyweight dynamic stretching exercise targeting the glutes and hip abductors, with secondary engagement of the hip flexors and lower back. It involves swinging one leg laterally across and away from the body to improve frontal plane hip mobility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1165",
+        "name": "leg swing",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "hip flexors"
+        ],
+        "instructions": [
+            "Stand tall with your feet hip-width apart and your arms relaxed by your sides.",
+            "Shift your weight onto one leg and lift the opposite foot slightly off the ground.",
+            "Swing the free leg forward and backward in a pendulum motion, gradually increasing the arc with each swing.",
+            "Keep your core engaged and your standing leg slightly bent for stability.",
+            "Complete the desired number of swings and then switch legs."
+        ],
+        "description": "The leg swing is a bodyweight dynamic stretching exercise targeting the hamstrings, with secondary engagement of the glutes and hip flexors. It involves swinging one leg forward and backward in a controlled pendulum motion to mobilize the hip joint and warm up the posterior chain.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1166",
+        "name": "mountain climber",
+        "target": "abs",
+        "secondaryMuscles": [
+            "shoulders",
+            "quads",
+            "hip flexors"
+        ],
+        "instructions": [
+            "Begin in a high plank position with your hands directly under your shoulders and your body in a straight line.",
+            "Engage your core and drive your right knee toward your chest.",
+            "Quickly return your right foot to the starting position and simultaneously drive your left knee toward your chest.",
+            "Continue alternating legs at a fast, running-like pace.",
+            "Repeat for the desired duration or number of repetitions."
+        ],
+        "description": "The mountain climber is a bodyweight cardio and core exercise targeting the abs, with secondary engagement of the shoulders, quads, and hip flexors. It involves rapidly alternating knee drives in a plank position to challenge core stability, cardiovascular endurance, and overall conditioning.",
+        "difficulty": "intermediate",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1167",
+        "name": "mountain pose - mountain-to-forward-fold-flow",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "abs",
+            "lower back",
+            "glutes"
+        ],
+        "instructions": [
+            "Stand tall in mountain pose with your feet together, arms by your sides, and weight evenly distributed.",
+            "Inhale and raise your arms overhead, lengthening your spine.",
+            "Exhale and hinge forward from your hips, sweeping your arms down as you fold toward the floor.",
+            "Allow your hands to reach toward the floor or rest on your shins, keeping a slight bend in your knees if needed.",
+            "Inhale to rise back up to mountain pose with arms overhead and repeat the flow for the desired number of repetitions."
+        ],
+        "description": "Mountain pose to forward fold flow is a bodyweight yoga movement targeting the hamstrings, with secondary engagement of the abs, lower back, and glutes. It transitions between a tall standing posture and a forward fold in coordination with the breath, promoting spinal mobility and posterior chain flexibility.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "neck",
+        "equipment": "body weight",
+        "id": "1168",
+        "name": "neck half circle",
+        "target": "neck",
+        "secondaryMuscles": [
+            "traps"
+        ],
+        "instructions": [
+            "Sit or stand with your spine tall and your shoulders relaxed.",
+            "Slowly drop your chin toward your chest.",
+            "Gently roll your head in a half arc from one shoulder toward the other, passing through the center.",
+            "Pause briefly on each side when your ear approaches your shoulder, feeling the stretch in your neck.",
+            "Return to center and repeat in the other direction for the desired number of repetitions."
+        ],
+        "description": "Neck half circle is a bodyweight stretching exercise targeting the neck muscles, with secondary engagement of the traps. It involves rolling the head in a controlled half-circle motion to release tension along the cervical spine and improve neck mobility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1169",
+        "name": "negative pull up",
+        "target": "lats",
+        "secondaryMuscles": [
+            "biceps",
+            "traps",
+            "rhomboids"
+        ],
+        "instructions": [
+            "Use a box or jump to reach the top position of a pull-up, with your chin above the bar and arms bent.",
+            "Grip the bar with an overhand grip, shoulder-width apart.",
+            "Slowly lower your body toward the starting hang position, taking 3-5 seconds to descend.",
+            "Maintain tension in your lats and arms throughout the descent, resisting gravity as much as possible.",
+            "Once fully extended, jump or step back to the top and repeat for the desired number of repetitions."
+        ],
+        "description": "The negative pull up is a bodyweight exercise targeting the lats, with secondary engagement of the biceps, traps, and rhomboids. It focuses on the eccentric lowering phase of the pull-up to build the back and arm strength required for a full pull-up.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1170",
+        "name": "one arm push ups",
+        "target": "chest",
+        "secondaryMuscles": [
+            "shoulders",
+            "upper arms",
+            "abs"
+        ],
+        "instructions": [
+            "Begin in a wide push-up stance with one hand placed in the center of your chest and the other placed behind your back.",
+            "Engage your core tightly and keep your body in a rigid plank position.",
+            "Lower your chest toward the floor by bending the working arm, keeping your elbow close to your body.",
+            "Pause briefly at the bottom, then press explosively back up to the starting position.",
+            "Complete the desired number of repetitions, then switch arms."
+        ],
+        "description": "One arm push ups are an advanced bodyweight exercise targeting the chest, with secondary engagement of the shoulders, upper arms, and abs. Performing the push-up on a single arm demands maximum chest and triceps strength, along with exceptional core stability to prevent rotation.",
+        "difficulty": "advanced",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1171",
+        "name": "open chest triangle pose detail",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hamstrings",
+            "obliques",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand with your feet wide apart, approximately three to four feet, and turn your right foot out 90 degrees.",
+            "Extend your arms out to the sides at shoulder height.",
+            "Hinge laterally over your front leg, lowering your right hand toward your right shin or the floor.",
+            "Extend your left arm toward the ceiling and rotate your gaze upward to open your chest.",
+            "Hold for 20-30 seconds, then return to standing and repeat on the other side."
+        ],
+        "description": "Open chest triangle pose detail is a bodyweight yoga exercise targeting the glutes, with secondary engagement of the hamstrings, obliques, and lower back. It involves a lateral bend over an extended leg while rotating the chest open, improving hamstring flexibility, lateral stability, and thoracic rotation.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1172",
+        "name": "pike push ups",
+        "target": "delts",
+        "secondaryMuscles": [
+            "upper arms",
+            "traps",
+            "chest"
+        ],
+        "instructions": [
+            "Begin in a downward dog position with your hands shoulder-width apart and hips raised toward the ceiling.",
+            "Engage your core and keep your legs straight throughout the movement.",
+            "Bend your elbows and lower the top of your head toward the floor between your hands.",
+            "Pause briefly at the bottom, then press through your palms to return to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "Pike push ups are a bodyweight exercise targeting the deltoids, with secondary engagement of the upper arms, traps, and chest. Performed in an inverted V-position, the angled pressing motion places the primary load on the shoulders, making this an effective progression toward the handstand push-up.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1173",
+        "name": "pistol squat",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "abs"
+        ],
+        "instructions": [
+            "Stand on one leg with the other leg extended straight out in front of you.",
+            "Extend your arms forward for counterbalance.",
+            "Slowly lower your body toward the floor by bending your standing knee, keeping your extended leg off the ground.",
+            "Descend as deep as possible while maintaining control, ideally until your standing thigh is parallel to or below the floor.",
+            "Drive through your heel to return to the starting position and repeat, then switch legs."
+        ],
+        "description": "The pistol squat is an advanced bodyweight exercise targeting the quadriceps, with secondary engagement of the glutes, hamstrings, and abs. It is a single-leg squat performed to full depth while the opposite leg is held straight out, demanding exceptional unilateral strength, balance, and ankle flexibility.",
+        "difficulty": "advanced",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1174",
+        "name": "pistol squats with poll support",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "abs"
+        ],
+        "instructions": [
+            "Stand in front of a pole, doorframe, or TRX strap with one hand gripping it for support.",
+            "Extend one leg straight out in front of you and shift your weight onto the opposite leg.",
+            "Slowly lower into a single-leg squat, using the pole to assist balance and reduce load as needed.",
+            "Descend until your thigh is parallel to or below the floor, then drive through your heel to rise.",
+            "Complete the desired number of repetitions and switch legs."
+        ],
+        "description": "Pistol squats with poll support are a bodyweight exercise targeting the quadriceps, with secondary engagement of the glutes, hamstrings, and abs. Using a support for balance allows the athlete to practice the full pistol squat range of motion while progressively building the strength and coordination needed for the unsupported version.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1175",
+        "name": "place jog cardio",
+        "target": "quads",
+        "secondaryMuscles": [
+            "hamstrings",
+            "glutes",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and arms relaxed at your sides.",
+            "Begin jogging in place at a comfortable pace, lifting your feet a few inches off the floor with each stride.",
+            "Pump your arms naturally in coordination with your legs.",
+            "Maintain an upright posture with your core lightly engaged and eyes forward.",
+            "Continue for the desired duration."
+        ],
+        "description": "Place jog cardio is a bodyweight cardiovascular exercise targeting the quadriceps, with secondary engagement of the hamstrings, glutes, and lower legs. It involves jogging in place as a low-impact way to elevate heart rate, warm up the lower body, or maintain active recovery.",
+        "difficulty": "beginner",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1176",
+        "name": "plank jack advanced",
+        "target": "abs",
+        "secondaryMuscles": [
+            "shoulders",
+            "glutes",
+            "lower legs"
+        ],
+        "instructions": [
+            "Begin in a high plank position with your hands directly under your shoulders and your body in a straight line.",
+            "Engage your core and keep your hips level throughout the movement.",
+            "Explosively jump both feet outward wider than hip-width apart, then jump them back together.",
+            "Perform the movement at maximum speed while maintaining a stable plank position.",
+            "Continue for the desired number of repetitions or duration."
+        ],
+        "description": "Plank jack advanced is a bodyweight cardio and core exercise targeting the abs, with secondary engagement of the shoulders, glutes, and lower legs. It involves rapidly jumping the feet in and out while holding a plank position, increasing the intensity and cardiovascular demand of the standard plank jack.",
+        "difficulty": "intermediate",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1177",
+        "name": "plank jack",
+        "target": "abs",
+        "secondaryMuscles": [
+            "shoulders",
+            "glutes",
+            "lower legs"
+        ],
+        "instructions": [
+            "Begin in a forearm or high plank position with your body in a straight line from head to heels.",
+            "Engage your core and keep your hips stable throughout.",
+            "Jump both feet out to the sides simultaneously, landing wider than hip-width apart.",
+            "Immediately jump both feet back together to the starting position.",
+            "Continue for the desired number of repetitions at a controlled pace."
+        ],
+        "description": "The plank jack is a bodyweight exercise targeting the abs, with secondary engagement of the shoulders, glutes, and lower legs. It combines the stability demands of a plank with a lateral jumping motion of the feet to add a cardiovascular component while training core endurance.",
+        "difficulty": "beginner",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1178",
+        "name": "plank",
+        "target": "abs",
+        "secondaryMuscles": [
+            "shoulders",
+            "lower back",
+            "glutes"
+        ],
+        "instructions": [
+            "Begin face down on the floor and prop yourself up on your forearms with elbows directly beneath your shoulders.",
+            "Lift your hips off the floor so your body forms a straight line from head to heels.",
+            "Engage your core, squeeze your glutes, and keep your hips level throughout.",
+            "Hold the position while breathing steadily for the desired duration.",
+            "Lower your knees to the floor to release."
+        ],
+        "description": "The plank is a foundational bodyweight isometric exercise targeting the abs, with secondary engagement of the shoulders, lower back, and glutes. It involves maintaining a rigid straight-body position on the forearms to build core endurance, spinal stability, and full-body tension.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1179",
+        "name": "pull up",
+        "target": "lats",
+        "secondaryMuscles": [
+            "biceps",
+            "traps",
+            "rhomboids"
+        ],
+        "instructions": [
+            "Hang from a pull-up bar with an overhand grip, hands slightly wider than shoulder-width apart.",
+            "Engage your core and depress your shoulder blades before initiating the pull.",
+            "Drive your elbows toward the floor to pull your chest up toward the bar.",
+            "Continue until your chin clears the bar, holding the top position briefly.",
+            "Slowly lower yourself back to the fully extended hang position and repeat for the desired number of repetitions."
+        ],
+        "description": "The pull up is a classic bodyweight exercise targeting the lats, with secondary engagement of the biceps, traps, and rhomboids. It involves pulling the body upward to the bar from a dead hang, making it one of the most effective compound exercises for building upper back width and pulling strength.",
+        "difficulty": "intermediate",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1180",
+        "name": "reach back - thoracic bridge",
+        "target": "lats",
+        "secondaryMuscles": [
+            "chest",
+            "lower back",
+            "shoulders"
+        ],
+        "instructions": [
+            "Begin in a tabletop position on your hands and knees.",
+            "Place one hand behind your head with your elbow pointing outward.",
+            "Rotate your torso to bring that elbow toward the floor between your arm and knee.",
+            "Then rotate in the opposite direction, opening your chest and reaching that elbow toward the ceiling.",
+            "Repeat for the desired number of repetitions and switch sides."
+        ],
+        "description": "The reach back thoracic bridge is a bodyweight mobility exercise targeting the lats, with secondary engagement of the chest, lower back, and shoulders. It involves rotating through the thoracic spine from a quadruped position to improve upper back mobility and shoulder health.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1181",
+        "name": "reach hinge triangle pose detail",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "lower back",
+            "obliques"
+        ],
+        "instructions": [
+            "Stand with feet wide apart and hinge from the hips over your front leg, keeping your back flat.",
+            "Reach one hand toward the floor or shin, extending the other arm to the ceiling.",
+            "Rotate your torso to open your chest and gaze up toward your raised hand.",
+            "Hold for 20-30 seconds, feeling the stretch in your hamstrings and the opening in your chest.",
+            "Return to standing and repeat on the other side."
+        ],
+        "description": "Reach hinge triangle pose detail is a bodyweight yoga exercise targeting the hamstrings, with secondary engagement of the glutes, lower back, and obliques. It involves a lateral hinge over one leg with a thoracic rotation component to stretch the hamstrings and improve spinal mobility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1182",
+        "name": "shoulder car",
+        "target": "delts",
+        "secondaryMuscles": [
+            "traps",
+            "upper arms"
+        ],
+        "instructions": [
+            "Stand or kneel with your spine tall and core engaged.",
+            "Raise one arm forward to shoulder height with the elbow straight.",
+            "Slowly rotate the arm in the largest circle possible, moving it upward, backward, down, and forward.",
+            "Perform the full controlled articular rotation at a slow, deliberate pace, exploring the end range in every direction.",
+            "Complete the desired number of rotations and switch arms."
+        ],
+        "description": "Shoulder car is a bodyweight mobility exercise targeting the deltoids, with secondary engagement of the traps and upper arms. CAR stands for controlled articular rotation; the movement involves taking the shoulder joint through its full range of motion in a slow, deliberate circle to improve joint health and mobility.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1183",
+        "name": "shoulder circle",
+        "target": "delts",
+        "secondaryMuscles": [
+            "traps",
+            "upper arms"
+        ],
+        "instructions": [
+            "Stand or sit upright with your arms hanging relaxed at your sides.",
+            "Slowly roll both shoulders forward in a circular motion, moving them up toward your ears, then back, then down.",
+            "Complete the desired number of circles in the forward direction.",
+            "Reverse the motion and perform the same number of circles in the backward direction.",
+            "Keep the movement slow and controlled, feeling the muscles around the shoulder loosen with each rotation."
+        ],
+        "description": "Shoulder circle is a bodyweight stretching exercise targeting the deltoids, with secondary engagement of the traps and upper arms. It involves rolling the shoulders in full circles to release tension, improve joint mobility, and warm up the shoulder girdle before training.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1184",
+        "name": "shoulder stretch warm up",
+        "target": "delts",
+        "secondaryMuscles": [
+            "traps",
+            "upper arms"
+        ],
+        "instructions": [
+            "Stand with your feet shoulder-width apart and your arms relaxed.",
+            "Interlace your fingers behind your back and straighten your arms.",
+            "Gently squeeze your shoulder blades together and lift your clasped hands slightly away from your body.",
+            "Hold for 10-15 seconds, feeling the stretch across the front of your shoulders and chest.",
+            "Release and repeat for the desired number of repetitions."
+        ],
+        "description": "Shoulder stretch warm up is a bodyweight stretching exercise targeting the deltoids and anterior shoulder, with secondary engagement of the traps and upper arms. It involves clasping the hands behind the back and opening the chest to release tightness and prepare the shoulder joint for activity.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1185",
+        "name": "shoulder stretch",
+        "target": "delts",
+        "secondaryMuscles": [
+            "traps",
+            "upper arms"
+        ],
+        "instructions": [
+            "Stand or sit with your back straight.",
+            "Bring one arm straight across your body at shoulder height.",
+            "Use your opposite hand or forearm to press the arm gently closer to your chest.",
+            "Hold for 20-30 seconds, feeling tension in the back of your shoulder.",
+            "Release and repeat on the other side."
+        ],
+        "description": "The shoulder stretch is a bodyweight stretching exercise targeting the posterior deltoids, with secondary engagement of the traps and upper arms. It involves drawing one arm horizontally across the body to alleviate shoulder tightness and improve joint flexibility and range of motion.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1186",
+        "name": "side plank hold on elbow",
+        "target": "obliques",
+        "secondaryMuscles": [
+            "abs",
+            "shoulders",
+            "glutes"
+        ],
+        "instructions": [
+            "Lie on your side with your legs stacked and prop yourself up on your forearm, with your elbow directly beneath your shoulder.",
+            "Lift your hips off the floor so your body forms a straight line from head to feet.",
+            "Keep your core engaged, your top hip pushed upward, and avoid letting your hips sag or rotate.",
+            "Hold the position for the desired duration while breathing steadily.",
+            "Lower your hips, rest, and repeat on the other side."
+        ],
+        "description": "The side plank hold on elbow is a bodyweight isometric exercise targeting the obliques, with secondary engagement of the abs, shoulders, and glutes. It involves maintaining a rigid lateral body position on one forearm to build lateral core stability and resist spinal rotation.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1187",
+        "name": "side to side dynamic leg swings",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hip flexors",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand facing a wall or support and place both hands on it for balance.",
+            "Shift your weight onto one leg and swing the other leg from side to side across the front of your body.",
+            "Allow each swing to gradually increase in range as your hip warms up.",
+            "Keep your core engaged and your torso stationary throughout the movement.",
+            "Complete the desired number of swings and switch legs."
+        ],
+        "description": "Side to side dynamic leg swings are a bodyweight dynamic stretching exercise targeting the glutes, with secondary engagement of the hip flexors and lower back. They involve swinging one leg horizontally across the body to improve frontal plane hip mobility and warm up the hip joints.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1188",
+        "name": "sit ups version 1",
+        "target": "abs",
+        "secondaryMuscles": [
+            "hip flexors",
+            "obliques"
+        ],
+        "instructions": [
+            "Lie flat on your back with your knees bent and feet flat on the floor.",
+            "Place your hands behind your head with your elbows pointing outward.",
+            "Engage your abs and curl your torso all the way up until your elbows approach your knees.",
+            "Pause briefly at the top, then slowly lower your torso back to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "Sit ups version 1 is a bodyweight core exercise targeting the abs, with secondary engagement of the hip flexors and obliques. It involves a full-range sit-up movement to strengthen the anterior core and develop abdominal endurance.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1189",
+        "name": "spinal wave into squats",
+        "target": "abs",
+        "secondaryMuscles": [
+            "lower back",
+            "quads",
+            "glutes"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and begin with a slow forward fold, rounding sequentially from the neck down through the spine.",
+            "Once fully folded, shift your weight into your heels and roll your spine down into a squat position.",
+            "Hold the squat briefly, engaging your core and keeping your chest open.",
+            "Drive through your heels to rise out of the squat, then sequentially uncurl your spine back to a tall standing position, head rising last.",
+            "Repeat the wave-like spinal articulation and squat for the desired number of repetitions."
+        ],
+        "description": "Spinal wave into squats is a bodyweight mobility exercise targeting the abs and spine, with secondary engagement of the lower back, quads, and glutes. It combines sequential spinal articulation with a squat to improve spinal mobility, core awareness, and lower body strength in a fluid flowing movement.",
+        "difficulty": "intermediate",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1190",
+        "name": "sprint interval fast running",
+        "target": "quads",
+        "secondaryMuscles": [
+            "hamstrings",
+            "glutes",
+            "lower legs"
+        ],
+        "instructions": [
+            "Begin standing or jogging to warm up, then transition into a full sprint.",
+            "Drive your knees forward and pump your arms powerfully to maximize your running speed.",
+            "Maintain maximum effort for the prescribed sprint duration, typically 10-30 seconds.",
+            "Slow to a jog or walk for the designated recovery period.",
+            "Repeat the sprint and recovery intervals for the desired number of rounds."
+        ],
+        "description": "Sprint interval fast running is a bodyweight cardio exercise targeting the quadriceps, with secondary engagement of the hamstrings, glutes, and lower legs. It involves alternating between maximum-effort sprints and recovery periods to build cardiovascular capacity, speed, and anaerobic endurance.",
+        "difficulty": "intermediate",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "cardio",
+        "equipment": "body weight",
+        "id": "1191",
+        "name": "sprint intervals fast running",
+        "target": "quads",
+        "secondaryMuscles": [
+            "hamstrings",
+            "glutes",
+            "lower legs"
+        ],
+        "instructions": [
+            "Begin with a light jog to warm up your muscles.",
+            "Accelerate to a maximum sprint, focusing on powerful arm drive and high knee lift.",
+            "Sustain the sprint for the prescribed interval, typically 15-30 seconds.",
+            "Recover by walking or slow jogging for the prescribed rest period.",
+            "Repeat for the desired number of intervals."
+        ],
+        "description": "Sprint intervals fast running is a bodyweight cardio training method targeting the quadriceps, with secondary engagement of the hamstrings, glutes, and lower legs. It structures repeated bouts of all-out sprinting with rest intervals to maximize anaerobic power output and metabolic conditioning.",
+        "difficulty": "advanced",
+        "category": "cardio"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1192",
+        "name": "standard push up",
+        "target": "chest",
+        "secondaryMuscles": [
+            "shoulders",
+            "upper arms",
+            "abs"
+        ],
+        "instructions": [
+            "Begin in a plank position with your hands placed slightly wider than shoulder-width apart and fingers pointing forward.",
+            "Engage your core and keep your body in a straight line from head to heels.",
+            "Lower your chest toward the floor by bending your elbows at roughly a 45-degree angle to your body.",
+            "Pause briefly when your chest is just above the floor, then press back up to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "The standard push up is a fundamental bodyweight exercise targeting the chest, with secondary engagement of the shoulders, upper arms, and abs. It involves lowering and pressing the body in a plank position to develop upper body pushing strength and core stability.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1193",
+        "name": "standing front to back kick",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hip flexors",
+            "hamstrings",
+            "abs"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and shift your weight onto one leg.",
+            "Kick your free leg forward to hip height, keeping the knee extended and core engaged.",
+            "Swing the leg back behind you, extending it at the hip, and squeeze your glute at the top.",
+            "Continue swinging the leg forward and backward in a controlled, continuous motion.",
+            "Complete the desired number of repetitions, then switch legs."
+        ],
+        "description": "Standing front to back kick is a bodyweight exercise targeting the glutes, with secondary engagement of the hip flexors, hamstrings, and abs. It involves swinging one leg forward and backward through a full sagittal arc to dynamically activate the posterior chain and improve hip mobility.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1194",
+        "name": "standing hamstring stretch",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart.",
+            "Extend one leg forward and place your heel on a slightly elevated surface or keep it on the floor with the knee straight.",
+            "Hinge forward from your hips with a flat back, reaching toward your extended foot.",
+            "Hold the stretch for 20-30 seconds when you feel tension in the back of your thigh.",
+            "Release and repeat on the other leg."
+        ],
+        "description": "The standing hamstring stretch is a bodyweight stretching exercise targeting the hamstrings, with secondary engagement of the glutes and lower back. It involves hinging forward over a straight leg to lengthen the hamstrings and improve flexibility in the posterior thigh.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1195",
+        "name": "standing hips stretch",
+        "target": "glutes",
+        "secondaryMuscles": [
+            "hip flexors",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand near a wall or support for balance.",
+            "Cross one ankle over the opposite knee, creating a figure-4 shape.",
+            "Slowly sit back as if lowering into a chair, bending the standing leg until you feel a deep stretch in the crossed leg's glute.",
+            "Keep your chest up and your back straight throughout the movement.",
+            "Hold for 20-30 seconds, then release and repeat on the other side."
+        ],
+        "description": "Standing hips stretch is a bodyweight stretching exercise targeting the glutes and hip external rotators, with secondary engagement of the hip flexors and lower back. It involves performing a standing figure-4 stretch by crossing one ankle over the knee to open the hip joint and relieve tension in the glutes.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1196",
+        "name": "standing quadriceps stretch",
+        "target": "quads",
+        "secondaryMuscles": [
+            "hip flexors",
+            "lower legs"
+        ],
+        "instructions": [
+            "Stand on one leg and bring the other foot up behind you toward your glutes.",
+            "Grasp your ankle with the corresponding hand and keep your knees close together.",
+            "Stand tall, keeping your hips level and your core engaged.",
+            "Hold the stretch for 20-30 seconds, feeling tension along the front of your thigh.",
+            "Release and repeat on the other leg."
+        ],
+        "description": "The standing quadriceps stretch is a bodyweight stretching exercise targeting the quadriceps, with secondary engagement of the hip flexors and lower legs. It involves pulling the heel toward the glutes while standing to lengthen the front of the thigh and improve quad flexibility.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1197",
+        "name": "sumo squat",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand with your feet wider than shoulder-width apart and your toes pointed out at approximately 45 degrees.",
+            "Place your hands together in front of your chest or on your hips.",
+            "Engage your core and push your hips back and down, lowering into a squat while keeping your chest upright and knees tracking over your toes.",
+            "Descend until your thighs are parallel to the floor or lower.",
+            "Drive through your heels to return to the starting position and repeat for the desired number of repetitions."
+        ],
+        "description": "The sumo squat is a bodyweight exercise targeting the quadriceps with increased emphasis on the inner thighs and glutes. The wide stance and externally rotated feet shift the workload to the adductors and glute muscles, distinguishing it from a standard squat.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1198",
+        "name": "supine recovery breathing",
+        "target": "abs",
+        "secondaryMuscles": [
+            "lower back"
+        ],
+        "instructions": [
+            "Lie flat on your back with your knees bent and feet flat on the floor, or with your legs elevated on a surface.",
+            "Place one hand on your chest and the other on your belly.",
+            "Inhale slowly through your nose, focusing on expanding your belly rather than your chest.",
+            "Exhale fully through your mouth, letting your abdomen fall and releasing all tension.",
+            "Continue for the desired duration, maintaining a slow and deliberate breathing rhythm."
+        ],
+        "description": "Supine recovery breathing is a bodyweight rehabilitation exercise targeting the abs through diaphragmatic activation, with secondary engagement of the lower back. It involves practicing deep belly breathing in a supine position to promote nervous system recovery, reduce tension, and restore core function after training.",
+        "difficulty": "beginner",
+        "category": "rehabilitation"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1199",
+        "name": "supine setup - pnf hamstring stretch",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "lower back"
+        ],
+        "instructions": [
+            "Lie flat on your back and raise one leg toward the ceiling, holding it with a towel, strap, or both hands behind the thigh.",
+            "Keep the opposite leg flat on the floor with a slight bend in the knee.",
+            "Gently pull the raised leg toward you until you feel a mild hamstring stretch.",
+            "Press your leg into your hands or strap with moderate force for 5-8 seconds, then relax.",
+            "Immediately pull the leg closer to increase the stretch and hold for 20-30 seconds before switching sides."
+        ],
+        "description": "Supine setup PNF hamstring stretch is a bodyweight rehabilitation exercise targeting the hamstrings, with secondary engagement of the glutes and lower back. It uses proprioceptive neuromuscular facilitation from a lying position to progressively increase hamstring flexibility through alternating contraction and passive stretching.",
+        "difficulty": "beginner",
+        "category": "rehabilitation"
+    },
+    {
+        "bodyPart": "back",
+        "equipment": "body weight",
+        "id": "1200",
+        "name": "tabletop start - thoracic bridge",
+        "target": "lats",
+        "secondaryMuscles": [
+            "lower back",
+            "shoulders",
+            "chest"
+        ],
+        "instructions": [
+            "Sit on the floor with your knees bent and feet flat, and place your hands behind you with fingers pointing toward your body.",
+            "Press through your hands and feet to lift your hips until your body forms a flat tabletop position, parallel to the floor.",
+            "Squeeze your glutes, drop your head back slightly, and open your chest upward.",
+            "Hold the tabletop position for 2-3 seconds, then slowly lower your hips back to the floor.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "Tabletop start thoracic bridge is a bodyweight exercise targeting the lats and thoracic spine, with secondary engagement of the lower back, shoulders, and chest. It involves lifting the hips into a reverse tabletop to open the chest and extend the spine, serving as a foundational movement for deeper backbend progressions.",
+        "difficulty": "beginner",
+        "category": "mobility"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1201",
+        "name": "tall spine seated forward fold",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "lower back",
+            "glutes"
+        ],
+        "instructions": [
+            "Sit on the floor with your legs extended straight in front of you and your feet flexed.",
+            "Sit up as tall as possible, lengthening your spine and pulling your shoulders back.",
+            "Inhale to lengthen, then exhale and hinge forward from the hips with a flat back, reaching your hands toward your feet.",
+            "Maintain a long spine throughout the stretch rather than rounding the lower back.",
+            "Hold for 20-30 seconds, then slowly return to a tall seated position."
+        ],
+        "description": "Tall spine seated forward fold is a bodyweight stretching exercise targeting the hamstrings, with secondary engagement of the lower back and glutes. It emphasizes maintaining a long, flat spine throughout the forward fold to maximize hamstring lengthening while protecting the lumbar spine.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1202",
+        "name": "tripod base headstand",
+        "target": "delts",
+        "secondaryMuscles": [
+            "abs",
+            "traps",
+            "upper arms"
+        ],
+        "instructions": [
+            "Kneel on the floor and place the crown of your head on the mat, positioning your hands shoulder-width apart to form a triangular base.",
+            "Press firmly through your hands and lift your knees off the floor, walking your feet in toward your head.",
+            "Engage your core and tuck your knees into your chest, lifting your feet off the floor to find a balanced tucked headstand.",
+            "Gradually extend your legs toward the ceiling when ready, pressing through the balls of your feet.",
+            "Hold for the desired duration, then tuck and lower with control."
+        ],
+        "description": "The tripod base headstand is an advanced bodyweight balance exercise targeting the deltoids, with secondary engagement of the abs, traps, and upper arms. It involves balancing in an inverted position using the head and both hands as a three-point base, building shoulder strength, core stability, and body awareness.",
+        "difficulty": "advanced",
+        "category": "balance"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1203",
+        "name": "twisted sit-ups",
+        "target": "obliques",
+        "secondaryMuscles": [
+            "abs",
+            "hip flexors"
+        ],
+        "instructions": [
+            "Lie flat on your back with your knees bent and feet flat on the floor.",
+            "Place your hands behind your head with elbows pointing outward.",
+            "Engage your core and curl your torso upward, simultaneously rotating your right elbow toward your left knee.",
+            "Lower back to the starting position, then curl up again and rotate your left elbow toward your right knee.",
+            "Continue alternating sides for the desired number of repetitions."
+        ],
+        "description": "Twisted sit-ups are a bodyweight core exercise targeting the obliques, with secondary engagement of the abs and hip flexors. They combine the sit-up movement with a rotational twist to effectively train the lateral core musculature and improve rotational strength.",
+        "difficulty": "beginner",
+        "category": "strength"
+    },
+    {
+        "bodyPart": "waist",
+        "equipment": "body weight",
+        "id": "1204",
+        "name": "ujjayi heat pranayama ladder",
+        "target": "abs",
+        "secondaryMuscles": [
+            "lower back"
+        ],
+        "instructions": [
+            "Sit in a comfortable cross-legged position with your spine tall and shoulders relaxed.",
+            "Partially constrict the back of your throat and breathe in through your nose, creating a soft ocean-like sound.",
+            "Exhale through your nose with the same throat constriction, maintaining steady sound and heat.",
+            "Begin with short, slow rounds and progressively increase the speed and length of each breath in a ladder pattern.",
+            "Complete the desired number of rounds, then transition to natural breathing."
+        ],
+        "description": "Ujjayi heat pranayama ladder is a bodyweight breathing exercise targeting the abs through diaphragmatic control, with secondary engagement of the lower back. It involves ujjayi breath work in a progressive ladder format to build internal heat, calm the mind, and deepen respiratory awareness.",
+        "difficulty": "intermediate",
+        "category": "rehabilitation"
+    },
+    {
+        "bodyPart": "shoulders",
+        "equipment": "body weight",
+        "id": "1205",
+        "name": "upper body cool down stretch",
+        "target": "delts",
+        "secondaryMuscles": [
+            "traps",
+            "chest",
+            "upper arms"
+        ],
+        "instructions": [
+            "Stand or sit comfortably and interlace your fingers in front of you.",
+            "Extend your arms forward at shoulder height, rounding your upper back and pushing your palms away from your body.",
+            "Hold for 10-15 seconds, then release and sweep your arms behind your back, interlacing your fingers and opening your chest.",
+            "Hold for 10-15 seconds, then release.",
+            "Continue alternating between the two stretches for the desired number of repetitions."
+        ],
+        "description": "Upper body cool down stretch is a bodyweight stretching exercise targeting the deltoids, with secondary engagement of the traps, chest, and upper arms. It alternates between a chest-rounded forward stretch and an open-chest backward stretch to systematically release tension across the upper body after training.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1206",
+        "name": "uttanasana (standing forward fold)",
+        "target": "hamstrings",
+        "secondaryMuscles": [
+            "glutes",
+            "lower back"
+        ],
+        "instructions": [
+            "Stand with your feet hip-width apart and your arms by your sides.",
+            "Inhale to lengthen your spine, then exhale and hinge forward from your hips, folding your torso toward the floor.",
+            "Allow your hands to rest on the floor, your shins, or your ankles, depending on your flexibility.",
+            "Let your head hang heavy and relax your neck completely.",
+            "Hold the position for 20-30 seconds, breathing deeply, then slowly roll back up to standing."
+        ],
+        "description": "Uttanasana, or standing forward fold, is a bodyweight yoga stretching exercise targeting the hamstrings, with secondary engagement of the glutes and lower back. It involves folding the torso forward from a standing position to deeply stretch the posterior chain while encouraging spinal decompression and relaxation.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "upper legs",
+        "equipment": "body weight",
+        "id": "1207",
+        "name": "warrior 1 alignment",
+        "target": "quads",
+        "secondaryMuscles": [
+            "glutes",
+            "hamstrings",
+            "shoulders"
+        ],
+        "instructions": [
+            "Step one foot forward into a wide lunge, keeping your front knee bent at approximately 90 degrees directly over your ankle.",
+            "Turn your back foot out at a 45-degree angle and press through the outer edge of that foot.",
+            "Square your hips toward the front of the mat as much as possible.",
+            "Raise both arms overhead with palms facing each other and draw your shoulders down away from your ears.",
+            "Hold for 20-30 seconds while breathing steadily, then switch sides."
+        ],
+        "description": "Warrior 1 alignment is a bodyweight yoga exercise targeting the quadriceps, with secondary engagement of the glutes, hamstrings, and shoulders. It involves holding a deep lunge position with arms raised overhead to simultaneously strengthen the lower body, open the hip flexors, and develop postural awareness.",
+        "difficulty": "beginner",
+        "category": "stretching"
+    },
+    {
+        "bodyPart": "chest",
+        "equipment": "body weight",
+        "id": "1208",
+        "name": "wide grip push up",
+        "target": "chest",
+        "secondaryMuscles": [
+            "shoulders",
+            "upper arms",
+            "abs"
+        ],
+        "instructions": [
+            "Begin in a push-up position with your hands placed significantly wider than shoulder-width apart.",
+            "Keep your fingers pointing forward or slightly outward and your body in a straight line from head to heels.",
+            "Lower your chest toward the floor by bending your elbows outward.",
+            "Pause briefly when your chest is just above the floor, then press back up to the starting position.",
+            "Repeat for the desired number of repetitions."
+        ],
+        "description": "The wide grip push up is a bodyweight exercise targeting the chest with increased emphasis on the outer pectoral muscles. The wider hand position reduces triceps involvement and places greater stress on the chest, making it an effective variation for developing chest width and strength.",
+        "difficulty": "beginner",
+        "category": "strength"
+    }
+]
