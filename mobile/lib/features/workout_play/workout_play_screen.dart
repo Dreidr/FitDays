@@ -7,6 +7,7 @@ import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/workout_play/models/active_workout_session.dart';
 import 'package:video_player/video_player.dart';
 import 'package:mobile/features/workout/services/local_exercise_repo.dart';
+import 'package:mobile/features/workout/widgets/set_completion_screen.dart';
 
 class WorkoutPlayScreen extends StatefulWidget {
   const WorkoutPlayScreen({
@@ -64,9 +65,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
       if (mounted) {
         setState(() {});
       }
-    } catch (_) {
-      debugPrint('Video not found: $exerciseId');
-    }
+    } catch (_) {}
   }
 
   Timer? _workoutTimer;
@@ -74,6 +73,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
 
   // Optional but nice: stable id for this run
   late final String _workoutId;
+  late AnimationController _arrowController;
 
   int _exerciseIndex = 0;
   int _setIndex = 1;
@@ -174,17 +174,44 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
     _resumeRestTimer();
   }
 
-  void _completeSet() async {
+  void _logSet() async {
     if (_isResting) return;
 
     if (_setIndex < _planned.sets) {
       setState(() => _setIndex++);
+
       await _persistSession();
       _startRest();
       return;
     }
 
-    if (_exerciseIndex < widget.exercises.length - 1) {
+    final currentExercise = widget.exercises[_exerciseIndex];
+
+    final hasNext = _exerciseIndex < widget.exercises.length - 1;
+
+    final nextExercise = hasNext ? widget.exercises[_exerciseIndex + 1] : null;
+
+    final currentExerciseData = await LocalExerciseRepo.getById(
+      currentExercise.exerciseId,
+    );
+
+    final nextExerciseData = nextExercise == null
+        ? null
+        : await LocalExerciseRepo.getById(nextExercise.exerciseId);
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SetCompletionScreen(
+          completedExercise: currentExercise,
+          nextExercise: nextExercise,
+          completedName: currentExerciseData?['name'] ?? 'Exercise',
+          nextName: nextExerciseData?['name'],
+        ),
+      ),
+    );
+
+    if (hasNext) {
       setState(() {
         _exerciseIndex++;
         _setIndex = 1;
@@ -195,7 +222,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
       await _loadVideo(widget.exercises[_exerciseIndex].exerciseId);
 
       await _persistSession();
-      _startRest(20);
+
       return;
     }
 
@@ -522,7 +549,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                       width: double.infinity,
                       height: 54,
                       child: ElevatedButton(
-                        onPressed: _isResting ? null : _completeSet,
+                        onPressed: _isResting ? null : _logSet,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4442D9),
                           shape: RoundedRectangleBorder(
@@ -530,7 +557,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                           ),
                         ),
                         child: Text(
-                          _isResting ? "Resting..." : "Complete set",
+                          _isResting ? "Resting..." : "Log Set",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,

@@ -28,13 +28,14 @@ class WorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final previewExercises = workout!.exercises
+    final previewExercises = workout?.exercises
         .where((e) {
           final id = int.tryParse(e.exerciseId) ?? 0;
           return id < 1107;
         })
         .take(4)
-        .toList();
+        .toList() ??
+    [];
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(

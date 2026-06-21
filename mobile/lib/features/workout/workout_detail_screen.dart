@@ -1059,8 +1059,11 @@ class _EditExerciseSheetState extends State<_EditExerciseSheet> {
                     ),
                   );
                 },
-                icon: const Icon(Icons.swap_horiz),
-                label: const Text("Replace Exercise"),
+                icon: const Icon(Icons.swap_horiz, size: 22),
+                label: const Text(
+                  "Replace Exercise",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                ),
               ),
             ],
           ),

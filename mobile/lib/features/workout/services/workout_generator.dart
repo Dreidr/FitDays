@@ -8,10 +8,10 @@ class WorkoutGenerator {
   static final _rng = Random();
 
   static int exerciseCountForDuration(int minutes) {
-    if (minutes <= 30) return 5;
-    if (minutes <= 40) return 6;
-    if (minutes <= 50) return 8;
-    return 10;
+    if (minutes <= 30) return 4;
+    if (minutes <= 40) return 5;
+    if (minutes <= 50) return 6;
+    return 8;
   }
 
   // ---------- helpers: normalize ----------
@@ -79,7 +79,7 @@ class WorkoutGenerator {
       return switch (lvl) {
         "beginner" => (sets: 3, repsMin: 8, repsMax: 12),
         "intermediate" => (sets: 4, repsMin: 8, repsMax: 12),
-        _ => (sets: 5, repsMin: 6, repsMax: 12),
+        _ => (sets: 4, repsMin: 8, repsMax: 12),
       };
     }
 
@@ -116,8 +116,7 @@ class WorkoutGenerator {
   }
 
   static int _setsForExercise(int baseSets, Map<String, dynamic> e) {
-    final s = _looksCompound(e) ? baseSets : max(2, baseSets - 1);
-    return min(5, s);
+    return baseSets;
   }
 
   // ---------- equipment + weight suggestion ----------
@@ -140,18 +139,88 @@ class WorkoutGenerator {
   }
 
   static bool _canSuggestWeight(Map<String, dynamic> e) {
-    final eq = _equip(e);
+    return !_isBodyweightLike(e);
+  }
 
-    // safe to suggest for these:
-    if (eq.contains("dumbbell") ||
-        eq.contains("kettlebell") ||
-        eq.contains("cable") ||
-        eq.contains("machine")) {
-      return true;
+  static double _levelMultiplier(String level) {
+    switch (level) {
+      case "beginner":
+        return 0.8;
+      case "advanced":
+        return 1.4;
+      default:
+        return 1.0; // intermediate
+    }
+  }
+
+  static double _goalMultiplier(String goal) {
+    switch (goal) {
+      case "strength":
+        return 1.2;
+      case "hypertrophy":
+        return 1.0;
+      case "fatloss":
+        return 0.8;
+      default:
+        return 0.9;
+    }
+  }
+
+  static double _genderMultiplier(String gender) {
+    return gender.contains("female") ? 0.7 : 1.0;
+  }
+
+  static double _baseWeightFactor(Map<String, dynamic> e) {
+    final eq = _equip(e);
+    final target = _norm(e["target"]?.toString());
+    final name = _norm(e["name"]?.toString());
+
+    // Isolation exercises
+    if (name.contains("preacher curl")) return 0.15;
+    if (name.contains("curl")) return 0.15;
+    if (name.contains("hammer curl")) return 0.15;
+
+    if (name.contains("lateral raise")) return 0.08;
+    if (name.contains("rear delt")) return 0.08;
+
+    if (name.contains("fly")) return 0.12;
+
+    if (name.contains("tricep pushdown")) return 0.25;
+    if (name.contains("tricep extension")) return 0.18;
+
+    // Unilateral leg movements
+    if (name.contains("lunge")) return 0.35;
+    if (name.contains("split squat")) return 0.35;
+    if (name.contains("step up")) return 0.30;
+
+    // BARBELL
+    if (eq.contains("barbell")) {
+      if (target.contains("quad") || target.contains("glute")) return 0.75;
+      if (target.contains("back") || target.contains("lat")) return 0.55;
+      if (target.contains("chest")) return 0.50;
+      return 0.45;
     }
 
-    // barbell/other: user sets it
-    return false;
+    // MACHINE
+    if (eq.contains("machine")) {
+      if (target.contains("quad") || target.contains("glute")) return 0.70;
+      return 0.40;
+    }
+
+    // CABLE
+    if (eq.contains("cable")) {
+      return 0.20;
+    }
+
+    // DUMBBELL
+    if (eq.contains("dumbbell")) {
+      if (target.contains("shoulder")) return 0.08;
+      if (target.contains("bicep")) return 0.10;
+      if (target.contains("tricep")) return 0.10;
+      return 0.12;
+    }
+
+    return 0.15;
   }
 
   static double? _suggestWeightKg(UserProfile? p, Map<String, dynamic> e) {
@@ -160,30 +229,23 @@ class WorkoutGenerator {
     final bw = p?.weightKg;
     if (bw == null || bw <= 0) return null;
 
+    final level = _userLevel(p);
     final goal = _userGoal(p);
-    final lvl = _userLevel(p);
+    final gender = _norm(p?.gender);
 
-    // conservative baseline % of bodyweight
-    double pct = 0.06;
-    if (goal == "strength") pct = 0.08;
-    if (goal == "hypertrophy") pct = 0.07;
-    if (goal == "fatloss") pct = 0.05;
+    final raw =
+        bw *
+        _baseWeightFactor(e) *
+        _levelMultiplier(level) *
+        _goalMultiplier(goal) *
+        _genderMultiplier(gender);
 
-    if (lvl == "beginner") pct *= 0.8;
-    if (lvl == "advanced") pct *= 1.2;
+    print(
+      "${e['name']} | "
+      "factor=${_baseWeightFactor(e)} | "
+      "weight=$raw",
+    );
 
-    final body = _norm(e["bodyPart"]?.toString());
-    final isLower =
-        body.contains("quad") ||
-        body.contains("hamstring") ||
-        body.contains("glute") ||
-        body.contains("calves");
-
-    if (isLower) pct *= 1.4;
-
-    final raw = bw * pct;
-
-    // round to nearest 0.5kg
     return (raw * 2).round() / 2.0;
   }
 
@@ -637,6 +699,7 @@ class WorkoutGenerator {
       // Cardio/stretching MVP: keep it simple and safe
       return picked.map((e) {
         final id = (e["id"] ?? "").toString();
+
         return PlannedExercise(
           exerciseId: id,
           sets: 1,
@@ -650,10 +713,29 @@ class WorkoutGenerator {
     // Strength lane
     final rx = _strengthRx(profile);
     final baseSets = _tweakSetsForDuration(rx.sets, duration);
+    final goal = _userGoal(profile);
 
     final exercises = picked.map((e) {
       final id = (e["id"] ?? "").toString();
-      final reps = _randInt(rx.repsMin, rx.repsMax);
+      int reps;
+
+      if (goal == "hypertrophy") {
+        if (_looksCompound(e)) {
+          reps = switch (_userLevel(profile)) {
+            "beginner" => _randInt(10, 12),
+            "intermediate" => _randInt(8, 12),
+            _ => _randInt(8, 12),
+          };
+        } else {
+          reps = switch (_userLevel(profile)) {
+            "beginner" => _randInt(12, 15),
+            "intermediate" => _randInt(10, 15),
+            _ => _randInt(10, 15),
+          };
+        }
+      } else {
+        reps = _randInt(rx.repsMin, rx.repsMax);
+      }
       final sets = _setsForExercise(baseSets, e);
 
       final weight = _isBodyweightLike(e) ? null : _suggestWeightKg(profile, e);

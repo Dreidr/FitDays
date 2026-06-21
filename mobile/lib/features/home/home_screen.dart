@@ -175,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             warmupOn: true,
                             exercises: generated,
                           );
-                          print("SAVING EXERCISES: ${saved.exercises.length}");
+
                           await LocalStorageService.saveGeneratedWorkout(saved);
                         }
 
