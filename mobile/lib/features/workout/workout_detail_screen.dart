@@ -67,17 +67,20 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       return id < 1107;
     }).toList();
 
-    () async {
-      _future = _loadExercises();
-
-      if (mounted) setState(() {});
-      await _saveCurrentWorkout();
-    }();
+    _initialize();
   }
 
   Future<List<Map<String, dynamic>>> _loadExercises() {
     final ids = _userPlan.map((e) => e.exerciseId).toList();
     return LocalExerciseRepo.fetchExercisesByIds(ids);
+  }
+
+  Future<void> _initialize() async {
+    _future = _loadExercises();
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _toggleWarmup(bool v) async {
@@ -285,6 +288,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       }
       _future = _loadExercises();
     });
+    await _saveCurrentWorkout();
   }
 
   @override
