@@ -162,6 +162,7 @@ class _BottomNavState extends State<BottomNav>
                 totalTimeText: widget.todayPlan.isWorkoutDay
                     ? "$mins mins"
                     : "Rest day",
+                     durationMinutes: mins,
                 workoutId: id,
                 warmupCount: 0,
               ),

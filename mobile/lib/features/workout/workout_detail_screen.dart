@@ -22,6 +22,7 @@ class WorkoutDetailScreen extends StatefulWidget {
     required this.workoutId, // ✅ new,
     required this.warmupCount,
     required this.plan,
+    required this.durationMinutes,
   });
 
   final DayPlan plan;
@@ -30,6 +31,7 @@ class WorkoutDetailScreen extends StatefulWidget {
   final String totalTimeText;
   final String workoutId;
   final int warmupCount; // ✅
+  final int durationMinutes;
 
   @override
   State<WorkoutDetailScreen> createState() => _WorkoutDetailScreenState();
@@ -158,6 +160,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     );
 
     final existing = LocalStorageService.getSavedWorkoutById(widget.workoutId);
+    final durationMinutes =
+        LocalStorageService.getUserProfile()?.workoutDuration ??
+        widget.durationMinutes;
 
     if (existing == null) return;
 
@@ -168,7 +173,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       id: existing.id,
       createdAt: existing.createdAt,
       title: existing.title,
-      durationMinutes: existing.durationMinutes,
+      durationMinutes: durationMinutes,
       warmupOn: true,
       exercises: generated,
     );
@@ -247,14 +252,29 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     if (existing == null) return;
     _previousWorkout = existing;
 
+    final currentCount = _userPlan.length;
+
+    final originalCount = WorkoutGenerator.exerciseCountForDuration(
+      widget.durationMinutes,
+    );
+
+    final calculatedMinutes =
+        ((widget.durationMinutes / originalCount) * currentCount).round();
+
     final updated = SavedWorkout(
       id: existing.id,
       createdAt: existing.createdAt,
       title: existing.title,
-      durationMinutes: existing.durationMinutes,
+      durationMinutes: calculatedMinutes, // ✅ FIX
       warmupOn: _warmupOn,
       exercises: [..._warmupPlan, ..._userPlan],
     );
+
+    _savedWorkout = updated;
+
+    if (mounted) {
+      setState(() {});
+    }
 
     await LocalStorageService.saveGeneratedWorkout(updated);
   }
@@ -355,7 +375,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         WorkoutHeaderCard(
                           dayLabel: widget.dayLabel,
                           title: widget.title,
-                          totalTimeText: widget.totalTimeText,
+                          totalTimeText:
+                              "${_savedWorkout?.durationMinutes ?? widget.durationMinutes} mins",
                           exercises: planItems,
                           muscleGroups: muscleGroupsForTitle(widget.title),
                           onBack: () => Navigator.pop(context),

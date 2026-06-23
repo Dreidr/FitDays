@@ -189,6 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               dayLabel: PlanCalendarService.dayLabel(plan.date),
                               title: plan.title,
                               totalTimeText: _totalTimeTextFor(plan, duration),
+                              durationMinutes: durationMinutes,
                               workoutId: id,
                               warmupCount: 0,
                             ),

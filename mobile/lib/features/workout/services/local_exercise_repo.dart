@@ -105,7 +105,9 @@ class LocalExerciseRepo {
         "instructions": instructions,
       });
     }
+    final warmups = await loadWarmups();
 
+    mapped.addAll(warmups);
     _cache = mapped;
 
     // build index
@@ -165,7 +167,14 @@ class LocalExerciseRepo {
 
   static Future<List<Map<String, dynamic>>> byBodyPart(String bodyPart) async {
     final all = await loadAll();
-    return all.where((e) => (e['bodyPart'] ?? '') == bodyPart).toList();
+
+    final results = all.where((e) {
+      final bp = (e['bodyPart'] ?? '').toString();
+
+      return bp.toLowerCase().contains(bodyPart.toLowerCase());
+    }).toList();
+
+    return results;
   }
 
   static Future<Map<String, dynamic>?> getById(String id) async {

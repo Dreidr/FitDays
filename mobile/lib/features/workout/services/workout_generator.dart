@@ -240,12 +240,6 @@ class WorkoutGenerator {
         _goalMultiplier(goal) *
         _genderMultiplier(gender);
 
-    print(
-      "${e['name']} | "
-      "factor=${_baseWeightFactor(e)} | "
-      "weight=$raw",
-    );
-
     return (raw * 2).round() / 2.0;
   }
 
@@ -669,6 +663,10 @@ class WorkoutGenerator {
     required DayPlan plan,
   }) async {
     final all = await LocalExerciseRepo.loadAll();
+    final exercisesOnly = all.where((e) {
+      final id = int.tryParse(e["id"].toString()) ?? 0;
+      return id < 1107;
+    }).toList();
 
     final generatedWarmups = await _generateWarmups(plan.title.toLowerCase());
 
@@ -679,15 +677,15 @@ class WorkoutGenerator {
     // 1) Filter by lane (category)
     List<Map<String, dynamic>> lanePool;
     if (lane == "cardio") {
-      lanePool = all
+      lanePool = exercisesOnly
           .where((e) => _norm(e["category"]?.toString()) == "cardio")
           .toList();
     } else if (lane == "stretching") {
-      lanePool = all
+      lanePool = exercisesOnly
           .where((e) => _norm(e["category"]?.toString()) == "stretching")
           .toList();
     } else {
-      lanePool = all
+      lanePool = exercisesOnly
           .where((e) => _isStrengthyCategory((e["category"] ?? "").toString()))
           .toList();
     }
@@ -785,6 +783,7 @@ class WorkoutGenerator {
     String workoutType,
   ) async {
     final warmups = await LocalExerciseRepo.loadWarmups();
+    
 
     const excludedKeywords = [
       'push up',
