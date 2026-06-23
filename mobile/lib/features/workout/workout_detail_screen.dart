@@ -13,6 +13,7 @@ import 'package:mobile/features/workout/services/workout_generator.dart';
 import 'package:mobile/features/workout/all_exercises_screen.dart';
 import 'package:mobile/features/workout/widgets/workout_header_card.dart';
 import 'package:mobile/features/workout/widgets/edit_exercise_sheet.dart';
+import 'package:mobile/features/workout/widgets/workout_bottom_actions.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
@@ -641,71 +642,13 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               ),
             ),
 
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(18, 10, 18, 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ✅ button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 54,
-                      child: ElevatedButton(
-                        onPressed: _startWorkout,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: buttonColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Text(
-                          buttonText,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _canUndoWorkout
-                                ? _undoWorkoutGeneration
-                                : _generateNewWorkout,
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              backgroundColor: Colors.grey.shade200,
-                              minimumSize: const Size.fromHeight(56),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            child: Text(
-                              _canUndoWorkout ? "Undo" : "New Workout",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: _canUndoWorkout
-                                    ? const Color(0xFFD32F2F) // red
-                                    : const Color(0xFF333333), // charcoal
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            WorkoutBottomActions(
+              buttonText: buttonText,
+              buttonColor: buttonColor,
+              canUndoWorkout: _canUndoWorkout,
+              onStartWorkout: _startWorkout,
+              onGenerateWorkout: _generateNewWorkout,
+              onUndoWorkout: _undoWorkoutGeneration,
             ),
           ],
         ),
