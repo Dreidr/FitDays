@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/workout/models/planned_exercise.dart';
-import 'package:mobile/features/workout/exercise_detail_screen.dart';
-import 'package:mobile/features/workout/widgets/exercise_row.dart';
+import 'package:mobile/features/workout/widgets/exercise_section.dart';
 import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 import 'package:mobile/features/workout_play/workout_play_screen.dart';
 import 'package:mobile/features/workout/widgets/warmup_section.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/features/workout/models/saved_workout.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/workout/models/day_plan.dart';
@@ -73,12 +71,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       _future = _loadExercises();
 
       if (mounted) setState(() {});
-    }();
-
-    () async {
-      _future = _loadExercises();
-
-      if (mounted) setState(() {});
+      await _saveCurrentWorkout();
     }();
   }
 
@@ -435,88 +428,32 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         const SizedBox(height: 10),
 
                         // ✅ Reorder + swipe-delete main list (user plan only)
-                        ReorderableListView.builder(
-                          shrinkWrap: true,
-                          physics:
-                              const NeverScrollableScrollPhysics(), // because you're inside SingleChildScrollView
-                          buildDefaultDragHandles: false,
-                          itemCount: planItems.length,
+                        ExerciseSection(
+                          planItems: planItems,
+                          exerciseById: exerciseById,
+
+                          onDelete: (index) async {
+                            setState(() {
+                              _userPlan.removeAt(index);
+                              _future = _loadExercises();
+                            });
+
+                            await _saveCurrentWorkout();
+                          },
+
+                          onEdit: _editExerciseWorkout,
+
                           onReorder: (oldIndex, newIndex) async {
                             setState(() {
-                              if (newIndex > oldIndex) newIndex -= 1;
+                              if (newIndex > oldIndex) {
+                                newIndex -= 1;
+                              }
+
                               final item = _userPlan.removeAt(oldIndex);
                               _userPlan.insert(newIndex, item);
                             });
 
                             await _saveCurrentWorkout();
-                          },
-                          itemBuilder: (context, i) {
-                            final planned = planItems[i];
-                            final ex = exerciseById[planned.exerciseId];
-                            if (ex == null) {}
-                            final name = ex == null
-                                ? "Missing exercise"
-                                : _s(ex['name']);
-
-                            return Slidable(
-                              key: ValueKey(
-                                planned,
-                              ), // IMPORTANT: unique per row (better than index)
-                              endActionPane: ActionPane(
-                                extentRatio:
-                                    0.28, // 👈 smaller = tighter delete button
-                                motion: const DrawerMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (_) async {
-                                      setState(() {
-                                        _userPlan.removeAt(i);
-                                        _future = _loadExercises();
-                                      });
-
-                                      await _saveCurrentWorkout();
-                                    },
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    label: "Delete",
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: ExerciseRow(
-                                  exerciseId: planned.exerciseId,
-                                  name: name.isEmpty ? "Exercise" : name,
-                                  meta: planned.metaText(),
-                                  onMore: () =>
-                                      _editExerciseWorkout(i, planned),
-                                  reorderIndex:
-                                      i, // ✅ new (see _ExerciseRow change below)
-                                  onTap: () {
-                                    if (ex == null) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            "Exercise not found: ${planned.exerciseId}",
-                                          ),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            ExerciseDetailScreen(exercise: ex),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            );
                           },
                         ),
 
