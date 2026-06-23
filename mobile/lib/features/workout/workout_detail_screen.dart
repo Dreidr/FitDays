@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/workout/models/planned_exercise.dart';
 import 'package:mobile/features/workout/exercise_detail_screen.dart';
-import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
+import 'package:mobile/features/workout/widgets/exercise_row.dart';
 import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 import 'package:mobile/features/workout_play/workout_play_screen.dart';
 import 'package:mobile/app/theme/app_decorations.dart';
@@ -11,6 +11,8 @@ import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/workout/models/day_plan.dart';
 import 'package:mobile/features/workout/services/workout_generator.dart';
 import 'package:mobile/features/workout/all_exercises_screen.dart';
+import 'package:mobile/features/workout/widgets/workout_header_card.dart';
+import 'package:mobile/features/workout/widgets/edit_exercise_sheet.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   const WorkoutDetailScreen({
@@ -79,13 +81,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     }();
   }
 
-  List<PlannedExercise> get _activePlan {
-    if (!_warmupOn) return _userPlan;
-    return [..._warmupPlan, ..._userPlan];
-  }
-
   Future<List<Map<String, dynamic>>> _loadExercises() {
-    final ids = _activePlan.map((e) => e.exerciseId).toList();
+    final ids = _userPlan.map((e) => e.exerciseId).toList();
     return LocalExerciseRepo.fetchExercisesByIds(ids);
   }
 
@@ -111,7 +108,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (_) => _EditExerciseSheet(
+      builder: (_) => EditExerciseSheet(
         initial: current,
         onSave: (updated) {
           setState(() {
@@ -138,7 +135,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder: (_) => _EditExerciseSheet(
+      builder: (_) => EditExerciseSheet(
         initial: current,
         onSave: (updated) {
           setState(() {
@@ -265,6 +262,37 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     await LocalStorageService.saveGeneratedWorkout(updated);
   }
 
+  Future<void> _addExercise() async {
+    final selected = await Navigator.push<List<Map<String, dynamic>>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AllExercisesScreen(multiSelect: true),
+      ),
+    );
+
+    if (selected == null) return;
+
+    final profile = LocalStorageService.getUserProfile();
+
+    setState(() {
+      for (final ex in selected) {
+        final exists = _userPlan.any(
+          (p) => p.exerciseId == ex['id'].toString(),
+        );
+
+        if (!exists) {
+          _userPlan.add(
+            WorkoutGenerator.buildPlannedExercise(
+              profile: profile,
+              exercise: ex,
+            ),
+          );
+        }
+      }
+      _future = _loadExercises();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final active = LocalStorageService.getActiveWorkoutSession();
@@ -326,25 +354,15 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _HeaderCard(
+                        WorkoutHeaderCard(
                           dayLabel: widget.dayLabel,
                           title: widget.title,
-                          exerciseCount: planItems.length,
+                          totalTimeText: widget.totalTimeText,
                           exercises: planItems,
                           muscleGroups: muscleGroupsForTitle(widget.title),
                           onBack: () => Navigator.pop(context),
                         ),
                         const SizedBox(height: 14),
-
-                        Text(
-                          "Total time: ${widget.totalTimeText}",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
 
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -463,7 +481,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                                         padding: const EdgeInsets.only(
                                           bottom: 10,
                                         ),
-                                        child: _ExerciseRow(
+                                        child: ExerciseRow(
                                           exerciseId: p.exerciseId,
                                           name: name.isEmpty ? "Warm-up" : name,
                                           meta: subtitle,
@@ -489,6 +507,43 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 10),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          child: Row(
+                            children: [
+                              Text(
+                                "${planItems.length} exercises",
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const Spacer(),
+                              TextButton(
+                                onPressed: _addExercise,
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xFF221FCB),
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "Add",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    SizedBox(width: 4),
+                                    Icon(Icons.add, size: 18),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                         const SizedBox(height: 10),
 
@@ -511,6 +566,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                           itemBuilder: (context, i) {
                             final planned = planItems[i];
                             final ex = exerciseById[planned.exerciseId];
+                            if (ex == null) {}
                             final name = ex == null
                                 ? "Missing exercise"
                                 : _s(ex['name']);
@@ -542,7 +598,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.only(bottom: 12),
-                                child: _ExerciseRow(
+                                child: ExerciseRow(
                                   exerciseId: planned.exerciseId,
                                   name: name.isEmpty ? "Exercise" : name,
                                   meta: planned.metaText(),
@@ -658,136 +714,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   }
 }
 
-class _HeaderCard extends StatelessWidget {
-  const _HeaderCard({
-    required this.dayLabel,
-    required this.title,
-    required this.exerciseCount,
-    required this.exercises,
-    required this.onBack,
-    this.muscleGroups,
-  });
-
-  final String dayLabel;
-  final String title;
-  final int exerciseCount;
-  final VoidCallback onBack;
-  final List<PlannedExercise> exercises;
-  final String? muscleGroups;
-
-  @override
-  Widget build(BuildContext context) {
-    final previewExercises = exercises.where((e) {
-      final id = int.tryParse(e.exerciseId) ?? 0;
-      return id < 1107;
-    }).toList();
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF4442D9).withValues(alpha: 0.85),
-            const Color(0xFF2F2ECF).withValues(alpha: 0.85),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4442D9).withValues(alpha: 0.35),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // top row: back + day
-          Row(
-            children: [
-              Text(
-                dayLabel,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
-              Text(
-                "$exerciseCount exercises",
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-
-          if (muscleGroups != null && muscleGroups!.isNotEmpty) ...[
-            const SizedBox(height: 6),
-
-            Text(
-              muscleGroups!,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-
-          const SizedBox(height: 14),
-
-          // thumbnails
-          SizedBox(
-            height: 56,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: previewExercises.length > 5
-                  ? 5
-                  : previewExercises.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 6),
-              itemBuilder: (_, index) {
-                final ex = previewExercises[index];
-
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: ExerciseThumb(exerciseId: ex.exerciseId),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 String muscleGroupsForTitle(String title) {
   final t = title.toLowerCase();
 
@@ -812,340 +738,4 @@ String muscleGroupsForTitle(String title) {
   }
 
   return '';
-}
-
-class _ExerciseRow extends StatelessWidget {
-  const _ExerciseRow({
-    required this.exerciseId,
-    required this.name,
-    required this.meta,
-    required this.onMore,
-    this.reorderIndex,
-    required this.onTap,
-  });
-
-  final String exerciseId;
-  final String name;
-  final String meta;
-  final VoidCallback onMore;
-  final int? reorderIndex;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: SizedBox(
-                width: 54,
-                height: 54,
-                child: exerciseId.isEmpty
-                    ? const Icon(
-                        Icons.image_not_supported,
-                        color: Colors.black54,
-                      )
-                    : ExerciseThumb(exerciseId: exerciseId), // ✅ your widget
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    meta,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            IconButton(
-              onPressed: onMore,
-              icon: const Icon(Icons.more_horiz, color: Colors.black54),
-            ),
-            if (reorderIndex != null)
-              ReorderableDragStartListener(
-                index: reorderIndex!,
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.drag_handle, color: Colors.black54),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EditExerciseSheet extends StatefulWidget {
-  const _EditExerciseSheet({required this.initial, required this.onSave});
-
-  final PlannedExercise initial;
-  final ValueChanged<PlannedExercise> onSave;
-
-  @override
-  State<_EditExerciseSheet> createState() => _EditExerciseSheetState();
-}
-
-class _EditExerciseSheetState extends State<_EditExerciseSheet> {
-  late int _sets;
-  late int _reps;
-  late TextEditingController _weightCtrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _sets = widget.initial.sets;
-    _reps = widget.initial.reps;
-
-    final w = widget.initial.weightKg;
-    _weightCtrl = TextEditingController(
-      text: (w != null && w > 0) ? w.toStringAsFixed(0) : "",
-    );
-  }
-
-  @override
-  void dispose() {
-    _weightCtrl.dispose();
-    super.dispose();
-  }
-
-  double? _parseWeight() {
-    final t = _weightCtrl.text.trim();
-    if (t.isEmpty) return null;
-
-    final v = double.tryParse(t);
-    if (v == null || v <= 0) return null;
-
-    // round to 0.5kg for nicer values
-    return (v * 2).round() / 2.0;
-  }
-
-  PlannedExercise _buildUpdated() {
-    return PlannedExercise(
-      exerciseId: widget.initial.exerciseId,
-      sets: _sets,
-      reps: _reps,
-      weightKg: _parseWeight(),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(18, 14, 18, 16 + bottom),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 44,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.black12,
-                borderRadius: BorderRadius.circular(99),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          const Text(
-            "Edit exercise",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 14),
-
-          _StepperRow(
-            label: "Sets",
-            value: _sets,
-            min: 1,
-            max: 8,
-            onChanged: (v) => setState(() => _sets = v),
-          ),
-          const SizedBox(height: 10),
-          _StepperRow(
-            label: "Reps",
-            value: _reps,
-            min: 1,
-            max: 30,
-            onChanged: (v) => setState(() => _reps = v),
-          ),
-
-          const SizedBox(height: 12),
-
-          const Text(
-            "Weight (kg)",
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: Colors.black54,
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          TextField(
-            controller: _weightCtrl,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              hintText: "Leave blank to set later",
-              filled: true,
-              fillColor: Colors.black.withValues(alpha: 0.04),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          Row(
-            children: [
-              TextButton.icon(
-                onPressed: () async {
-                  final currentExercise = await LocalExerciseRepo.getById(
-                    widget.initial.exerciseId,
-                  );
-
-                  final target = currentExercise?["target"];
-
-                  final replacement = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AllExercisesScreen(
-                        targetFilter: target,
-                        selectionMode: true,
-                        warmupOnly: true,
-                      ),
-                    ),
-                  );
-
-                  if (replacement == null) return;
-
-                  widget.onSave(
-                    PlannedExercise(
-                      exerciseId: replacement["id"].toString(),
-                      sets: _sets,
-                      reps: _reps,
-                      weightKg: _parseWeight(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.swap_horiz, size: 22),
-                label: const Text(
-                  "Replace Exercise",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              TextButton(
-                onPressed: () => setState(() => _weightCtrl.text = ""),
-                child: const Text("Clear weight"),
-              ),
-              const Spacer(),
-              SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4442D9),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  onPressed: () => widget.onSave(_buildUpdated()),
-                  child: const Text(
-                    "Save",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StepperRow extends StatelessWidget {
-  const _StepperRow({
-    required this.label,
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.onChanged,
-  });
-
-  final String label;
-  final int value;
-  final int min;
-  final int max;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
-            ),
-          ),
-          IconButton(
-            onPressed: value > min ? () => onChanged(value - 1) : null,
-            icon: const Icon(Icons.remove_circle_outline),
-          ),
-          Text(
-            "$value",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-          ),
-          IconButton(
-            onPressed: value < max ? () => onChanged(value + 1) : null,
-            icon: const Icon(Icons.add_circle_outline),
-          ),
-        ],
-      ),
-    );
-  }
 }

@@ -7,12 +7,16 @@ class AllExercisesScreen extends StatefulWidget {
   final String? targetFilter;
   final bool selectionMode;
   final bool warmupOnly;
+  final bool multiSelect;
+  final List<String> preselectedIds;
 
   const AllExercisesScreen({
     super.key,
     this.targetFilter,
     this.selectionMode = false,
     this.warmupOnly = false,
+    this.multiSelect = false,
+    this.preselectedIds = const [],
   });
 
   @override
@@ -30,10 +34,14 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
 
   String? _selectedBodyPart; // null = all
   String _search = "";
+  final Set<String> _selectedIds = {};
 
   @override
   void initState() {
     super.initState();
+
+    _selectedIds.addAll(widget.preselectedIds);
+
     _bootstrap();
   }
 
@@ -113,6 +121,14 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
   void _selectBodyPart(String? part) {
     setState(() => _selectedBodyPart = part);
     _applyFilters();
+  }
+
+  void _confirmSelection() {
+    final selected = _items
+        .where((e) => _selectedIds.contains(e['id'].toString()))
+        .toList();
+
+    Navigator.pop(context, selected);
   }
 
   @override
@@ -215,14 +231,26 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                         final bodyPart = _s(ex['bodyPart']);
                         final target = _s(ex['target']);
                         final equipment = _s(ex['equipment']);
+                        final isSelected = _selectedIds.contains(
+                          ex['id'].toString(),
+                        );
 
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
-                              if (widget.selectionMode) {
-                                Navigator.pop(context, ex);
+                              if (widget.multiSelect) {
+                                final id = ex['id'].toString();
+
+                                setState(() {
+                                  if (_selectedIds.contains(id)) {
+                                    _selectedIds.remove(id);
+                                  } else {
+                                    _selectedIds.add(id);
+                                  }
+                                });
+
                                 return;
                               }
 
@@ -236,11 +264,19 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                             },
                             child: Container(
                               padding: const EdgeInsets.all(12),
+
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: isSelected
+                                    ? const Color(
+                                        0xFF4442D9,
+                                      ).withValues(alpha: 0.05)
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color: Colors.black.withValues(alpha: 0.06),
+                                  color: isSelected
+                                      ? const Color(0xFF4442D9)
+                                      : Colors.black.withValues(alpha: 0.06),
+                                  width: isSelected ? 2 : 1,
                                 ),
                               ),
                               child: Row(
@@ -292,10 +328,25 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  const Icon(
-                                    Icons.chevron_right,
-                                    color: Colors.black45,
-                                  ),
+                                  widget.multiSelect
+                                      ? Icon(
+                                          _selectedIds.contains(
+                                                ex['id'].toString(),
+                                              )
+                                              ? Icons.check_circle
+                                              : Icons.radio_button_unchecked,
+
+                                          color:
+                                              _selectedIds.contains(
+                                                ex['id'].toString(),
+                                              )
+                                              ? const Color(0xFF4442D9)
+                                              : Colors.black38,
+                                        )
+                                      : const Icon(
+                                          Icons.chevron_right,
+                                          color: Colors.black45,
+                                        ),
                                 ],
                               ),
                             ),
@@ -307,6 +358,33 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: widget.multiSelect
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
+                  onPressed: _selectedIds.isEmpty ? null : _confirmSelection,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4442D9),
+                    minimumSize: const Size.fromHeight(56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text(
+                    _selectedIds.isEmpty
+                        ? "Select Exercises"
+                        : "Add ${_selectedIds.length} Exercise${_selectedIds.length == 1 ? '' : 's'}",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : null,
     );
   }
 }

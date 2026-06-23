@@ -633,6 +633,36 @@ class WorkoutGenerator {
     return copy.take(min(count, copy.length)).toList();
   }
 
+  static PlannedExercise buildPlannedExercise({
+    required UserProfile? profile,
+    required Map<String, dynamic> exercise,
+  }) {
+    final duration = profile?.workoutDuration ?? 40;
+    final rx = _strengthRx(profile);
+    final baseSets = _tweakSetsForDuration(rx.sets, duration);
+
+    int reps;
+
+    if (_userGoal(profile) == "hypertrophy") {
+      reps = _looksCompound(exercise) ? _randInt(8, 12) : _randInt(10, 15);
+    } else {
+      reps = _randInt(rx.repsMin, rx.repsMax);
+    }
+
+    final sets = _setsForExercise(baseSets, exercise);
+
+    final weight = _isBodyweightLike(exercise)
+        ? null
+        : _suggestWeightKg(profile, exercise);
+
+    return PlannedExercise(
+      exerciseId: exercise["id"].toString(),
+      sets: sets,
+      reps: reps,
+      weightKg: weight,
+    );
+  }
+
   // ---------- main ----------
   static Future<List<PlannedExercise>> generatePlannedExercises({
     required UserProfile? profile,
