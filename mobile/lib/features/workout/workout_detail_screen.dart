@@ -4,7 +4,7 @@ import 'package:mobile/features/workout/exercise_detail_screen.dart';
 import 'package:mobile/features/workout/widgets/exercise_row.dart';
 import 'package:mobile/features/workout/services/local_exercise_repo.dart';
 import 'package:mobile/features/workout_play/workout_play_screen.dart';
-import 'package:mobile/app/theme/app_decorations.dart';
+import 'package:mobile/features/workout/widgets/warmup_section.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/features/workout/models/saved_workout.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
@@ -365,148 +365,29 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         ),
                         const SizedBox(height: 14),
 
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          decoration: AppDecorations.card(context),
-                          child: Column(
-                            children: [
-                              // ✅ ONE ROW: title + chevron + switch
-                              Row(
-                                children: [
-                                  const SizedBox(width: 10),
-                                  const Expanded(
-                                    child: Text(
-                                      "Warm-up",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ),
+                        WarmupSection(
+                          warmupOn: _warmupOn,
+                          warmupVisible: _warmupVisible,
+                          warmupPlan: _warmupPlan,
+                          exerciseById: exerciseById,
 
-                                  const SizedBox(width: 10),
+                          onToggleWarmup: _toggleWarmup,
 
-                                  // Switch with app color
-                                  Switch(
-                                    value: _warmupOn,
-                                    onChanged: _toggleWarmup,
-                                    activeThumbColor: Colors.white, // thumb
+                          onToggleVisible: () {
+                            setState(() {
+                              _warmupVisible = !_warmupVisible;
+                            });
+                          },
 
-                                    activeTrackColor: const Color(
-                                      0xFF4442D9,
-                                    ), // track (ON)
-                                    inactiveThumbColor: Colors.white,
-                                    inactiveTrackColor: Colors.black26,
-                                  ),
+                          onEditWarmup: _editExerciseWarmup,
 
-                                  // Chevron button (disabled when switch off)
-                                  IconButton(
-                                    visualDensity: VisualDensity.compact,
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                    onPressed: _warmupOn
-                                        ? () => setState(
-                                            () => _warmupVisible =
-                                                !_warmupVisible,
-                                          )
-                                        : null,
-                                    icon: Icon(
-                                      _warmupVisible
-                                          ? Icons.expand_less
-                                          : Icons.expand_more,
-                                      color: _warmupOn
-                                          ? Colors.black54
-                                          : Colors.black26,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          onDeleteWarmup: (p) async {
+                            setState(() {
+                              _warmupPlan.remove(p);
+                            });
 
-                              // ✅ Expanded warm-up list
-                              if (_warmupOn && _warmupVisible) ...[
-                                const SizedBox(height: 10),
-
-                                if (_warmupPlan.isEmpty)
-                                  const Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      "No warm-up exercises found in dataset.",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black54,
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  ..._warmupPlan.map((p) {
-                                    final ex = exerciseById[p.exerciseId];
-
-                                    final name = ex == null
-                                        ? "Warm-up"
-                                        : _s(ex['name']);
-                                    final cat = ex == null
-                                        ? ""
-                                        : _s(ex['category']);
-
-                                    final subtitle = [
-                                      p.metaText(),
-                                      if (cat.isNotEmpty) cat,
-                                    ].join(" • ");
-
-                                    return Slidable(
-                                      key: ValueKey(p),
-                                      endActionPane: ActionPane(
-                                        extentRatio: 0.28,
-                                        motion: const DrawerMotion(),
-                                        children: [
-                                          SlidableAction(
-                                            onPressed: (_) async {
-                                              setState(() {
-                                                _warmupPlan.remove(p);
-                                              });
-
-                                              await _saveCurrentWorkout();
-                                            },
-                                            backgroundColor: Colors.red,
-                                            foregroundColor: Colors.white,
-                                            icon: Icons.delete,
-                                            label: "Delete",
-                                          ),
-                                        ],
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 10,
-                                        ),
-                                        child: ExerciseRow(
-                                          exerciseId: p.exerciseId,
-                                          name: name.isEmpty ? "Warm-up" : name,
-                                          meta: subtitle,
-                                          onMore: () => _editExerciseWarmup(p),
-                                          onTap: () {
-                                            if (ex == null) return;
-
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) =>
-                                                    ExerciseDetailScreen(
-                                                      exercise: ex,
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                              ],
-                            ],
-                          ),
+                            await _saveCurrentWorkout();
+                          },
                         ),
                         const SizedBox(height: 10),
 
@@ -544,6 +425,11 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                               ),
                             ],
                           ),
+                        ),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Color(0xFFEAEAEA),
                         ),
 
                         const SizedBox(height: 10),
