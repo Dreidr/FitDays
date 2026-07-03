@@ -73,7 +73,11 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _loadExercises() {
-    final ids = _userPlan.map((e) => e.exerciseId).toList();
+    final ids = [
+      ..._warmupPlan.map((e) => e.exerciseId),
+      ..._userPlan.map((e) => e.exerciseId),
+    ];
+
     return LocalExerciseRepo.fetchExercisesByIds(ids);
   }
 
@@ -109,7 +113,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       ),
       builder: (_) => EditExerciseSheet(
         initial: current,
-        onSave: (updated) {
+        isWarmup: true,
+        onSave: (updated) async {
           setState(() {
             final index = _warmupPlan.indexWhere(
               (e) => e.exerciseId == current.exerciseId,
@@ -117,10 +122,11 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
             if (index != -1) {
               _warmupPlan[index] = updated;
+              _future = _loadExercises();
             }
           });
 
-          Navigator.pop(context);
+          await _saveCurrentWorkout();
         },
       ),
     );
@@ -136,13 +142,14 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       ),
       builder: (_) => EditExerciseSheet(
         initial: current,
-        onSave: (updated) {
+        isWarmup: false,
+        onSave: (updated) async {
           setState(() {
             _userPlan[index] = updated;
             _future = _loadExercises();
           });
 
-          Navigator.pop(context);
+          await _saveCurrentWorkout();
         },
       ),
     );

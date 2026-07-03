@@ -105,9 +105,7 @@ class LocalExerciseRepo {
         "instructions": instructions,
       });
     }
-    final warmups = await loadWarmups();
 
-    mapped.addAll(warmups);
     _cache = mapped;
 
     // build index
@@ -152,29 +150,32 @@ class LocalExerciseRepo {
         .toList();
   }
 
-  static Future<List<String>> bodyParts() async {
+  static Future<List<String>> targets() async {
     final all = await loadAll();
-    final parts = <String>{};
+
+    final targets = <String>{};
 
     for (final e in all) {
-      final bp = (e['bodyPart'] ?? '').toString().trim();
-      if (bp.isNotEmpty) parts.add(bp);
+      final t = (e["target"] ?? "").toString().trim();
+
+      if (t.isNotEmpty) {
+        targets.add(t);
+      }
     }
 
-    final list = parts.toList()..sort();
+    final list = targets.toList()..sort();
+
     return list;
   }
 
-  static Future<List<Map<String, dynamic>>> byBodyPart(String bodyPart) async {
+  static Future<List<Map<String, dynamic>>> byTarget(String target) async {
     final all = await loadAll();
 
-    final results = all.where((e) {
-      final bp = (e['bodyPart'] ?? '').toString();
+    return all.where((e) {
+      final t = (e['target'] ?? '').toString();
 
-      return bp.toLowerCase().contains(bodyPart.toLowerCase());
+      return t.toLowerCase() == target.toLowerCase();
     }).toList();
-
-    return results;
   }
 
   static Future<Map<String, dynamic>?> getById(String id) async {

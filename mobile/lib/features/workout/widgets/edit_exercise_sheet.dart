@@ -8,10 +8,12 @@ class EditExerciseSheet extends StatefulWidget {
     super.key,
     required this.initial,
     required this.onSave,
+    this.isWarmup = false,
   });
 
   final PlannedExercise initial;
   final ValueChanged<PlannedExercise> onSave;
+  final bool isWarmup;
 
   @override
   State<EditExerciseSheet> createState() => EditExerciseSheetState();
@@ -145,9 +147,9 @@ class EditExerciseSheetState extends State<EditExerciseSheet> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => AllExercisesScreen(
-                        targetFilter: target,
+                        initialTarget: widget.isWarmup ? null : target,
                         selectionMode: true,
-                        warmupOnly: true,
+                        warmupOnly: widget.isWarmup,
                       ),
                     ),
                   );
@@ -162,6 +164,7 @@ class EditExerciseSheetState extends State<EditExerciseSheet> {
                       weightKg: _parseWeight(),
                     ),
                   );
+                  Navigator.pop(context);
                 },
                 icon: const Icon(Icons.swap_horiz, size: 22),
                 label: const Text(
@@ -187,7 +190,10 @@ class EditExerciseSheetState extends State<EditExerciseSheet> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  onPressed: () => widget.onSave(_buildUpdated()),
+                  onPressed: () {
+                    widget.onSave(_buildUpdated());
+                    Navigator.pop(context);
+                  },
                   child: const Text(
                     "Save",
                     style: TextStyle(

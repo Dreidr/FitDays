@@ -4,7 +4,7 @@ import 'package:mobile/features/workout/exercise_detail_screen.dart';
 import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
 
 class AllExercisesScreen extends StatefulWidget {
-  final String? targetFilter;
+  final String? initialTarget;
   final bool selectionMode;
   final bool warmupOnly;
   final bool multiSelect;
@@ -12,7 +12,7 @@ class AllExercisesScreen extends StatefulWidget {
 
   const AllExercisesScreen({
     super.key,
-    this.targetFilter,
+    this.initialTarget,
     this.selectionMode = false,
     this.warmupOnly = false,
     this.multiSelect = false,
@@ -25,14 +25,15 @@ class AllExercisesScreen extends StatefulWidget {
 
 class _AllExercisesScreenState extends State<AllExercisesScreen> {
   final _searchCtrl = TextEditingController();
+  final ScrollController _chipScrollController = ScrollController();
 
   List<Map<String, dynamic>> _items = [];
-  List<String> _bodyParts = [];
+  List<String> _targets = [];
 
   bool _loading = false;
   int _totalAll = 0;
 
-  String? _selectedBodyPart; // null = all
+  String? _selectedTarget; // null = all
   String _search = "";
   final Set<String> _selectedIds = {};
 
@@ -41,12 +42,14 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
     super.initState();
 
     _selectedIds.addAll(widget.preselectedIds);
+    _selectedTarget = widget.initialTarget;
 
     _bootstrap();
   }
 
   @override
   void dispose() {
+    _chipScrollController.dispose();
     _searchCtrl.dispose();
     super.dispose();
   }
@@ -59,26 +62,33 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
       final all = widget.warmupOnly
           ? await LocalExerciseRepo.loadWarmups()
           : await LocalExerciseRepo.loadAll();
-      final parts = await LocalExerciseRepo.bodyParts();
-      final warmups = await LocalExerciseRepo.loadWarmups();
 
-      var filtered = all;
-
-      if (widget.targetFilter != null) {
-        filtered = all.where((e) {
-          return _s(e["target"]).toLowerCase() ==
-              widget.targetFilter!.toLowerCase();
-        }).toList();
+      final targets = widget.warmupOnly
+          ? (all
+                .map((e) => _s(e["target"]))
+                .where((e) => e.isNotEmpty)
+                .toSet()
+                .toList()
+              ..sort())
+          : await LocalExerciseRepo.targets();
+      if (_selectedTarget != null && targets.contains(_selectedTarget)) {
+        targets.remove(_selectedTarget);
+        targets.insert(0, _selectedTarget!);
       }
-
-      for (final w in warmups.take(30)) {}
 
       if (!mounted) return;
 
       setState(() {
-        _items = filtered;
-        _totalAll = filtered.length;
-        _bodyParts = parts;
+        _items = all;
+        _totalAll = all.length;
+        _targets = targets;
+      });
+
+      if (widget.initialTarget != null) {
+        await _applyFilters();
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToSelectedChip();
       });
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -87,18 +97,38 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
 
   Future<void> _applyFilters() async {
     setState(() => _loading = true);
+
     try {
       List<Map<String, dynamic>> list;
 
-      if (_search.trim().isNotEmpty) {
-        list = await LocalExerciseRepo.searchByName(_search);
-      } else if (_selectedBodyPart != null && _selectedBodyPart!.isNotEmpty) {
-        list = await LocalExerciseRepo.byBodyPart(_selectedBodyPart!);
+      if (widget.warmupOnly) {
+        // Work only with warmups
+        list = await LocalExerciseRepo.loadWarmups();
+
+        if (_search.trim().isNotEmpty) {
+          list = list.where((e) {
+            return _s(e["name"]).toLowerCase().contains(_search.toLowerCase());
+          }).toList();
+        }
+
+        if (_selectedTarget != null && _selectedTarget!.isNotEmpty) {
+          list = list.where((e) {
+            return _s(e["bodyPart"]) == _selectedTarget;
+          }).toList();
+        }
       } else {
-        list = await LocalExerciseRepo.loadAll();
+        // Existing logic for normal exercises
+        if (_search.trim().isNotEmpty) {
+          list = await LocalExerciseRepo.searchByName(_search);
+        } else if (_selectedTarget != null && _selectedTarget!.isNotEmpty) {
+          list = await LocalExerciseRepo.byTarget(_selectedTarget!);
+        } else {
+          list = await LocalExerciseRepo.loadAll();
+        }
       }
 
       if (!mounted) return;
+
       setState(() => _items = list);
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -118,8 +148,8 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
     _applyFilters();
   }
 
-  void _selectBodyPart(String? part) {
-    setState(() => _selectedBodyPart = part);
+  void _selectTarget(String? part) {
+    setState(() => _selectedTarget = part);
     _applyFilters();
   }
 
@@ -131,11 +161,27 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
     Navigator.pop(context, selected);
   }
 
+  void _scrollToSelectedChip() {
+    if (_selectedTarget == null) return;
+
+    final index = _targets.indexOf(_selectedTarget!);
+
+    if (index == -1) return;
+
+    const chipWidth = 100.0;
+
+    _chipScrollController.animateTo(
+      index * chipWidth,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final title = _selectedBodyPart == null
+    final title = _selectedTarget == null
         ? "All Exercises"
-        : "Exercises • ${_selectedBodyPart!}";
+        : "Exercises • ${_selectedTarget!}";
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -175,23 +221,24 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
           ),
 
           // BodyPart filter chips
-          if (_bodyParts.isNotEmpty) ...[
+          if (_targets.isNotEmpty) ...[
             SizedBox(
               height: 44,
               child: ListView(
+                controller: _chipScrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 scrollDirection: Axis.horizontal,
                 children: [
                   _FilterChip(
                     label: "All ($_totalAll)",
-                    selected: _selectedBodyPart == null,
-                    onTap: () => _selectBodyPart(null),
+                    selected: _selectedTarget == null,
+                    onTap: () => _selectTarget(null),
                   ),
-                  ..._bodyParts.map(
+                  ..._targets.map(
                     (p) => _FilterChip(
-                      label: p,
-                      selected: _selectedBodyPart == p,
-                      onTap: () => _selectBodyPart(p),
+                      label: titleCase(p),
+                      selected: _selectedTarget == p,
+                      onTap: () => _selectTarget(p),
                     ),
                   ),
                 ],
@@ -254,6 +301,13 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                                 return;
                               }
 
+                              // ✅ Replace Exercise mode
+                              if (widget.selectionMode) {
+                                Navigator.pop(context, ex);
+                                return;
+                              }
+
+                              // ✅ Normal browse mode
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
