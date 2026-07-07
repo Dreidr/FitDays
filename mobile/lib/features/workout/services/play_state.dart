@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:mobile/core/models/user_profile.dart';
 import 'package:mobile/core/services/local_storage_services.dart';
 import 'package:mobile/features/workout/models/day_plan.dart';

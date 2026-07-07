@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:mobile/features/workout/models/day_plan.dart';
 import 'package:mobile/features/workout/models/saved_workout.dart';
 import 'package:mobile/features/workout/widgets/exercise_thumb.dart';
+import 'package:mobile/features/workout/utils/workout_info.dart';
 
 class WorkoutCard extends StatelessWidget {
   const WorkoutCard({
@@ -37,6 +38,7 @@ class WorkoutCard extends StatelessWidget {
             .take(4)
             .toList() ??
         [];
+    final info = getWorkoutInfo(plan.type);
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -74,34 +76,56 @@ class WorkoutCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    dayLabel, // 👈 USE THE GETTER YOU ALREADY WROTE
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        dayLabel,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+
+                      Text(
+                        workout != null
+                            ? "${workout!.durationMinutes} min"
+                            : "",
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Text(
-                    plan.title,
+                    info.title,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
+
                   const SizedBox(height: 4),
+
                   Text(
-                    workout != null
-                        ? "${workout!.durationMinutes} mins"
-                        : plan.subtitle,
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    info.subtitle,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
 
+                  const SizedBox(height: 6),
+
                   if (workout != null && workout!.exercises.isNotEmpty) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
 
                     SizedBox(
                       height: 48,

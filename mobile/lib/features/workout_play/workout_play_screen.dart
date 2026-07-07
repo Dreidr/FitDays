@@ -73,7 +73,6 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
 
   // Optional but nice: stable id for this run
   late final String _workoutId;
-  late AnimationController _arrowController;
 
   int _exerciseIndex = 0;
   int _setIndex = 1;
@@ -160,7 +159,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
     super.dispose();
   }
 
-  String _s(dynamic v) => (v ?? '').toString();
+  String s(dynamic v) => (v ?? '').toString();
 
   void _startRest([int seconds = _defaultRestSeconds]) async {
     _timer?.cancel();

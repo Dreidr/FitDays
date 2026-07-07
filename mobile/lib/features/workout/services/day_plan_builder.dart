@@ -1,6 +1,7 @@
 import 'package:mobile/core/models/user_profile.dart';
 import 'package:mobile/features/workout/models/day_plan.dart';
 import 'package:mobile/features/workout/services/plan_calendar_service.dart';
+import 'package:mobile/core/enums/workout_type.dart';
 
 class DayPlanBuilder {
   static List<DayPlan> buildNext3Plans({
@@ -35,6 +36,65 @@ class DayPlanBuilder {
       ),
     ];
   }
+
+ static WorkoutType workoutTypeFromTitle(String title) {
+  switch (title.toLowerCase()) {
+    case "push":
+      return WorkoutType.push;
+
+    case "pull":
+      return WorkoutType.pull;
+
+    case "legs":
+      return WorkoutType.legs;
+
+    case "upper body":
+      return WorkoutType.upperBody;
+
+    case "lower body":
+      return WorkoutType.lowerBody;
+
+    case "full body":
+    case "full body starter":
+      return WorkoutType.fullBody;
+
+    case "hiit":
+      return WorkoutType.hiit;
+
+    case "steady cardio":
+      return WorkoutType.steadyCardio;
+
+    case "core & conditioning":
+      return WorkoutType.coreConditioning;
+
+    case "full body circuit":
+      return WorkoutType.fullBodyCircuit;
+
+    case "stretching":
+      return WorkoutType.stretching;
+
+    case "mobility":
+      return WorkoutType.mobility;
+
+    case "recovery":
+      return WorkoutType.recovery;
+
+    case "yoga flow":
+      return WorkoutType.yogaFlow;
+
+    case "balance training":
+      return WorkoutType.balanceTraining;
+
+    case "functional movement":
+      return WorkoutType.functionalMovement;
+
+    case "mobility & stability":
+      return WorkoutType.mobilityStability;
+
+    default:
+      return WorkoutType.fullBody;
+  }
+}
 
   static List<DayPlan> buildWeek({
     required DateTime startDate,
@@ -144,8 +204,9 @@ class DayPlanBuilder {
       return DayPlan(
         date: d,
         isWorkoutDay: false,
+        type: WorkoutType.rest,
         title: "Rest Day",
-        subtitle: "Recovery • optional walk/stretch",
+        subtitle: "Take it easy today",
       );
     }
 
@@ -153,11 +214,12 @@ class DayPlanBuilder {
     final idx = (wc - 1) % split.length;
 
     return DayPlan(
-      date: d,
-      isWorkoutDay: true,
-      title: split[idx],
-      subtitle: "$durationMinutes min • ${_planLabel(profile)}",
-    );
+  date: d,
+  isWorkoutDay: true,
+  type: workoutTypeFromTitle(split[idx]),
+  title: split[idx],
+  subtitle: "$durationMinutes min • ${_planLabel(profile)}",
+);
   }
 
   static String _normalizeDay(String s) {

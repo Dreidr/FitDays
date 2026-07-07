@@ -1,4 +1,3 @@
-import '../../workout/services/local_exercise_repo.dart';
 import 'package:mobile/features/workout/models/planned_exercise.dart';
 import 'package:flutter/material.dart';
 

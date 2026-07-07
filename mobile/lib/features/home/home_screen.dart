@@ -16,6 +16,7 @@ import 'package:mobile/features/workout/services/play_state.dart';
 import 'package:mobile/features/workout/services/plan_calendar_service.dart';
 import 'package:mobile/features/workout/services/workout_completion_service.dart';
 import 'package:mobile/features/workout/services/day_plan_builder.dart';
+import 'package:mobile/core/enums/workout_type.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -62,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return DayPlan(
       date: start,
       isWorkoutDay: true,
+      type: WorkoutType.fullBody,
       title: "Full Body Starter",
       subtitle: "30–40 min • Beginner friendly",
     );
@@ -111,7 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Greeting(userNameVN: widget.userNameVN),
+                    Greeting(
+                      userNameVN: widget.userNameVN,
+                      todayPlan: plans.first,
+                    ),
 
                     Divider(
                       thickness: 1,

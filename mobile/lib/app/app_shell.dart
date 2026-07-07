@@ -5,6 +5,7 @@ import 'package:mobile/features/profile/profile_tab_root.dart';
 import 'package:mobile/core/widgets/bottom_navigation.dart'; // your sticky nav
 import 'package:mobile/features/workout/models/day_plan.dart';
 import 'package:mobile/features/workout/services/day_plan_builder.dart';
+import 'package:mobile/core/enums/workout_type.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({
@@ -51,6 +52,7 @@ class _AppShellState extends State<AppShell> {
       orElse: () => DayPlan(
         date: today,
         isWorkoutDay: false,
+        type: WorkoutType.rest,
         title: "Rest Day",
         subtitle: "Recovery",
       ),
