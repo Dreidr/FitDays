@@ -1,30 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:mobile/core/models/exercise_set.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:mobile/features/workout/widgets/show_set_picker.dart';
 
 class ExerciseDetailScreen extends StatefulWidget {
-  const ExerciseDetailScreen({
-    super.key,
-    required this.exercise,
-  });
+  const ExerciseDetailScreen({super.key, required this.exercise});
 
   final Map<String, dynamic> exercise;
 
   @override
-  State<ExerciseDetailScreen> createState() =>
-      _ExerciseDetailScreenState();
+  State<ExerciseDetailScreen> createState() => _ExerciseDetailScreenState();
 }
 
-class _ExerciseDetailScreenState
-    extends State<ExerciseDetailScreen> {
+class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
+  late List<ExerciseSet> workoutSets;
   late VideoPlayerController _controller;
   bool _ready = false;
 
   String _s(dynamic v) => (v ?? '').toString();
 
   List<String> _list(dynamic v) =>
-      (v is List)
-          ? v.map((e) => e.toString()).toList()
-          : const [];
+      (v is List) ? v.map((e) => e.toString()).toList() : const [];
+
+  Future<void> _editSet(int index) async {
+    final updated = await showSetPicker(
+      context: context,
+      exerciseName: widget.exercise['name'],
+      initial: workoutSets[index],
+    );
+
+    if (updated != null) {
+      setState(() {
+        workoutSets[index] = updated;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -32,9 +43,8 @@ class _ExerciseDetailScreenState
 
     final id = widget.exercise['id'];
 
-    _controller = VideoPlayerController.asset(
-      'assets/videos/$id.mp4',
-    )..initialize().then((_) {
+    _controller = VideoPlayerController.asset('assets/videos/$id.mp4')
+      ..initialize().then((_) {
         _controller.setLooping(true);
         _controller.play();
 
@@ -44,6 +54,8 @@ class _ExerciseDetailScreenState
           });
         }
       });
+
+    workoutSets = [ExerciseSet(reps: 10, weightKg: 80)];
   }
 
   @override
@@ -57,22 +69,14 @@ class _ExerciseDetailScreenState
     final ex = widget.exercise;
 
     final name = _s(ex['name']);
-    final bodyPart = _s(ex['bodyPart']);
-    final target = _s(ex['target']);
-    final equipment = _s(ex['equipment']);
-    final difficulty = _s(ex['difficulty']);
+
     final description = _s(ex['description']);
 
-    final secondary = _list(ex['secondaryMuscles']);
     final instructions = _list(ex['instructions']);
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          name.isEmpty ? 'Exercise' : name,
-        ),
-      ),
+      appBar: AppBar(title: Text(name.isEmpty ? 'Exercise' : name)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -87,16 +91,10 @@ class _ExerciseDetailScreenState
                 height: 300,
                 child: _ready
                     ? AspectRatio(
-                        aspectRatio:
-                            _controller.value.aspectRatio,
-                        child: VideoPlayer(
-                          _controller,
-                        ),
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: VideoPlayer(_controller),
                       )
-                    : const Center(
-                        child:
-                            CircularProgressIndicator(),
-                      ),
+                    : const Center(child: CircularProgressIndicator()),
               ),
             ),
           ),
@@ -105,138 +103,134 @@ class _ExerciseDetailScreenState
 
           Text(
             name,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-            ),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
           ),
 
           const SizedBox(height: 12),
 
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              if (bodyPart.isNotEmpty)
-                _Chip("Body: $bodyPart"),
+          if (description.isNotEmpty) ...[
+            const SizedBox(height: 16),
 
-              if (target.isNotEmpty)
-                _Chip("Target: $target"),
+            Text(
+              description,
+              style: const TextStyle(
+                fontSize: 15,
+                height: 1.5,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+          const SizedBox(height: 24),
 
-              if (equipment.isNotEmpty)
-                _Chip("Equipment: $equipment"),
-
-              if (difficulty.isNotEmpty)
-                _Chip("Difficulty: $difficulty"),
-            ],
+          const Text(
+            "Workout Setup",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
 
-          if (description.isNotEmpty) ...[
-            const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-            const Text(
-              "Description",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-              ),
+          Material(
+            color: const Color(0xFFF7F8FA),
+            borderRadius: BorderRadius.circular(20),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                ...List.generate(workoutSets.length, (index) {
+                  final set = workoutSets[index];
+
+                  return Slidable(
+                    key: ValueKey(index),
+                    endActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (_) {
+                            setState(() {
+                              if (workoutSets.length > 1) {
+                                workoutSets.removeAt(index);
+                              }
+                            });
+                          },
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete_outline,
+                          label: 'Delete',
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        "Set ${index + 1}",
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      subtitle: Text(
+                        "${set.reps} reps × ${set.weightKg.toStringAsFixed(0)} kg",
+                      ),
+                      onTap: () => _editSet(index),
+                    ),
+                  );
+                }),
+
+                const Divider(height: 1),
+
+                ListTile(
+                  leading: const Icon(Icons.add),
+                  title: const Text("Add Set"),
+                  onTap: () {
+                    setState(() {
+                      if (workoutSets.isNotEmpty) {
+                        workoutSets.add(workoutSets.last.copy());
+                      } else {
+                        workoutSets.add(ExerciseSet(reps: 10, weightKg: 0));
+                      }
+                    });
+                  },
+                ),
+              ],
             ),
-
-            const SizedBox(height: 8),
-
-            Text(description),
-          ],
-
-          if (secondary.isNotEmpty) ...[
-            const SizedBox(height: 20),
-
-            const Text(
-              "Secondary Muscles",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: secondary
-                  .map((e) => _Chip(e))
-                  .toList(),
-            ),
-          ],
+          ),
 
           const SizedBox(height: 20),
 
           const Text(
             "Instructions",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
 
           const SizedBox(height: 12),
 
-          if (instructions.isEmpty)
-            const Text(
-              "No instructions available.",
-            ),
+          if (instructions.isEmpty) const Text("No instructions available."),
 
-          for (int i = 0;
-              i < instructions.length;
-              i++)
+          for (int i = 0; i < instructions.length; i++)
             Padding(
-              padding:
-                  const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 12),
               child: Row(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "${i + 1}. ",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                  Expanded(
-                    child: Text(
-                      instructions[i],
-                    ),
-                  ),
+                  Expanded(child: Text(instructions[i])),
                 ],
               ),
             ),
+          const SizedBox(height: 24),
+
+          Container(
+            height: 160,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF7F8FA),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Center(
+              child: Text(
+                "Muscle Illustration",
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF4F6F8),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontWeight: FontWeight.w500,
-        ),
       ),
     );
   }
