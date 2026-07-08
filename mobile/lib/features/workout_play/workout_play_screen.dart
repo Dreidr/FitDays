@@ -314,10 +314,24 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
           elevation: 0,
-          title: Text(
-            widget.title,
-            style: const TextStyle(fontWeight: FontWeight.w800),
+          scrolledUnderElevation: 0,
+          centerTitle: true,
+
+          title: const Text(
+            "eniig yanzlana",
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            color: Colors.black,
+            onPressed: () => Navigator.pop(context),
           ),
         ),
         body: SafeArea(
@@ -469,7 +483,7 @@ class _WorkoutPlayScreenState extends State<WorkoutPlayScreen> {
                                   const SizedBox(height: 6),
                                   Text(
                                     (weight != null && weight > 0)
-                                        ? "${weight.toStringAsFixed(1)} kg"
+                                        ? "${weight.toStringAsFixed(1)} kg eniig yanzlana"
                                         : "Bodyweight",
                                     style: const TextStyle(
                                       fontSize: 14,

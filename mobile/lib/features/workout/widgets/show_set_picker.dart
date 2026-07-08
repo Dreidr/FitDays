@@ -8,13 +8,16 @@ Future<ExerciseSet?> showSetPicker({
   required ExerciseSet initial,
 }) {
   int reps = initial.reps;
-  double weight = initial.weightKg;
+  double? weight = initial.weightKg;
+  final hasWeight = initial.weightKg != null;debugPrint(
+  "PICKER: $exerciseName | weight=${initial.weightKg} | hasWeight=$hasWeight",
+);
 
   final repsController = FixedExtentScrollController(initialItem: reps - 1);
   final weightValues = List.generate(121, (i) => i * 2.5);
 
   final weightController = FixedExtentScrollController(
-    initialItem: weightValues.indexOf(weight),
+    initialItem: hasWeight ? weightValues.indexOf(weight!) : 0,
   );
   return showModalBottomSheet<ExerciseSet>(
     context: context,
@@ -132,91 +135,92 @@ Future<ExerciseSet?> showSetPicker({
                             ],
                           ),
                         ),
+                        if (hasWeight)
+                          Expanded(
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                ListWheelScrollView.useDelegate(
+                                  controller: weightController,
+                                  itemExtent: 44,
+                                  physics: const FixedExtentScrollPhysics(),
+                                  onSelectedItemChanged: (index) {
+                                    HapticFeedback.selectionClick();
 
-                        Expanded(
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              ListWheelScrollView.useDelegate(
-                                controller: weightController,
-                                itemExtent: 44,
-                                physics: const FixedExtentScrollPhysics(),
-                                onSelectedItemChanged: (index) {
-                                  HapticFeedback.selectionClick();
+                                    modalSetState(() {
+                                      weight = weightValues[index];
+                                    });
+                                  },
+                                  childDelegate: ListWheelChildBuilderDelegate(
+                                    childCount: weightValues.length,
 
-                                  modalSetState(() {
-                                    weight = weightValues[index];
-                                  });
-                                },
-                                childDelegate: ListWheelChildBuilderDelegate(
-                                  childCount: weightValues.length,
+                                    builder: (_, index) {
+                                      final selectedIndex = weightValues
+                                          .indexOf(weight ?? 0);
+                                      final distance = (index - selectedIndex)
+                                          .abs();
 
-                                  builder: (_, index) {
-                                    final selectedIndex = weightValues.indexOf(
-                                      weight,
-                                    );
-                                    final distance = (index - selectedIndex)
-                                        .abs();
+                                      double opacity;
+                                      double fontSize;
+                                      FontWeight fontWeight;
 
-                                    double opacity;
-                                    double fontSize;
-                                    FontWeight fontWeight;
+                                      if (distance == 0) {
+                                        opacity = 1.0;
+                                        fontSize = 20;
+                                        fontWeight = FontWeight.w500;
+                                      } else if (distance == 1) {
+                                        opacity = 0.65;
+                                        fontSize = 20;
+                                        fontWeight = FontWeight.w500;
+                                      } else if (distance == 2) {
+                                        opacity = 0.35;
+                                        fontSize = 18;
+                                        fontWeight = FontWeight.w500;
+                                      } else {
+                                        opacity = 0.15;
+                                        fontSize = 16;
+                                        fontWeight = FontWeight.w500;
+                                      }
 
-                                    if (distance == 0) {
-                                      opacity = 1.0;
-                                      fontSize = 20;
-                                      fontWeight = FontWeight.w500;
-                                    } else if (distance == 1) {
-                                      opacity = 0.65;
-                                      fontSize = 20;
-                                      fontWeight = FontWeight.w500;
-                                    } else if (distance == 2) {
-                                      opacity = 0.35;
-                                      fontSize = 18;
-                                      fontWeight = FontWeight.w500;
-                                    } else {
-                                      opacity = 0.15;
-                                      fontSize = 16;
-                                      fontWeight = FontWeight.w500;
-                                    }
-
-                                    return Center(
-                                      child: AnimatedDefaultTextStyle(
-                                        duration: const Duration(
-                                          milliseconds: 120,
-                                        ),
-                                        curve: Curves.easeOut,
-                                        style: TextStyle(
-                                          fontSize: fontSize,
-                                          fontWeight: fontWeight,
-                                          color: Colors.black.withValues(
-                                            alpha: opacity,
+                                      return Center(
+                                        child: AnimatedDefaultTextStyle(
+                                          duration: const Duration(
+                                            milliseconds: 120,
+                                          ),
+                                          curve: Curves.easeOut,
+                                          style: TextStyle(
+                                            fontSize: fontSize,
+                                            fontWeight: fontWeight,
+                                            color: Colors.black.withValues(
+                                              alpha: opacity,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            "${weightValues[index]} kg",
                                           ),
                                         ),
-                                        child: Text(
-                                          "${weightValues[index]} kg",
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
 
-                              IgnorePointer(
-                                child: Container(
-                                  height: 44,
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.06),
-                                    borderRadius: BorderRadius.circular(10),
+                                IgnorePointer(
+                                  child: Container(
+                                    height: 44,
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.06,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),

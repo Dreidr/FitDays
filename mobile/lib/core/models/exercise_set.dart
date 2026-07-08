@@ -1,11 +1,11 @@
 class ExerciseSet {
   ExerciseSet({
     required this.reps,
-    required this.weightKg,
+    this.weightKg,
   });
 
   int reps;
-  double weightKg;
+  double? weightKg;
 
   ExerciseSet copy() {
     return ExerciseSet(

@@ -312,7 +312,7 @@ class _AllExercisesScreenState extends State<AllExercisesScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) =>
-                                      ExerciseDetailScreen(exercise: ex),
+                                      ExerciseDetailScreen(exercise: ex,),
                                 ),
                               );
                             },

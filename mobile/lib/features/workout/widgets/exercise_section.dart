@@ -81,7 +81,13 @@ class ExerciseSection extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ExerciseDetailScreen(exercise: ex),
+                    builder: (_) => ExerciseDetailScreen(
+                      exercise: ex,
+                      plannedExercise: planned,
+                      onReplace: () async {
+                        onEdit(i, planned);
+                      },
+                    ),
                   ),
                 );
               },

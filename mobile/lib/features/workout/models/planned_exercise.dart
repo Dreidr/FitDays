@@ -45,9 +45,16 @@ class PlannedExercise {
   final double? weightKg;
 
   String metaText() {
-    final w = (weightKg != null && weightKg! > 0)
-        ? " x ${weightKg!.toStringAsFixed(0)}kg"
-        : "";
+    String w = "";
+
+    if (weightKg != null && weightKg! > 0) {
+      final text = weightKg == weightKg!.roundToDouble()
+          ? weightKg!.toStringAsFixed(0)
+          : weightKg!.toStringAsFixed(1);
+
+      w = " x ${text}kg";
+    }
+
     return "$sets sets x $reps reps$w";
   }
 }

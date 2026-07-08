@@ -132,10 +132,18 @@ class WorkoutGenerator {
 
     final name = _norm(e["name"]?.toString());
     return name.contains("push up") ||
+        name.contains("pushup") ||
+        name.contains("pushups") ||
         name.contains("pull up") ||
+        name.contains("pullup") ||
+        name.contains("pullups") ||
+        name.contains("chin up") ||
+        name.contains("chinup") ||
+        name.contains("dip") ||
         name.contains("plank") ||
         name.contains("burpee") ||
-        name.contains("jump");
+        name.contains("jump") ||
+        name.contains("leg raise");
   }
 
   static bool _canSuggestWeight(Map<String, dynamic> e) {
@@ -240,7 +248,7 @@ class WorkoutGenerator {
         _goalMultiplier(goal) *
         _genderMultiplier(gender);
 
-    return (raw * 2).round() / 2.0;
+    return (raw / 2.5).round() * 2.5;
   }
 
   // ---------- existing helpers ----------
@@ -783,7 +791,6 @@ class WorkoutGenerator {
     String workoutType,
   ) async {
     final warmups = await LocalExerciseRepo.loadWarmups();
-    
 
     const excludedKeywords = [
       'push up',
